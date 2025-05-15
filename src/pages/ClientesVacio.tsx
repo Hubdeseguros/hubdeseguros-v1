@@ -1,4 +1,3 @@
-import { UserPlus } from "lucide-react";
 import EmptyTableCard from "@/components/common/EmptyTableCard";
 
 export default function ClientesVacio() {
