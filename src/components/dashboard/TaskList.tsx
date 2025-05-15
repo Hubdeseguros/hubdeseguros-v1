@@ -1,5 +1,4 @@
-
-import { Check } from "lucide-react";
+import { Check, AlertCircle } from "lucide-react";
 
 interface Task {
   id: string;
@@ -50,7 +49,10 @@ const TaskList = ({ tasks, title = "Tareas", emptyMessage = 'No hay tareas pendi
                 <div className="flex-1">
                   <div className="flex items-center">
                     <span className={`h-2 w-2 rounded-full ${getPriorityDot(task.priority)} mr-2`}></span>
-                    <p className="font-medium text-sm">{task.title}</p>
+                    <p className="font-medium text-sm flex items-center gap-1">
+                      {task.priority === 'alta' && <AlertCircle className="text-red-500 h-4 w-4" />}
+                      {task.title}
+                    </p>
                   </div>
                   {task.dueDate && (
                     <p className="text-xs text-gray-500 mt-1">Vencimiento: {task.dueDate}</p>

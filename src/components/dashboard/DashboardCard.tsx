@@ -1,4 +1,3 @@
-
 import { ReactNode } from 'react';
 import { Card } from '@/components/ui/card';
 
@@ -9,19 +8,25 @@ interface DashboardCardProps {
   icon?: ReactNode;
   trend?: number;
   color?: 'blue' | 'green' | 'amber' | 'red' | 'purple';
-  change?: string; // Added change property
-  timeframe?: string; // Added timeframe property
+  change?: string;
+  timeframe?: string;
+  security?: boolean;
+  alert?: boolean;
+  privacyMsg?: string;
 }
 
-const DashboardCard = ({ 
-  title, 
-  value, 
-  subtitle, 
-  icon, 
+const DashboardCard = ({
+  title,
+  value,
+  subtitle,
+  icon,
   trend,
   color = 'blue',
   change,
-  timeframe 
+  timeframe,
+  security,
+  alert,
+  privacyMsg
 }: DashboardCardProps) => {
   const getBgColor = () => {
     switch (color) {
@@ -59,7 +64,23 @@ const DashboardCard = ({
   };
 
   return (
-    <Card className={`${getBgColor()} p-6 rounded-lg`}>
+    <Card className={`${getBgColor()} p-6 rounded-lg relative`}>
+      {security && (
+        <div className="absolute top-2 right-2 flex items-center gap-1 text-green-600">
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4l7 4v4c0 5-3.5 9-7 9s-7-4-7-9V8l7-4z" />
+          </svg>
+          <span className="text-xs font-semibold">Seguro</span>
+        </div>
+      )}
+      {alert && (
+        <div className="absolute top-2 left-2 bg-red-100 text-red-700 px-2 py-1 rounded flex items-center gap-1">
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span className="text-xs font-bold">Alerta</span>
+        </div>
+      )}
       <div className="flex justify-between items-start">
         <div>
           <h3 className="text-gray-600 text-sm font-medium">{title}</h3>
@@ -99,6 +120,14 @@ const DashboardCard = ({
           </div>
         )}
       </div>
+      {privacyMsg && (
+        <div className="mt-2 text-xs text-gray-400 flex items-center gap-1">
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c1.104 0 2-.896 2-2s-.896-2-2-2-2 .896-2 2 .896 2 2 2zm0 0v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {privacyMsg}
+        </div>
+      )}
     </Card>
   );
 };
