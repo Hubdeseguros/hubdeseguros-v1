@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
-import { BarChart4, Clock, Shield, Users } from 'lucide-react';
+import { BarChart4, Clock, Shield, Users, Lock, FileText } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 const Landing = () => {
   const {
@@ -365,6 +365,27 @@ const Landing = () => {
           </div>
         </div>
       </footer>
+
+      {/* Accesos rápidos a documentación y soporte */}
+      <div className="flex flex-wrap gap-4 mt-8 justify-center">
+        <a href="/docs/legales.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded hover:bg-blue-100 border">
+          <FileText className="w-4 h-4" /> Documentos Legales
+        </a>
+        <a href="/docs/soporte.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded hover:bg-green-100 border">
+          <Shield className="w-4 h-4" /> Soporte
+        </a>
+        <a href="/docs/privacidad.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-gray-50 text-gray-700 rounded hover:bg-gray-100 border">
+          <Lock className="w-4 h-4" /> Política de Privacidad
+        </a>
+      </div>
+
+      {/* Banner fijo de privacidad */}
+      <div className="fixed bottom-0 left-0 w-full bg-blue-50 text-blue-900 text-center py-2 text-xs flex items-center justify-center gap-2 z-50 border-t border-blue-200">
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c1.104 0 2-.896 2-2s-.896-2-2-2-2 .896-2 2 .896 2 2 2zm0 0v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Tu privacidad es nuestra prioridad. Consulta nuestra <a href="/docs/privacidad.pdf" className="underline ml-1" target="_blank" rel="noopener noreferrer">Política de Privacidad</a>.
+      </div>
 
       {/* Botón flotante de WhatsApp */}
       <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp" className="fixed bottom-6 right-6 bg-blue-700 text-white rounded-full p-3 shadow-lg hover:bg-blue-700 transition-colors z-50">

@@ -13,6 +13,7 @@ interface DashboardCardProps {
   security?: boolean;
   alert?: boolean;
   privacyMsg?: string;
+  badge?: ReactNode;
 }
 
 const DashboardCard = ({
@@ -26,7 +27,8 @@ const DashboardCard = ({
   timeframe,
   security,
   alert,
-  privacyMsg
+  privacyMsg,
+  badge
 }: DashboardCardProps) => {
   const getBgColor = () => {
     switch (color) {
@@ -64,9 +66,9 @@ const DashboardCard = ({
   };
 
   return (
-    <Card className={`${getBgColor()} p-6 rounded-lg relative`}>
+    <Card className={`${getBgColor()} p-6 rounded-lg relative shadow-md transition-shadow hover:shadow-lg`}>
       {security && (
-        <div className="absolute top-2 right-2 flex items-center gap-1 text-green-600">
+        <div className="absolute top-2 right-2 flex items-center gap-1 text-green-600" aria-label="Seguro">
           <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4l7 4v4c0 5-3.5 9-7 9s-7-4-7-9V8l7-4z" />
           </svg>
@@ -74,7 +76,7 @@ const DashboardCard = ({
         </div>
       )}
       {alert && (
-        <div className="absolute top-2 left-2 bg-red-100 text-red-700 px-2 py-1 rounded flex items-center gap-1">
+        <div className="absolute top-2 left-2 bg-red-100 text-red-700 px-2 py-1 rounded flex items-center gap-1" aria-label="Alerta">
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -84,9 +86,12 @@ const DashboardCard = ({
       <div className="flex justify-between items-start">
         <div>
           <h3 className="text-gray-600 text-sm font-medium">{title}</h3>
-          <p className={`text-3xl font-bold ${getTextColor()} mt-1`}>
-            {value}
-          </p>
+          <div className="flex items-center gap-2">
+            <p className={`text-3xl font-bold ${getTextColor()} mt-1`}>
+              {value}
+            </p>
+            {badge}
+          </div>
           {(subtitle || change) && (
             <p className="text-gray-600 text-xs mt-1">
               {subtitle || change}
