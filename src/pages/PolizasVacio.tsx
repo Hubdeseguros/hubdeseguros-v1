@@ -1,14 +1,16 @@
-import { EmptyState } from "@/components/common/EmptyState";
-import { Shield } from "lucide-react";
+import { FileText } from "lucide-react";
+import EmptyTableCard from "@/components/common/EmptyTableCard";
 
 export default function PolizasVacio() {
   return (
-    <EmptyState
-      icon={<Shield />}
+    <EmptyTableCard
+      icon={<FileText className="w-16 h-16 text-green-400" />}
       title="No hay pólizas registradas"
-      description="Todavía no has emitido ninguna póliza. Las pólizas protegen a tus clientes y son el principal producto de tu aseguradora. Crea tu primera póliza para comenzar a operar."
-      actionLabel="Nueva Póliza"
-      onAction={() => {/* lógica para crear póliza */}}
+      description="Registra tu primera póliza y comienza a proteger a tus clientes. Lleva el control de renovaciones y vencimientos."
+      actionLabel="Agregar póliza"
+      onAction={() => {/* lógica para abrir modal/formulario */}}
+      bgColor="bg-green-50"
+      borderColor="border-green-200"
     />
   );
 } 

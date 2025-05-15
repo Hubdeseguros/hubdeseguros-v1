@@ -1,0 +1,37 @@
+import { ReactNode } from "react";
+
+interface EmptyTableCardProps {
+  icon: ReactNode;
+  title: string;
+  description: string;
+  actionLabel?: string;
+  onAction?: () => void;
+  bgColor?: string;
+  borderColor?: string;
+}
+
+const EmptyTableCard = ({
+  icon,
+  title,
+  description,
+  actionLabel,
+  onAction,
+  bgColor = "bg-blue-50",
+  borderColor = "border-blue-200"
+}: EmptyTableCardProps) => (
+  <div className={`flex flex-col items-center justify-center py-16 rounded-xl shadow-md border ${bgColor} ${borderColor} max-w-lg mx-auto my-12`}>
+    <div className="mb-4">{icon}</div>
+    <h2 className="text-xl font-bold mb-2 text-blue-900">{title}</h2>
+    <p className="text-gray-600 mb-6 text-center">{description}</p>
+    {actionLabel && onAction && (
+      <button
+        onClick={onAction}
+        className="px-6 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition font-semibold shadow"
+      >
+        {actionLabel}
+      </button>
+    )}
+  </div>
+);
+
+export default EmptyTableCard; 

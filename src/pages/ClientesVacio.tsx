@@ -1,14 +1,16 @@
-import { EmptyState } from "@/components/common/EmptyState";
-import { Users } from "lucide-react";
+import { UserPlus } from "lucide-react";
+import EmptyTableCard from "@/components/common/EmptyTableCard";
 
 export default function ClientesVacio() {
   return (
-    <EmptyState
-      icon={<Users />}
-      title="No hay clientes registrados"
-      description="Aún no has agregado ningún cliente a tu cartera. Los clientes son el corazón de tu aseguradora. Comienza a registrar nuevos clientes para gestionar sus pólizas y siniestros."
-      actionLabel="Agregar Cliente"
-      onAction={() => {/* lógica para abrir modal o redirigir a formulario */}}
+    <EmptyTableCard
+      icon={<UserPlus className="w-16 h-16 text-blue-400" />}
+      title="¡Aún no tienes clientes!"
+      description="Agrega tu primer cliente y comienza a construir tu cartera. Gestiona fácilmente sus pólizas y siniestros desde aquí."
+      actionLabel="Agregar cliente"
+      onAction={() => {/* lógica para abrir modal/formulario */}}
+      bgColor="bg-blue-50"
+      borderColor="border-blue-200"
     />
   );
 } 

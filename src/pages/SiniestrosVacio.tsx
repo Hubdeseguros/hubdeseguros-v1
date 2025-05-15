@@ -1,14 +1,16 @@
-import { EmptyState } from "@/components/common/EmptyState";
-import { AlertCircle } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
+import EmptyTableCard from "@/components/common/EmptyTableCard";
 
 export default function SiniestrosVacio() {
   return (
-    <EmptyState
-      icon={<AlertCircle />}
-      title="Sin siniestros reportados"
-      description="No se han reportado siniestros aún. Aquí podrás gestionar y dar seguimiento a los reclamos de tus asegurados cuando ocurran eventos cubiertos por sus pólizas."
-      actionLabel="Reportar Siniestro"
-      onAction={() => {/* lógica para reportar siniestro */}}
+    <EmptyTableCard
+      icon={<AlertTriangle className="w-16 h-16 text-red-400" />}
+      title="No hay siniestros reportados"
+      description="Aquí aparecerán los siniestros reportados por tus clientes. Haz seguimiento y gestiona cada caso fácilmente."
+      actionLabel="Reportar siniestro"
+      onAction={() => {/* lógica para abrir modal/formulario */}}
+      bgColor="bg-red-50"
+      borderColor="border-red-200"
     />
   );
 } 
