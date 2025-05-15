@@ -19,6 +19,8 @@ const AdminDashboard = lazy(() => import('../features/dashboard/admin/AdminDashb
 // Páginas de ejemplo para cada sección
 const Placeholder = lazy(() => import('../components/common/Placeholder'));
 
+const AgentSalesDashboard = lazy(() => import('../features/dashboard/agent/AgentSalesDashboard'));
+
 const LoadingFallback = () => (
   <div className="flex items-center justify-center min-h-screen">
     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
@@ -122,6 +124,7 @@ const AppRoutes = () => {
           <Route path="importar/coberturas" element={<Placeholder title="Coberturas" />} />
           <Route path="importar/tareas" element={<Placeholder title="Tareas" />} />
           <Route path="importar/datos-adicionales" element={<Placeholder title="Datos adicionales" />} />
+          <Route path="ventas" element={<AgentSalesDashboard />} />
         </Route>
 
         {/* Rutas para AGENCIA */}
