@@ -66,7 +66,7 @@ const DashboardCard = ({
   };
 
   return (
-    <Card className={`${getBgColor()} p-6 rounded-lg relative shadow-md transition-shadow hover:shadow-lg`}>
+    <Card className={`${getBgColor()} p-6 rounded-lg relative shadow-md transition-shadow duration-200 hover:shadow-lg min-h-[120px]`}>
       {security && (
         <div className="absolute top-2 right-2 flex items-center gap-1 text-green-600" aria-label="Seguro">
           <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -86,11 +86,11 @@ const DashboardCard = ({
       <div className="flex justify-between items-start">
         <div>
           <h3 className="text-gray-600 text-sm font-medium">{title}</h3>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 min-h-[32px]">
             <p className={`text-3xl font-bold ${getTextColor()} mt-1`}>
               {value}
             </p>
-            {badge}
+            {badge || <span className="inline-block w-8 h-4" />}
           </div>
           {(subtitle || change) && (
             <p className="text-gray-600 text-xs mt-1">
