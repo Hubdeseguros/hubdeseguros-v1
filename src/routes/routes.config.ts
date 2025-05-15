@@ -473,3 +473,5 @@ export const getRoutesByRole = (role: UserRole): RouteConfig => {
       return adminRoutes; // Por defecto, si es ADMIN mostramos la vista de administrador
   }
 };
+
+const { unreadCount } = useNotifications();

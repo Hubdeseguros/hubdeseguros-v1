@@ -1,17 +1,37 @@
-import { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import * as notifService from "@/lib/notifications";
+import { useUser } from "@/hooks/useUser"; // Debes tener un hook de usuario autenticado
 
 export function useNotifications() {
-  const [notifications, setNotifications] = useState(notifService.getNotifications());
+  const { user } = useUser();
+  const [notifications, setNotifications] = useState<notifService.Notification[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const refresh = () => setNotifications(notifService.getNotifications());
-  const markAsRead = (id: string) => {
-    notifService.markAsRead(id);
-    refresh();
+  const fetchNotifications = useCallback(async () => {
+    if (!user) return;
+    setLoading(true);
+    try {
+      const data = await notifService.getNotifications(user.id);
+      setNotifications(data);
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    fetchNotifications();
+    // Opcional: suscripción en tiempo real con supabase.channel
+  }, [fetchNotifications]);
+
+  const markAsRead = async (id: string) => {
+    await notifService.markAsRead(id);
+    fetchNotifications();
   };
-  const markAllAsRead = () => {
-    notifService.markAllAsRead();
-    refresh();
+
+  const markAllAsRead = async () => {
+    if (!user) return;
+    await notifService.markAllAsRead(user.id);
+    fetchNotifications();
   };
 
   return {
@@ -19,6 +39,7 @@ export function useNotifications() {
     unreadCount: notifications.filter((n) => !n.read).length,
     markAsRead,
     markAllAsRead,
-    refresh,
+    refresh: fetchNotifications,
+    loading,
   };
 } 

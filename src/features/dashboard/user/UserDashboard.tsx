@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import DashboardCard from '@/components/dashboard/DashboardCard';
 import TaskList from '@/components/dashboard/TaskList';
 import { Shield, AlertCircle, CreditCard } from 'lucide-react';
-import { addNotification } from "@/lib/notifications";
+import { addNotification, notifyPagoRealizado } from "@/lib/notifications";
 import { toast } from "@/components/ui/use-toast";
 
 // Datos de ejemplo para el dashboard
@@ -42,12 +42,8 @@ const pendingTasks = [
 ];
 
 const UserDashboard = () => {
-  function handlePagoRealizado() {
-    addNotification({
-      title: "Pago realizado",
-      description: "Tu pago fue registrado exitosamente.",
-      type: "success",
-    });
+  async function handlePagoRealizado() {
+    await notifyPagoRealizado(user.id);
     toast({ title: "Pago realizado", description: "Tu pago fue registrado exitosamente.", variant: "success" });
   }
 

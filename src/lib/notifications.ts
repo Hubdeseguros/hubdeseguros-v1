@@ -1,53 +1,50 @@
-export type Notification = {
-  id: string;
-  title: string;
-  description: string;
-  date: string;
-  read: boolean;
-  type: "info" | "warning" | "success" | "error";
-};
+import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 
-let notifications: Notification[] = [
-  {
-    id: "1",
-    title: "Vencimiento de póliza",
-    description: "Tu póliza de auto vence en 3 días.",
-    date: new Date().toISOString(),
-    read: false,
-    type: "warning",
-  },
-  {
-    id: "2",
-    title: "Pago recibido",
-    description: "Se ha registrado el pago de tu póliza de vida.",
-    date: new Date().toISOString(),
-    read: false,
+export type Notification = Database["public"]["Tables"]["notifications"]["Row"];
+export type NotificationInsert = Database["public"]["Tables"]["notifications"]["Insert"];
+
+export async function getNotifications(user_id: string): Promise<Notification[]> {
+  const { data, error } = await supabase
+    .from("notifications")
+    .select("*")
+    .eq("user_id", user_id)
+    .order("date", { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function markAsRead(id: string) {
+  const { error } = await supabase
+    .from("notifications")
+    .update({ read: true })
+    .eq("id", id);
+  if (error) throw error;
+}
+
+export async function markAllAsRead(user_id: string) {
+  const { error } = await supabase
+    .from("notifications")
+    .update({ read: true })
+    .eq("user_id", user_id)
+    .eq("read", false);
+  if (error) throw error;
+}
+
+export async function addNotification(notification: NotificationInsert) {
+  const { error } = await supabase
+    .from("notifications")
+    .insert([notification]);
+  if (error) throw error;
+}
+
+export async function notifyPagoRealizado(user_id: string) {
+  await addNotification({
+    user_id,
+    title: "Pago realizado",
+    description: "Tu pago fue registrado exitosamente.",
     type: "success",
-  },
-];
-
-export function getNotifications(): Notification[] {
-  return notifications;
-}
-
-export function markAsRead(id: string) {
-  notifications = notifications.map((n) =>
-    n.id === id ? { ...n, read: true } : n
-  );
-}
-
-export function markAllAsRead() {
-  notifications = notifications.map((n) => ({ ...n, read: true }));
-}
-
-export function addNotification(notification: Omit<Notification, "id" | "date" | "read">) {
-  notifications = [
-    {
-      ...notification,
-      id: (Math.random() * 100000).toFixed(0),
-      date: new Date().toISOString(),
-      read: false,
-    },
-    ...notifications,
-  ];
+    read: false,
+    date: new Date().toISOString(),
+  });
 } 
