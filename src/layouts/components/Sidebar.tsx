@@ -578,9 +578,20 @@ const Sidebar = () => {
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <div 
-                              className={`flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-[#2a3c5a] rounded-md transition-colors cursor-pointer ${
+                              className={`flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-[#2a3c5a] rounded-md transition-colors duration-150 cursor-pointer min-h-[40px] select-none ${
                                 activeKey === item.key ? 'bg-[#2a3c5a] font-medium text-blue-400' : ''
                               }`}
+                              style={{ minWidth: collapsed ? 48 : 0 }}
+                              tabIndex={0}
+                              onKeyDown={e => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  if (item.subMenu) {
+                                    toggleSubMenu(item.key);
+                                  } else {
+                                    handleItemClick(item.path, item.key, item.target);
+                                  }
+                                }
+                              }}
                               onClick={() => {
                                 if (item.subMenu) {
                                   toggleSubMenu(item.key);
@@ -588,14 +599,19 @@ const Sidebar = () => {
                                   handleItemClick(item.path, item.key, item.target);
                                 }
                               }}
+                              aria-current={activeKey === item.key ? "page" : undefined}
+                              aria-label={item.label}
+                              role="menuitem"
                             >
-                              <div className="mr-2"><item.icon size={18} /></div>
+                              <div className="mr-2 min-w-[24px] flex justify-center items-center">
+                                <item.icon size={18} />
+                              </div>
                               {!collapsed && (
                                 <span className="ml-1">{item.label}</span>
                               )}
                               {!collapsed && item.subMenu && (
                                 <div className="ml-auto">
-                                  <ChevronRight size={16} className={`transition-transform ${item.isOpen ? 'rotate-90' : ''}`} />
+                                  <ChevronRight size={16} className={`transition-transform duration-150 ${item.isOpen ? 'rotate-90' : ''}`} />
                                 </div>
                               )}
                             </div>
@@ -614,12 +630,24 @@ const Sidebar = () => {
                           {item.subMenu.map((subItem) => (
                             <li key={subItem.key}>
                               <div 
-                                className={`flex items-center px-4 py-1.5 text-sm text-gray-300 hover:bg-[#2a3c5a] rounded-md transition-colors cursor-pointer ${
+                                className={`flex items-center px-4 py-1.5 text-sm text-gray-300 hover:bg-[#2a3c5a] rounded-md transition-colors duration-150 cursor-pointer min-h-[36px] select-none ${
                                   activeKey === subItem.key ? 'bg-[#2a3c5a] font-medium text-blue-400' : ''
                                 }`}
+                                tabIndex={0}
+                                style={{ minWidth: 0 }}
+                                onKeyDown={e => {
+                                  if (e.key === 'Enter' || e.key === ' ') {
+                                    handleItemClick(subItem.path, subItem.key, subItem.target);
+                                  }
+                                }}
                                 onClick={() => handleItemClick(subItem.path, subItem.key, subItem.target)}
+                                aria-current={activeKey === subItem.key ? "page" : undefined}
+                                aria-label={subItem.label}
+                                role="menuitem"
                               >
-                                <div className="mr-2"><subItem.icon size={18} /></div>
+                                <div className="mr-2 min-w-[24px] flex justify-center items-center">
+                                  <subItem.icon size={18} />
+                                </div>
                                 <span>{subItem.label}</span>
                                 {subItem.target === '_blank' && (
                                   <ArrowUpRight size={14} className="ml-1 text-xs" />
