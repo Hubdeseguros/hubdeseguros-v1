@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React from "react"
 import {
   Table,
   TableHeader,
@@ -8,18 +8,7 @@ import {
   TableCell,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { Dialog } from "@/components/ui/dialog"
-import { Policy, mockPolicies } from "./mockPolicies"
-import { PolicyForm } from "./PolicyForm"
-import { toast } from "@/components/ui/use-toast"
-import { CheckCircle, XCircle, AlertCircle } from "lucide-react"
 import { usePolicies } from "./usePolicies"
-
-const statusConfig = {
-  Activa: { color: 'green', icon: <CheckCircle className="text-green-600 w-4 h-4" /> },
-  Vencida: { color: 'red', icon: <XCircle className="text-red-600 w-4 h-4" /> }
-  // Puedes agregar más estados aquí si los agregas en mockPolicies
-};
 
 export const PolicyTable: React.FC = () => {
   const { policies, loading, error, deletePolicy } = usePolicies();
