@@ -1,4 +1,3 @@
-
 import { UserRole } from '../types/auth';
 import { 
   BarChart4, 
@@ -24,6 +23,7 @@ import {
   Bell,
   Contact
 } from "lucide-react";
+import { useNotifications } from "@/hooks/useNotifications";
 
 export interface MenuItem {
   key: string;

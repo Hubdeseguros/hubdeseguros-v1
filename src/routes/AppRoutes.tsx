@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import PrivateRoute from './PrivateRoute';
 import { UserRole } from '@/types/auth';
+import NotificationsPage from "@/pages/Notifications";
 
 // Pages con lazy loading
 const Login = lazy(() => import('../pages/Login'));
@@ -67,7 +68,7 @@ const AppRoutes = () => {
           <Route path="pagos" element={<Placeholder title="Pagos" />} />
           <Route path="documentos" element={<Placeholder title="Documentos" />} />
           <Route path="cotizaciones" element={<Placeholder title="Cotizaciones" />} />
-          <Route path="notificaciones" element={<Placeholder title="Notificaciones" />} />
+          <Route path="notificaciones" element={<NotificationsPage />} />
           <Route path="contacto-soporte" element={<Placeholder title="Contacto con Soporte" />} />
         </Route>
 
