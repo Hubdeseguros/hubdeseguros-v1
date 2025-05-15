@@ -19,8 +19,8 @@ const EmptyTableCard = ({
   bgColor = "bg-blue-50",
   borderColor = "border-blue-200"
 }: EmptyTableCardProps) => (
-  <div className={`flex flex-col items-center justify-center py-16 rounded-xl shadow-md border ${bgColor} ${borderColor} max-w-lg mx-auto my-12`}>
-    <div className="mb-4">{icon}</div>
+  <div className={`flex flex-col items-center justify-center py-16 rounded-xl shadow-md border ${bgColor} ${borderColor} max-w-lg mx-auto my-12 min-h-[320px] transition-shadow`}>
+    <div className="mb-4 min-h-[64px] flex items-center justify-center">{icon}</div>
     <h2 className="text-xl font-bold mb-2 text-blue-900">{title}</h2>
     <p className="text-gray-600 mb-6 text-center">{description}</p>
     {actionLabel && onAction && (
@@ -34,4 +34,4 @@ const EmptyTableCard = ({
   </div>
 );
 
-export default EmptyTableCard; 
+export default EmptyTableCard;
