@@ -2,7 +2,7 @@
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/315697c9-550b-4cb8-b63b-f6411d2a264a
+**URL**: https://hubdeseguros.github.io/hubdeseguros-v1/
 
 ## How can I edit this code?
 
@@ -10,7 +10,7 @@ There are several ways of editing your application.
 
 **Use Lovable**
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/315697c9-550b-4cb8-b63b-f6411d2a264a) and start prompting.
+Simply visit the https://hubdeseguros.github.io/hubdeseguros-v1/ and start prompting.
 
 Changes made via Lovable will be committed automatically to this repo.
 
