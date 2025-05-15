@@ -2,7 +2,7 @@
 
 ## Project info
 
-**URL**: https://hubdeseguros.github.io/hubdeseguros-v1/
+**URL**: https://hubdeseguros.com
 
 ## How can I edit this code?
 
