@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import { Policy } from "./mockPolicies"
+import { usePolicies, Policy } from "./usePolicies"
 
 type PolicyFormProps = {
   initialData?: Policy
@@ -24,6 +24,7 @@ export const PolicyForm: React.FC<PolicyFormProps> = ({
   onSubmit,
   onCancel,
 }) => {
+  const { addPolicy, updatePolicy, error } = usePolicies();
   const form = useForm<Omit<Policy, "id">>({
     defaultValues: initialData || {
       number: "",
@@ -33,8 +34,13 @@ export const PolicyForm: React.FC<PolicyFormProps> = ({
     },
   })
 
-  const handleSubmit = form.handleSubmit((data) => {
-    onSubmit(data)
+  const handleSubmit = form.handleSubmit(async (data) => {
+    if (initialData) {
+      await updatePolicy(initialData.id, data);
+    } else {
+      await addPolicy(data);
+    }
+    onSubmit(data);
   })
 
   return (
@@ -103,6 +109,7 @@ export const PolicyForm: React.FC<PolicyFormProps> = ({
             </FormItem>
           )}
         />
+        {error && <div className="text-red-500">{error}</div>}
         <div className="flex gap-2 justify-end">
           <Button type="button" variant="secondary" onClick={onCancel}>
             Cancelar
