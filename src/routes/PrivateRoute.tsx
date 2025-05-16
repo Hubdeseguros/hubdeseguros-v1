@@ -9,11 +9,13 @@ import { useEffect } from 'react';
 interface PrivateRouteProps {
   allowedRoles?: UserRole[];
   requiresAuthentication?: boolean;
+  children?: React.ReactNode;
 }
 
 const PrivateRoute = ({ 
   allowedRoles = [],
-  requiresAuthentication = true
+  requiresAuthentication = true,
+  children
 }: PrivateRouteProps) => {
   const { isAuthenticated, user } = useAuth();
 

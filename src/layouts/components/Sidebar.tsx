@@ -179,7 +179,7 @@ const Sidebar = () => {
             key: 'clientes',
             label: 'Clientes',
             icon: FileUser,
-            path: '/clientes',
+            path: '/clientes/listado',
             isOpen: true,
             subMenu: [
               {

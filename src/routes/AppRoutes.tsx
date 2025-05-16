@@ -83,6 +83,14 @@ const AppRoutes = () => {
             <Route path="notificaciones" element={<Placeholder title="Preferencias de Notificaciones" />} />
           </Route>
           <Route path="contacto-soporte" element={<Placeholder title="Contacto con Soporte" />} />
+          <Route path="clientes">
+            <Route index element={<Navigate to="listado" replace />} />
+            <Route path="listado" element={
+              <Suspense fallback={<LoadingFallback />}>
+                <ClientsPage />
+              </Suspense>
+            } />
+          </Route>
         </Route>
 
         {/* Rutas para AGENTE */}
@@ -234,10 +242,13 @@ const AppRoutes = () => {
 
         {/* Rutas para todos los usuarios autenticados */}
         <Route path="/" element={<PrivateRoute />}>
-          <Route path="clientes">
-            <Route index element={<Navigate to="listado" replace />} />
-            <Route path="listado" element={<ClientsPage />} />
-          </Route>
+          <Route path="/clientes/listado" element={
+            <PrivateRoute>
+              <Suspense fallback={<LoadingFallback />}>
+                <ClientsPage />
+              </Suspense>
+            </PrivateRoute>
+          } />
         </Route>
 
         {/* Ruta 404 - Redirigir a landing */}
