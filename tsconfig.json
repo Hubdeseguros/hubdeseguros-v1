@@ -6,7 +6,7 @@
     { "path": "./tsconfig.paths.json" }
   ],
   "compilerOptions": {
-    "target": "ES2015",
+    "target": "ES2020",
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
@@ -25,13 +25,9 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "noImplicitAny": false,
     "noUnusedParameters": false,
-    "skipLibCheck": true,
     "allowJs": true,
     "noUnusedLocals": false,
-    "strictNullChecks": false,
-    "esModuleInterop": true,
-    "target": "ES2020"
+    "strictNullChecks": false
   }
 }

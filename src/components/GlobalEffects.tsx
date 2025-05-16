@@ -24,9 +24,9 @@ const GlobalEffects: React.FC = () => {
             el.remove(); // Eliminar completamente el elemento del DOM
           } else {
             // Para otros tipos de elementos, solo ocultarlos
-            el.style.display = 'none';
-            el.style.visibility = 'hidden';
-            el.style.pointerEvents = 'none';
+            (el as HTMLElement).style.display = 'none';
+            (el as HTMLElement).style.visibility = 'hidden';
+            (el as HTMLElement).style.pointerEvents = 'none';
             el.setAttribute('aria-hidden', 'true');
             el.setAttribute('hidden', 'true');
           }
