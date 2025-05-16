@@ -35,12 +35,28 @@ export function UserMenu() {
   };
 
   const handleProfileClick = () => {
-    navigate('/profile');
+    // Use the correct path based on user role
+    const profilePath = user.role === 'CLIENTE' 
+      ? '/usuario/perfil' 
+      : user.role === 'AGENTE' 
+        ? '/agente/perfil' 
+        : user.role === 'AGENCIA' 
+          ? '/agencia/perfil' 
+          : '/admin/perfil';
+    navigate(profilePath);
     setIsOpen(false);
   };
 
   const handleSettingsClick = () => {
-    navigate('/settings');
+    // Use the correct path based on user role
+    const settingsPath = user.role === 'CLIENTE' 
+      ? '/usuario/configuracion' 
+      : user.role === 'AGENTE' 
+        ? '/agente/configuracion' 
+        : user.role === 'AGENCIA' 
+          ? '/agencia/configuracion' 
+          : '/admin/configuracion';
+    navigate(settingsPath);
     setIsOpen(false);
   };
 
