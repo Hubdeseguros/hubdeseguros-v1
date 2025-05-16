@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 const AgentEmpty: React.FC = () => (
   <div className="text-center text-gray-400 py-8">
@@ -6,4 +6,4 @@ const AgentEmpty: React.FC = () => (
   </div>
 );
 
-export default AgentEmpty;
+export default AgentEmpty; 

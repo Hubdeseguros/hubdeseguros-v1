@@ -1,4 +1,4 @@
-import type { MenuIcon } from "@/components/ui/sidebar/types";
+import type { MenuIcon } from '@/components/ui/sidebar/types';
 import {
   Home,
   BellRing,
@@ -11,99 +11,93 @@ import {
   Building2,
   Settings,
   FileText,
-} from "lucide-react";
+} from 'lucide-react';
 
 export const menuSections = [
   {
-    title: "Navegación Principal",
+    title: 'Navegación Principal',
     items: [
       {
-        key: "dashboard",
-        label: "Dashboard",
+        key: 'dashboard',
+        label: 'Dashboard',
         icon: Home,
-        path: "/",
+        path: '/',
       },
       {
-        key: "notifications",
-        label: "Notificaciones",
+        key: 'notifications',
+        label: 'Notificaciones',
         icon: BellRing,
-        path: "/notifications",
+        path: '/notifications',
       },
       {
-        key: "profile",
-        label: "Perfil",
+        key: 'profile',
+        label: 'Perfil',
         icon: FileUser,
-        path: "/profile",
+        path: '/profile',
       },
     ],
   },
   {
-    title: "Seguros",
+    title: 'Seguros',
     items: [
       {
-        key: "policies",
-        label: "Pólizas",
+        key: 'policies',
+        label: 'Polizas',
         icon: FilePieChart,
-        path: "/agente/polizas",
+        path: '/policies',
       },
       {
-        key: "claims",
-        label: "Siniestros",
+        key: 'claims',
+        label: 'Siniestros',
         icon: AlertTriangle,
-        path: "/agente/siniestros",
+        path: '/claims',
       },
       {
-        key: "sales",
-        label: "Ventas",
+        key: 'payments',
+        label: 'Pagos',
         icon: DollarSign,
-        path: "/agente/ventas",
-      },
-      {
-        key: "payments",
-        label: "Pagos",
-        icon: DollarSign,
-        path: "/payments",
+        path: '/payments',
       },
     ],
   },
   {
-    title: "Clientes",
+    title: 'Clientes',
     items: [
       {
-        key: "clients",
-        label: "Clientes",
+        key: 'clients',
+        label: 'Clientes',
         icon: Users,
-        path: "/agente/clientes",
+        path: '/clients',
       },
       {
-        key: "agents",
-        label: "Agentes",
+        key: 'agents',
+        label: 'Agentes',
         icon: UserPlus,
-        path: "/agents",
+        path: '/agents',
       },
       {
-        key: "agencies",
-        label: "Agencias",
+        key: 'agencies',
+        label: 'Agencias',
         icon: Building2,
-        path: "/agencies",
+        path: '/agencies',
       },
     ],
   },
   {
-    title: "Configuración",
+    title: 'Configuración',
     items: [
       {
-        key: "settings",
-        label: "Configuración",
+        key: 'settings',
+        label: 'Configuración',
         icon: Settings,
-        path: "/settings",
+        path: '/settings',
       },
       {
-        key: "documentation",
-        label: "Documentación",
+        key: 'documentation',
+        label: 'Documentación',
         icon: FileText,
-        path: "/docs",
-        target: "_blank",
+        path: '/docs',
+        target: '_blank',
       },
     ],
   },

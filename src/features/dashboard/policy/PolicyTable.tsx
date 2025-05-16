@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"
 import {
   Table,
   TableHeader,
@@ -6,9 +6,9 @@ import {
   TableRow,
   TableHead,
   TableCell,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { usePolicies } from "./usePolicies";
+} from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
+import { usePolicies } from "./usePolicies"
 
 export const PolicyTable: React.FC = () => {
   const { policies, loading, error, deletePolicy } = usePolicies();
@@ -35,10 +35,7 @@ export const PolicyTable: React.FC = () => {
             <TableCell>{policy.type}</TableCell>
             <TableCell>{policy.status}</TableCell>
             <TableCell>
-              <Button
-                variant="destructive"
-                onClick={() => deletePolicy(policy.id)}
-              >
+              <Button variant="destructive" onClick={() => deletePolicy(policy.id)}>
                 Eliminar
               </Button>
             </TableCell>
@@ -47,4 +44,4 @@ export const PolicyTable: React.FC = () => {
       </TableBody>
     </Table>
   );
-};
+} 
