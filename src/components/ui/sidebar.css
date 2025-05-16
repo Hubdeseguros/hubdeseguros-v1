@@ -1,0 +1,39 @@
+.sidebar-wrapper {
+  transition: width 0.2s ease-in-out;
+}
+
+[data-sidebar="sidebar"] {
+  transition: transform 0.2s ease-in-out;
+}
+
+[data-sidebar="sidebar"][data-mobile="true"] {
+  transform: translateX(-100%);
+}
+
+[data-sidebar="sidebar"]:not([data-mobile="true"]) {
+  transform: translateX(0);
+}
+
+[data-sidebar="sidebar"][data-mobile="true"]:hover {
+  transform: translateX(0);
+}
+
+[data-sidebar="sidebar"][data-mobile="true"] .sidebar-content {
+  opacity: 0;
+  pointer-events: none;
+}
+
+[data-sidebar="sidebar"][data-mobile="true"]:hover .sidebar-content {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+[data-sidebar="sidebar"][data-mobile="false"] .sidebar-content {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+[data-sidebar="sidebar"][data-mobile="false"]:hover .sidebar-content {
+  opacity: 1;
+  pointer-events: auto;
+}
