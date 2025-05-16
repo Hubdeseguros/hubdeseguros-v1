@@ -69,6 +69,42 @@ export type Database = {
           },
         ]
       }
+      agents: {
+        Row: {
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          license_number: string
+          phone: string | null
+          status: Database["public"]["Enums"]["agent_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          first_name: string
+          id?: string
+          last_name: string
+          license_number: string
+          phone?: string | null
+          status: Database["public"]["Enums"]["agent_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          license_number?: string
+          phone?: string | null
+          status?: Database["public"]["Enums"]["agent_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       aseguradoras: {
         Row: {
           codigo: string | null
@@ -820,6 +856,7 @@ export type Database = {
       }
     }
     Enums: {
+      agent_status: "ACTIVE" | "INACTIVE" | "PENDING"
       estado_actividad_enum: "PENDIENTE" | "REALIZADA" | "CANCELADA"
       estado_civil_enum: "SOLTERO" | "CASADO" | "DIVORCIADO" | "VIUDO"
       estado_oportunidad_enum: "NUEVA" | "EN_PROCESO" | "GANADA" | "PERDIDA"
@@ -966,6 +1003,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      agent_status: ["ACTIVE", "INACTIVE", "PENDING"],
       estado_actividad_enum: ["PENDIENTE", "REALIZADA", "CANCELADA"],
       estado_civil_enum: ["SOLTERO", "CASADO", "DIVORCIADO", "VIUDO"],
       estado_oportunidad_enum: ["NUEVA", "EN_PROCESO", "GANADA", "PERDIDA"],
