@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -58,16 +58,17 @@ const Sidebar = () => {
   const { state: sidebarState, toggleSidebar } = useSidebar();
   const [activeKey, setActiveKey] = useState('');
   const [menuSections, setMenuSections] = useState<MenuSection[]>([]);
+  const [openSubMenus, setOpenSubMenus] = useState<Set<string>>(new Set());
 
   const collapsed = sidebarState !== 'expanded';
 
-  const handleToggle = () => {
+  const handleToggle = useCallback(() => {
     toggleSidebar();
-  };
+  }, [toggleSidebar]);
 
   useEffect(() => {
     if (user) {
-      const menuConfig = getMenuByRole(user.role);
+      const menuConfig = useMemo(() => getMenuByRole(user.role), [user.role]);
       setMenuSections(menuConfig);
     }
   }, [user]);
@@ -80,7 +81,7 @@ const Sidebar = () => {
           if (path === item.path || path.startsWith(item.path + '/')) {
             setActiveKey(item.key);
             if (item.subMenu) {
-              toggleSubMenu(item.key);
+              setOpenSubMenus(prev => new Set([...prev, item.key]));
             }
             break;
           }
@@ -88,7 +89,7 @@ const Sidebar = () => {
             for (const subItem of item.subMenu) {
               if (path === subItem.path || path.startsWith(subItem.path + '/')) {
                 setActiveKey(subItem.key);
-                toggleSubMenu(item.key);
+                setOpenSubMenus(prev => new Set([...prev, item.key]));
                 break;
               }
             }
@@ -98,31 +99,28 @@ const Sidebar = () => {
     }
   }, [location.pathname, menuSections]);
 
-  const handleItemClick = (path: string, key: string, target?: string) => {
+  const handleItemClick = useCallback((path: string, key: string, target?: string) => {
     if (target === '_blank') {
       window.open(path, '_blank');
     } else {
-      // Solo actualizamos el activeKey si es diferente al actual
       if (activeKey !== key) {
         setActiveKey(key);
       }
       navigate(path);
     }
-  };
+  }, [navigate, activeKey]);
 
-  const toggleSubMenu = (key: string) => {
-    setMenuSections(prevSections => 
-      prevSections.map(section => ({
-        ...section,
-        items: section.items.map(item => {
-          if (item.key === key) {
-            return { ...item, isOpen: !item.isOpen };
-          }
-          return item;
-        })
-      }))
-    );
-  };
+  const toggleSubMenu = useCallback((key: string) => {
+    setOpenSubMenus(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(key)) {
+        newSet.delete(key);
+      } else {
+        newSet.add(key);
+      }
+      return newSet;
+    });
+  }, []);
 
   const getMenuByRole = (role: string): MenuSection[] => {
     const roleRoute = role.toLowerCase();
@@ -650,25 +648,75 @@ const Sidebar = () => {
                                 activeKey === item.key ? 'bg-[#2a3c5a] font-medium text-blue-400' : ''
                               }`}
                               style={{ minWidth: collapsed ? 48 : 0 }}
-                                    handleItemClick(subItem.path, subItem.key, subItem.target);
+                              tabIndex={0}
+                              onKeyDown={e => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  if (item.subMenu) {
+                                    toggleSubMenu(item.key);
+                                  } else {
+                                    handleItemClick(item.path, item.key, item.target);
                                   }
-                                }}
-                                onClick={() => handleItemClick(subItem.path, subItem.key, subItem.target)}
-                                aria-current={activeKey === subItem.key ? "page" : undefined}
-                                aria-label={subItem.label}
-                                role="menuitem"
-                              >
-                                <div className="mr-2 min-w-[24px] flex justify-center items-center">
-                                  <subItem.icon size={18} />
-                                </div>
-                                <span>{subItem.label}</span>
-                                {subItem.target === '_blank' && (
-                                  <ArrowUpRight size={14} className="ml-1 text-xs" />
-                                )}
+                                }
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (item.subMenu) {
+                                  toggleSubMenu(item.key);
+                                } else {
+                                  handleItemClick(item.path, item.key, item.target);
+                                }
+                              }}
+                            >
+                              <div className="mr-2 min-w-[24px] flex justify-center items-center">
+                                {item.icon && <item.icon size={18} />}
                               </div>
-                            </li>
-                          ))}
-                        </ul>
+                              {!collapsed && (
+                                <span className="ml-1">{item.label}</span>
+                              )}
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{item.label}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      {item.subMenu && (
+                        <div className={`ml-6 mt-1 transition-all duration-200 ${
+                          openSubMenus.has(item.key) ? 'opacity-100' : 'opacity-0 invisible'
+                        }`}>
+                          <ul className="border-l border-[#2a3c5a] pl-2">
+                            {item.subMenu.map((subItem) => (
+                              <li key={subItem.key}>
+                                <TooltipProvider delayDuration={300}>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div 
+                                        className={`flex items-center px-4 py-1.5 text-sm text-gray-300 hover:bg-[#2a3c5a] rounded-md transition-colors duration-150 cursor-pointer min-h-[36px] select-none ${
+                                          activeKey === subItem.key ? 'bg-[#2a3c5a] font-medium text-blue-400' : ''
+                                        }`}
+                                        style={{ minWidth: collapsed ? 48 : 0 }}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleItemClick(subItem.path, subItem.key, subItem.target);
+                                        }}
+                                      >
+                                        <div className="mr-2 min-w-[24px] flex justify-center items-center">
+                                          {subItem.icon && <subItem.icon size={16} />}
+                                        </div>
+                                        {!collapsed && (
+                                          <span className="ml-1">{subItem.label}</span>
+                                        )}
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>{subItem.label}</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       )}
                     </li>
                   ))}
@@ -679,16 +727,16 @@ const Sidebar = () => {
         ))}
       </div>
 
-      {/* Footer con botón de cerrar sesión */}
-      <div className={`p-4 border-t border-[#2a3c5a] ${collapsed ? 'flex justify-center' : ''}`}>
-        <Button 
-          variant="ghost" 
-          onClick={logout} 
-          className={`text-gray-300 hover:bg-[#2a3c5a] ${collapsed ? 'w-10 h-10 p-0' : 'w-full'}`}
-        >
-          <LogOut size={18} />
-          {!collapsed && <span className="ml-2">Cerrar sesión</span>}
-        </Button>
+      {/* Footer del sidebar */}
+      <div className="border-t border-[#2a3c5a] p-4">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-blue-700 flex items-center justify-center text-white font-medium">
+              <LogOut size={18} />
+            </div>
+            <span className="text-sm text-gray-300">Cerrar Sesión</span>
+          </div>
+        </div>
       </div>
     </div>
   );
