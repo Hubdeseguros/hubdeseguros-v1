@@ -49,40 +49,43 @@ const AgentSalesDashboard = lazy(
   () => import("../features/dashboard/agent/AgentSalesDashboard"),
 );
 
-/**
- * Componente principal de rutas de la aplicación
- * Gestiona todas las rutas y la navegación entre ellas
- */
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
+  </div>
+);
+
 const AppRoutes = () => {
-  const { user } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+
+  // Redirección inteligente basada en autenticación y rol
+  const getDefaultRoute = () => {
+    if (!isAuthenticated) return "/landing";
+
+    switch (user?.role) {
+      case "CLIENTE":
+        return "/usuario/dashboard";
+      case "AGENTE":
+        return "/agente/dashboard";
+      case "AGENCIA":
+        return "/agencia/dashboard";
+      case "ADMIN":
+        return "/admin/dashboard";
+      default:
+        return "/dashboard";
+    }
+  };
 
   return (
     <Suspense fallback={<LoadingFallback />}>
       <Routes>
+        {/* Ruta raíz con redirección a landing */}
+        <Route path="/" element={<Navigate to="/landing" replace />} />
+
         {/* Rutas públicas */}
         <Route path="/landing" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-
-        {/* Redirección a la ruta correspondiente según el rol */}
-        <Route
-          path="/"
-          element={
-            user ? (
-              user.role === "CLIENTE" ? (
-                <Navigate to="/usuario/dashboard" replace />
-              ) : user.role === "AGENTE" ? (
-                <Navigate to="/agente/dashboard" replace />
-              ) : user.role === "AGENCIA" ? (
-                <Navigate to="/agencia/dashboard" replace />
-              ) : (
-                <Navigate to="/admin/dashboard" replace />
-              )
-            ) : (
-              <Navigate to="/landing" replace />
-            )
-          }
-        />
 
         {/* Rutas para CLIENTE */}
         <Route
@@ -138,7 +141,6 @@ const AppRoutes = () => {
           <Route path="dashboard" element={<AgentDashboard />} />
           <Route path="clientes">
             <Route index element={<ClientsPage />} />
-            <Route path="listado" element={<ClientsPage />} />
             <Route path="nuevo" element={<NewClientPage />} />
             <Route path=":clientId" element={<ClientDetailPage />} />
             <Route path="editar/:clientId" element={<EditClientPage />} />
@@ -170,21 +172,33 @@ const AppRoutes = () => {
             element={<Placeholder title="Remisiones" />}
           />
           <Route path="tareas" element={<Placeholder title="Tareas" />} />
-          <Route path="cobros" element={<Placeholder title="Cobros" />} />
-          <Route
-            path="cobros/pagos"
-            element={<Placeholder title="Listado de pagos" />}
-          />
-          <Route
-            path="cobros/recibos"
-            element={<Placeholder title="Recibos y Cuadre de caja" />}
-          />
-          <Route
-            path="cobros/liquidar"
-            element={<Placeholder title="Liquidar vendedores" />}
-          />
+
+          {/* Rutas de Cobros */}
+          <Route path="cobros">
+            <Route index element={<Placeholder title="Cobros" />} />
+            <Route
+              path="pagos"
+              element={<Placeholder title="Listado de pagos" />}
+            />
+            <Route
+              path="recibos"
+              element={<Placeholder title="Recibos y Cuadre de caja" />}
+            />
+            <Route
+              path="liquidar"
+              element={<Placeholder title="Liquidar vendedores" />}
+            />
+          </Route>
+
           <Route path="informes" element={<Placeholder title="Informes" />} />
           <Route path="archivos" element={<Placeholder title="Archivos" />} />
+
+          {/* Rutas de Siniestros */}
+          <Route path="siniestros">
+            <Route index element={<ClaimsPage />} />
+            <Route path="nuevo" element={<ClaimsPage />} />
+            <Route path="editar/:id" element={<ClaimsPage />} />
+          </Route>
 
           <Route path="facturas" element={<Placeholder title="Facturas" />} />
           <Route
@@ -341,7 +355,6 @@ const AppRoutes = () => {
           <Route path="dashboard" element={<AgencyDashboard />} />
           <Route path="clientes">
             <Route index element={<ClientsPage />} />
-            <Route path="listado" element={<ClientsPage />} />
             <Route path="nuevo" element={<NewClientPage />} />
             <Route path=":clientId" element={<ClientDetailPage />} />
             <Route path="editar/:clientId" element={<EditClientPage />} />
@@ -531,7 +544,6 @@ const AppRoutes = () => {
           <Route path="vista-general" element={<AdminDashboard />} />
           <Route path="clientes">
             <Route index element={<ClientsPage />} />
-            <Route path="listado" element={<ClientsPage />} />
             <Route path="nuevo" element={<NewClientPage />} />
             <Route path=":clientId" element={<ClientDetailPage />} />
             <Route path="editar/:clientId" element={<EditClientPage />} />
@@ -570,20 +582,6 @@ const AppRoutes = () => {
         <Route path="*" element={<Navigate to="/landing" replace />} />
       </Routes>
     </Suspense>
-  );
-};
-
-const LoadingFallback = () => {
-  return (
-    <div className="flex h-screen items-center justify-center">
-      <div className="text-center">
-        <div className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto"></div>
-        <h2 className="text-xl font-semibold">Cargando...</h2>
-        <p className="text-muted-foreground">
-          Estamos preparando todo para ti
-        </p>
-      </div>
-    </div>
   );
 };
 
