@@ -57,8 +57,8 @@ const AppRoutes = () => {
   return (
     <Suspense fallback={<LoadingFallback />}>
       <Routes>
-        {/* Ruta raíz con redirección inteligente */}
-        <Route path="/" element={<Navigate to={getDefaultRoute()} replace />} />
+        {/* Ruta raíz con redirección a landing */}
+        <Route path="/" element={<Navigate to="/landing" replace />} />
         
         {/* Rutas públicas */}
         <Route path="/landing" element={<Landing />} />
@@ -231,8 +231,8 @@ const AppRoutes = () => {
           <Route path="perfil" element={<ProfilePage />} />
         </Route>
 
-        {/* Ruta 404 */}
-        <Route path="*" element={<NotFound />} />
+        {/* Ruta 404 - Redirigir a landing */}
+        <Route path="*" element={<Navigate to="/landing" replace />} />
       </Routes>
     </Suspense>
   );
