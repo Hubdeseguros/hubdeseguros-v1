@@ -13,4 +13,4 @@ export default function EnDesarrollo() {
       borderColor="border-gray-200"
     />
   );
-}
+} 

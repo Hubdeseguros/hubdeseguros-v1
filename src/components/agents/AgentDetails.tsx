@@ -1,5 +1,5 @@
-import React from "react";
-import { Agent } from "@/features/agents/types";
+import React from 'react';
+import { Agent } from '@/features/agents/types';
 
 interface Props {
   agent: Agent;
@@ -7,9 +7,7 @@ interface Props {
 
 const AgentDetails: React.FC<Props> = ({ agent }) => (
   <div className="p-4 bg-white rounded shadow">
-    <h2 className="text-xl font-bold mb-2">
-      {agent.first_name} {agent.last_name}
-    </h2>
+    <h2 className="text-xl font-bold mb-2">{agent.first_name} {agent.last_name}</h2>
     <div className="text-gray-700">Email: {agent.email}</div>
     <div className="text-gray-700">Teléfono: {agent.phone}</div>
     <div className="text-gray-700">Licencia: {agent.license_number}</div>
@@ -19,4 +17,4 @@ const AgentDetails: React.FC<Props> = ({ agent }) => (
   </div>
 );
 
-export default AgentDetails;
+export default AgentDetails; 

@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { Payment, PaymentFormData } from "@/features/payments/types";
-import { paymentService } from "@/features/payments/services/paymentService";
+import { useState, useEffect } from 'react';
+import { Payment, PaymentFormData } from '@/features/payments/types';
+import { paymentService } from '@/features/payments/services/paymentService';
 
 export const usePayments = () => {
   const [data, setData] = useState<Payment[]>([]);
@@ -44,4 +44,4 @@ export const usePayments = () => {
     fetchPayments,
     createPayment,
   };
-};
+}; 

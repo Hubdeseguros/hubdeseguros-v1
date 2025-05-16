@@ -1,6 +1,7 @@
-export type UserRole = "CLIENTE" | "AGENTE" | "AGENCIA" | "ADMIN";
 
-export type UserLevel = "BASICO" | "INTERMEDIO" | "AVANZADO";
+export type UserRole = 'CLIENTE' | 'AGENTE' | 'AGENCIA' | 'ADMIN';
+
+export type UserLevel = 'BASICO' | 'INTERMEDIO' | 'AVANZADO';
 
 export interface User {
   id: string;

@@ -1,5 +1,6 @@
-import { supabase } from "@/integrations/supabase/client";
-import { Payment, PaymentFormData } from "../types";
+
+import { supabase } from '@/integrations/supabase/client';
+import { Payment, PaymentFormData } from '../types';
 
 // Helper conversion for payment status and method
 interface PaymentRow {
@@ -19,15 +20,14 @@ function mapPagoRow(row: PaymentRow): Payment {
     policy_id: row.poliza_id,
     amount: Number(row.monto),
     payment_date: row.fecha_pago,
-    method: row.metodo_pago || "",
-    status:
-      row.estado === "PAGADO"
-        ? "COMPLETED"
-        : row.estado === "PENDIENTE"
-          ? "PENDING"
-          : "FAILED",
+    method: row.metodo_pago || '',
+    status: row.estado === "PAGADO"
+      ? "COMPLETED"
+      : row.estado === "PENDIENTE"
+      ? "PENDING"
+      : "FAILED",
     created_at: row.created_at,
-    updated_at: row.updated_at,
+    updated_at: row.updated_at
   };
 }
 
@@ -55,48 +55,33 @@ function paymentFormToDb(data: PaymentFormData) {
 
 export const paymentService = {
   getAll: async (): Promise<Payment[]> => {
-    const { data, error } = await supabase.from("pagos").select("*");
+    const { data, error } = await supabase.from('pagos').select('*');
     if (error) throw error;
     return (data as any[]).map(mapPagoRow);
   },
   getById: async (id: string): Promise<Payment | null> => {
-    const { data, error } = await supabase
-      .from("pagos")
-      .select("*")
-      .eq("id", id)
-      .maybeSingle();
+    const { data, error } = await supabase.from('pagos').select('*').eq('id', id).maybeSingle();
     if (error) throw error;
     if (!data) return null;
     return mapPagoRow(data);
   },
   create: async (data: PaymentFormData): Promise<Payment> => {
     const insertData = paymentFormToDb(data);
-    const { data: created, error } = await supabase
-      .from("pagos")
-      .insert(insertData)
-      .select()
-      .maybeSingle();
+    const { data: created, error } = await supabase.from('pagos').insert(insertData).select().maybeSingle();
     if (error) throw error;
     if (!created) throw new Error("No payment created");
     return mapPagoRow(created);
   },
-  update: async (
-    id: string,
-    data: Partial<PaymentFormData>,
-  ): Promise<Payment> => {
+  update: async (id: string, data: Partial<PaymentFormData>): Promise<Payment> => {
     const updateData = paymentFormToDb(data as PaymentFormData);
-    const { data: updated, error } = await supabase
-      .from("pagos")
-      .update(updateData)
-      .eq("id", id)
-      .select()
-      .maybeSingle();
+    const { data: updated, error } = await supabase.from('pagos').update(updateData).eq('id', id).select().maybeSingle();
     if (error) throw error;
     if (!updated) throw new Error("No payment updated");
     return mapPagoRow(updated);
   },
   delete: async (id: string): Promise<void> => {
-    const { error } = await supabase.from("pagos").delete().eq("id", id);
+    const { error } = await supabase.from('pagos').delete().eq('id', id);
     if (error) throw error;
-  },
+  }
 };
+
