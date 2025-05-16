@@ -179,20 +179,20 @@ const Sidebar = () => {
             key: 'clientes',
             label: 'Clientes',
             icon: FileUser,
-            path: `/${roleRoute}/clientes`,
+            path: '/clientes',
             isOpen: true,
             subMenu: [
               {
                 key: 'listado-clientes',
                 label: 'Listado de Clientes',
                 icon: FileUser,
-                path: `/${roleRoute}/clientes/listado`
+                path: '/clientes/listado'
               },
               {
                 key: 'crm',
                 label: 'Asistente Comercial/CRM',
                 icon: Laptop,
-                path: `/${roleRoute}/clientes/crm`
+                path: '/clientes/crm'
               }
             ]
           },
