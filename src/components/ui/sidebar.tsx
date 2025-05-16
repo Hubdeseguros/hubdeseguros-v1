@@ -70,22 +70,38 @@ const SidebarProvider = React.forwardRef<
 
     // This is the internal state of the sidebar.
     // We use openProp and setOpenProp for control from outside the component.
-    const [_open, _setOpen] = React.useState(defaultOpen)
-    const open = openProp ?? _open
+    // Usar useRef para evitar re-renders innecesarios
+    const openRef = React.useRef(defaultOpen)
+    const open = openProp ?? openRef.current
+    
     const setOpen = React.useCallback(
       (value: boolean | ((value: boolean) => boolean)) => {
         const openState = typeof value === "function" ? value(open) : value
         if (setOpenProp) {
           setOpenProp(openState)
         } else {
-          _setOpen(openState)
+          openRef.current = openState
         }
 
         // This sets the cookie to keep the sidebar state.
         document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
       },
-      [setOpenProp, open]
+      [setOpenProp]
     )
+
+    // Actualizar el estado inicial desde la cookie
+    React.useEffect(() => {
+      const cookie = document.cookie.split('; ').find(row => row.startsWith(SIDEBAR_COOKIE_NAME))
+      if (cookie) {
+        const value = cookie.split('=')[1]
+        const isOpen = value === 'true'
+        if (setOpenProp) {
+          setOpenProp(isOpen)
+        } else {
+          openRef.current = isOpen
+        }
+      }
+    }, [setOpenProp])
 
     // Helper to toggle the sidebar.
     const toggleSidebar = React.useCallback(() => {
@@ -110,9 +126,18 @@ const SidebarProvider = React.forwardRef<
       return () => window.removeEventListener("keydown", handleKeyDown)
     }, [toggleSidebar])
 
-    // We add a state so that we can do data-state="expanded" or "collapsed".
-    // This makes it easier to style the sidebar with Tailwind classes.
-    const state = open ? "expanded" : "collapsed"
+    // Usar un estado más estable para las transiciones
+    const [transitionState, setTransitionState] = React.useState(open ? "expanded" : "collapsed")
+    
+    // Actualizar el estado de transición con un delay para evitar parpadeos
+    React.useEffect(() => {
+      const timeout = setTimeout(() => {
+        setTransitionState(open ? "expanded" : "collapsed")
+      }, 100) // Pequeño delay para evitar parpadeos
+      return () => clearTimeout(timeout)
+    }, [open])
+
+    const state = transitionState
 
     const contextValue = React.useMemo<SidebarContext>(
       () => ({
