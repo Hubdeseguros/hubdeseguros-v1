@@ -1,4 +1,4 @@
-declare module '@/components/ui/sidebar' {
+declare module "@/components/ui/sidebar" {
   import {
     Sidebar,
     SidebarContent,
@@ -23,8 +23,8 @@ declare module '@/components/ui/sidebar' {
     SidebarRail,
     SidebarSeparator,
     SidebarTrigger,
-    useSidebar
-  } from './sidebar/sidebar';
+    useSidebar,
+  } from "./sidebar/sidebar";
 
   export {
     Sidebar,
@@ -50,6 +50,6 @@ declare module '@/components/ui/sidebar' {
     SidebarRail,
     SidebarSeparator,
     SidebarTrigger,
-    useSidebar
+    useSidebar,
   };
 }

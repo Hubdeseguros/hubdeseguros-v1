@@ -1,4 +1,4 @@
-import { 
+import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
@@ -22,8 +22,8 @@ import {
   SidebarRail,
   SidebarSeparator,
   SidebarTrigger,
-  useSidebar
-} from './sidebar';
+  useSidebar,
+} from "./sidebar";
 
 export {
   Sidebar,
@@ -49,5 +49,5 @@ export {
   SidebarRail,
   SidebarSeparator,
   SidebarTrigger,
-  useSidebar
+  useSidebar,
 };

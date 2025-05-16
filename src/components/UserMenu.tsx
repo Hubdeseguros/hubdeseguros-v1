@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,8 +12,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { User, Settings, LogOut, UserCog } from 'lucide-react';
+} from "@/components/ui/dropdown-menu";
+import { User, Settings, LogOut, UserCog } from "lucide-react";
 
 export function UserMenu() {
   const { user, logout } = useAuth();
@@ -23,39 +23,41 @@ export function UserMenu() {
   if (!user) return null;
 
   const userInitials = user.name
-    .split(' ')
+    .split(" ")
     .map((n) => n[0])
-    .join('')
+    .join("")
     .toUpperCase()
     .substring(0, 2);
 
   const handleLogout = () => {
     logout();
-    navigate('/auth/login');
+    navigate("/auth/login");
   };
 
   const handleProfileClick = () => {
     // Use the correct path based on user role
-    const profilePath = user.role === 'CLIENTE' 
-      ? '/usuario/perfil' 
-      : user.role === 'AGENTE' 
-        ? '/agente/perfil' 
-        : user.role === 'AGENCIA' 
-          ? '/agencia/perfil' 
-          : '/admin/perfil';
+    const profilePath =
+      user.role === "CLIENTE"
+        ? "/usuario/perfil"
+        : user.role === "AGENTE"
+          ? "/agente/perfil"
+          : user.role === "AGENCIA"
+            ? "/agencia/perfil"
+            : "/admin/perfil";
     navigate(profilePath);
     setIsOpen(false);
   };
 
   const handleSettingsClick = () => {
     // Use the correct path based on user role
-    const settingsPath = user.role === 'CLIENTE' 
-      ? '/usuario/configuracion' 
-      : user.role === 'AGENTE' 
-        ? '/agente/configuracion' 
-        : user.role === 'AGENCIA' 
-          ? '/agencia/configuracion' 
-          : '/admin/configuracion';
+    const settingsPath =
+      user.role === "CLIENTE"
+        ? "/usuario/configuracion"
+        : user.role === "AGENTE"
+          ? "/agente/configuracion"
+          : user.role === "AGENCIA"
+            ? "/agencia/configuracion"
+            : "/admin/configuracion";
     navigate(settingsPath);
     setIsOpen(false);
   };

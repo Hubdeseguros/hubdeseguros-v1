@@ -28,4 +28,4 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       </button>
     )}
   </div>
-); 
+);

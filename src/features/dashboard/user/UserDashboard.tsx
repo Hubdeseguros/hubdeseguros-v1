@@ -1,7 +1,7 @@
-import { Link } from 'react-router-dom';
-import DashboardCard from '@/components/dashboard/DashboardCard';
-import TaskList from '@/components/dashboard/TaskList';
-import { Shield, AlertCircle, CreditCard } from 'lucide-react';
+import { Link } from "react-router-dom";
+import DashboardCard from "@/components/dashboard/DashboardCard";
+import TaskList from "@/components/dashboard/TaskList";
+import { Shield, AlertCircle, CreditCard } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 
 // Datos de ejemplo para el dashboard
@@ -12,7 +12,7 @@ const stats = [
     change: "activas",
     timeframe: "último período",
     icon: <Shield className="h-6 w-6" />,
-    linkTo: "/usuario/mis-polizas"
+    linkTo: "/usuario/mis-polizas",
   },
   {
     title: "Siniestros",
@@ -20,7 +20,7 @@ const stats = [
     change: "pendientes",
     timeframe: "sin siniestros",
     icon: <AlertCircle className="h-6 w-6" />,
-    linkTo: "/usuario/siniestros"
+    linkTo: "/usuario/siniestros",
   },
   {
     title: "Pagos",
@@ -28,16 +28,40 @@ const stats = [
     change: "próximo pago",
     timeframe: "período actual",
     icon: <CreditCard className="h-6 w-6" />,
-    linkTo: "/usuario/pagos"
-  }
+    linkTo: "/usuario/pagos",
+  },
 ];
 
 // Tareas pendientes de ejemplo
 const pendingTasks = [
-  { id: '1', title: 'Renovación de póliza de auto', priority: 'alta' as const, dueDate: '18/05/2023', completed: false },
-  { id: '2', title: 'Completar información personal', priority: 'media' as const, dueDate: '22/05/2023', completed: false },
-  { id: '3', title: 'Subir documentos de identidad', priority: 'baja' as const, dueDate: '25/05/2023', completed: true },
-  { id: '4', title: 'Confirmar cobertura adicional', priority: 'media' as const, dueDate: '01/06/2023', completed: false }
+  {
+    id: "1",
+    title: "Renovación de póliza de auto",
+    priority: "alta" as const,
+    dueDate: "18/05/2023",
+    completed: false,
+  },
+  {
+    id: "2",
+    title: "Completar información personal",
+    priority: "media" as const,
+    dueDate: "22/05/2023",
+    completed: false,
+  },
+  {
+    id: "3",
+    title: "Subir documentos de identidad",
+    priority: "baja" as const,
+    dueDate: "25/05/2023",
+    completed: true,
+  },
+  {
+    id: "4",
+    title: "Confirmar cobertura adicional",
+    priority: "media" as const,
+    dueDate: "01/06/2023",
+    completed: false,
+  },
 ];
 
 const UserDashboard = () => {
@@ -48,9 +72,11 @@ const UserDashboard = () => {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Panel de Usuario</h1>
-        <p className="text-muted-foreground">Bienvenido a tu panel de control personalizado</p>
+        <p className="text-muted-foreground">
+          Bienvenido a tu panel de control personalizado
+        </p>
       </div>
-      
+
       <div className="grid gap-6 md:grid-cols-3">
         {stats.map((stat, index) => (
           <Link key={index} to={stat.linkTo}>
@@ -75,7 +101,9 @@ const UserDashboard = () => {
                   <h3 className="font-medium text-lg">Póliza de Automóvil</h3>
                   <p className="text-gray-500 text-sm">Premium</p>
                 </div>
-                <div className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs">Activa</div>
+                <div className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs">
+                  Activa
+                </div>
               </div>
               <div className="mt-4 border-t pt-4">
                 <div className="flex justify-between text-sm">
@@ -89,7 +117,7 @@ const UserDashboard = () => {
               </div>
             </div>
           </Link>
-          
+
           <Link to="/usuario/mis-polizas" className="block">
             <div className="bg-white border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex justify-between items-center">
@@ -97,7 +125,9 @@ const UserDashboard = () => {
                   <h3 className="font-medium text-lg">Póliza de Hogar</h3>
                   <p className="text-gray-500 text-sm">Básica</p>
                 </div>
-                <div className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs">Activa</div>
+                <div className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs">
+                  Activa
+                </div>
               </div>
               <div className="mt-4 border-t pt-4">
                 <div className="flex justify-between text-sm">

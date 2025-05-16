@@ -8,4 +8,4 @@ const AgentSalesDashboard: React.FC = () => (
   </div>
 );
 
-export default AgentSalesDashboard; 
+export default AgentSalesDashboard;

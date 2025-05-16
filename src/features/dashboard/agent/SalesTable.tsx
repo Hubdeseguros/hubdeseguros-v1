@@ -25,7 +25,9 @@ export const SalesTable: React.FC = () => {
 
   const handleFormSubmit = (data: Omit<Sale, "id">) => {
     if (editing) {
-      setSales(sales.map((s) => (s.id === editing.id ? { ...editing, ...data } : s)));
+      setSales(
+        sales.map((s) => (s.id === editing.id ? { ...editing, ...data } : s)),
+      );
     } else {
       setSales([...sales, { ...data, id: Date.now() }]);
     }
@@ -37,13 +39,18 @@ export const SalesTable: React.FC = () => {
     <div>
       <div className="flex justify-between mb-2">
         <h2 className="text-xl font-bold">Ventas</h2>
-        <button className="btn btn-primary" onClick={handleCreate}>Nueva Venta</button>
+        <button className="btn btn-primary" onClick={handleCreate}>
+          Nueva Venta
+        </button>
       </div>
       {showForm && (
         <SaleForm
           initialData={editing || undefined}
           onSubmit={handleFormSubmit}
-          onCancel={() => { setShowForm(false); setEditing(null); }}
+          onCancel={() => {
+            setShowForm(false);
+            setEditing(null);
+          }}
         />
       )}
       <table className="table-auto w-full mt-4">
@@ -66,8 +73,18 @@ export const SalesTable: React.FC = () => {
               <td>{sale.fecha}</td>
               <td>{sale.estado}</td>
               <td>
-                <button className="btn btn-sm btn-secondary mr-2" onClick={() => handleEdit(sale)}>Editar</button>
-                <button className="btn btn-sm btn-danger" onClick={() => handleDelete(sale)}>Eliminar</button>
+                <button
+                  className="btn btn-sm btn-secondary mr-2"
+                  onClick={() => handleEdit(sale)}
+                >
+                  Editar
+                </button>
+                <button
+                  className="btn btn-sm btn-danger"
+                  onClick={() => handleDelete(sale)}
+                >
+                  Eliminar
+                </button>
               </td>
             </tr>
           ))}
@@ -75,4 +92,4 @@ export const SalesTable: React.FC = () => {
       </table>
     </div>
   );
-}; 
+};

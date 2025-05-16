@@ -1,4 +1,4 @@
-export type PaymentStatus = 'PENDING' | 'COMPLETED' | 'FAILED';
+export type PaymentStatus = "PENDING" | "COMPLETED" | "FAILED";
 
 export interface Payment {
   id: string;
@@ -11,4 +11,4 @@ export interface Payment {
   updated_at: string;
 }
 
-export type PaymentFormData = Omit<Payment, 'id' | 'created_at' | 'updated_at'>; 
+export type PaymentFormData = Omit<Payment, "id" | "created_at" | "updated_at">;
