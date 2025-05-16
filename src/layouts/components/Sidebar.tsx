@@ -183,12 +183,6 @@ const Sidebar = () => {
             isOpen: true,
             subMenu: [
               {
-                key: 'listado-clientes',
-                label: 'Listado de Clientes',
-                icon: FileUser,
-                path: '/clientes/listado'
-              },
-              {
                 key: 'crm',
                 label: 'Asistente Comercial/CRM',
                 icon: Laptop,
