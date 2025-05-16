@@ -1,9 +1,10 @@
+
 import { useEffect, useState, useCallback } from "react";
 import * as notifService from "@/lib/notifications";
-import { useUser } from "@/hooks/useUser"; // Debes tener un hook de usuario autenticado
+import { useAuth } from "@/hooks/useAuth"; // Usar el hook correcto
 
 export function useNotifications() {
-  const { user } = useUser();
+  const { user } = useAuth(); // Extraer user del nuevo hook
   const [notifications, setNotifications] = useState<notifService.Notification[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -42,4 +43,4 @@ export function useNotifications() {
     refresh: fetchNotifications,
     loading,
   };
-} 
+}
