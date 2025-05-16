@@ -1,5 +1,5 @@
-import React from "react"
-import { useForm } from "react-hook-form"
+import React from "react";
+import { useForm } from "react-hook-form";
 import {
   Form,
   FormItem,
@@ -7,16 +7,16 @@ import {
   FormControl,
   FormMessage,
   FormField,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { ApiKey } from "./mockApiKeys"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { ApiKey } from "./mockApiKeys";
 
 type ApiKeyFormProps = {
-  initialData?: ApiKey
-  onSubmit: (data: Omit<ApiKey, "id" | "key" | "createdAt">) => void
-  onCancel: () => void
-}
+  initialData?: ApiKey;
+  onSubmit: (data: Omit<ApiKey, "id" | "key" | "createdAt">) => void;
+  onCancel: () => void;
+};
 
 export const ApiKeyForm: React.FC<ApiKeyFormProps> = ({
   initialData,
@@ -25,9 +25,9 @@ export const ApiKeyForm: React.FC<ApiKeyFormProps> = ({
 }) => {
   const form = useForm<Omit<ApiKey, "id" | "key" | "createdAt">>({
     defaultValues: initialData || { name: "", status: "Activo" },
-  })
+  });
 
-  const handleSubmit = form.handleSubmit((data) => onSubmit(data))
+  const handleSubmit = form.handleSubmit((data) => onSubmit(data));
 
   return (
     <Form {...form}>
@@ -71,5 +71,5 @@ export const ApiKeyForm: React.FC<ApiKeyFormProps> = ({
         </div>
       </form>
     </Form>
-  )
-}
+  );
+};

@@ -8,9 +8,11 @@ export default function VentasVacio() {
       title="Aún no tienes ventas"
       description="Registra tus ventas y haz seguimiento a tus comisiones y oportunidades de negocio."
       actionLabel="Registrar venta"
-      onAction={() => {/* lógica para abrir modal/formulario */}}
+      onAction={() => {
+        /* lógica para abrir modal/formulario */
+      }}
       bgColor="bg-purple-50"
       borderColor="border-purple-200"
     />
   );
-} 
+}

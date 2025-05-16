@@ -1,5 +1,4 @@
-
-export type ClientStatus = 'ACTIVE' | 'INACTIVE' | 'PENDING';
+export type ClientStatus = "ACTIVE" | "INACTIVE" | "PENDING";
 
 export interface Client {
   id: string;
@@ -10,10 +9,10 @@ export interface Client {
   document_id: string;
   document_type: string;
   address?: string | null;
-  created_at: string;    // ISO8601
-  updated_at: string;    // ISO8601
+  created_at: string; // ISO8601
+  updated_at: string; // ISO8601
   status: ClientStatus;
 }
 
 // Data para formularios (omitiendo campos autogenerados por el sistema)
-export type ClientFormData = Omit<Client, 'id' | 'created_at' | 'updated_at'>;
+export type ClientFormData = Omit<Client, "id" | "created_at" | "updated_at">;

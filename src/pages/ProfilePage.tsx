@@ -1,24 +1,39 @@
-import { useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { useToast } from '@/components/ui/use-toast';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { InputWithIcon } from '@/components/ui/input-with-icon';
-import { 
-  Loader2, 
-  User, 
-  Mail, 
-  Phone, 
-  Building, 
-  MapPin, 
+import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useToast } from "@/components/ui/use-toast";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { InputWithIcon } from "@/components/ui/input-with-icon";
+import {
+  Loader2,
+  User,
+  Mail,
+  Phone,
+  Building,
+  MapPin,
   Briefcase,
   Calendar,
   AlertTriangle,
@@ -27,8 +42,8 @@ import {
   Check,
   Edit2,
   Globe as GlobeIcon,
-  FileText
-} from 'lucide-react';
+  FileText,
+} from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,33 +53,49 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from "@/components/ui/alert-dialog";
 
 const profileFormSchema = z.object({
   name: z.string().min(2, {
-    message: 'El nombre debe tener al menos 2 caracteres.',
+    message: "El nombre debe tener al menos 2 caracteres.",
   }),
   email: z.string().email({
-    message: 'Por favor ingresa un correo electrónico válido.',
+    message: "Por favor ingresa un correo electrónico válido.",
   }),
   phone: z.string().min(8, {
-    message: 'El teléfono debe tener al menos 8 dígitos.',
+    message: "El teléfono debe tener al menos 8 dígitos.",
   }),
-  company: z.string().min(2, {
-    message: 'El nombre de la empresa debe tener al menos 2 caracteres.',
-  }).optional(),
-  position: z.string().min(2, {
-    message: 'El cargo debe tener al menos 2 caracteres.',
-  }).optional(),
-  address: z.string().min(5, {
-    message: 'La dirección debe tener al menos 5 caracteres.',
-  }).optional(),
-  bio: z.string().max(500, {
-    message: 'La biografía no puede tener más de 500 caracteres.',
-  }).optional(),
-  website: z.string().url({
-    message: 'Por favor ingresa una URL válida.',
-  }).optional().or(z.literal('')),
+  company: z
+    .string()
+    .min(2, {
+      message: "El nombre de la empresa debe tener al menos 2 caracteres.",
+    })
+    .optional(),
+  position: z
+    .string()
+    .min(2, {
+      message: "El cargo debe tener al menos 2 caracteres.",
+    })
+    .optional(),
+  address: z
+    .string()
+    .min(5, {
+      message: "La dirección debe tener al menos 5 caracteres.",
+    })
+    .optional(),
+  bio: z
+    .string()
+    .max(500, {
+      message: "La biografía no puede tener más de 500 caracteres.",
+    })
+    .optional(),
+  website: z
+    .string()
+    .url({
+      message: "Por favor ingresa una URL válida.",
+    })
+    .optional()
+    .or(z.literal("")),
   documentType: z.string().optional(),
   documentNumber: z.string().optional(),
 });
@@ -83,16 +114,16 @@ export default function ProfilePage() {
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      name: user?.name || '',
-      email: user?.email || '',
-      phone: user?.phone || '',
-      company: user?.company || '',
-      position: user?.position || '',
-      address: user?.address || '',
-      bio: user?.bio || '',
-      website: user?.website || '',
-      documentType: user?.documentType || '',
-      documentNumber: user?.documentNumber || '',
+      name: user?.name || "",
+      email: user?.email || "",
+      phone: user?.phone || "",
+      company: user?.company || "",
+      position: user?.position || "",
+      address: user?.address || "",
+      bio: user?.bio || "",
+      website: user?.website || "",
+      documentType: user?.documentType || "",
+      documentNumber: user?.documentNumber || "",
     },
   });
 
@@ -101,16 +132,17 @@ export default function ProfilePage() {
       setIsLoading(true);
       await updateProfile(data);
       toast({
-        title: 'Perfil actualizado',
-        description: 'Tus datos se han actualizado correctamente.',
+        title: "Perfil actualizado",
+        description: "Tus datos se han actualizado correctamente.",
       });
       setIsEditing(false);
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error("Error updating profile:", error);
       toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'No se pudo actualizar el perfil. Por favor, inténtalo de nuevo.',
+        variant: "destructive",
+        title: "Error",
+        description:
+          "No se pudo actualizar el perfil. Por favor, inténtalo de nuevo.",
       });
     } finally {
       setIsLoading(false);
@@ -126,19 +158,20 @@ export default function ProfilePage() {
     try {
       setIsDeleting(true);
       // Add account deletion logic here
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
       await logout();
-      navigate('/login');
+      navigate("/login");
       toast({
-        title: 'Cuenta eliminada',
-        description: 'Tu cuenta ha sido eliminada correctamente.',
+        title: "Cuenta eliminada",
+        description: "Tu cuenta ha sido eliminada correctamente.",
       });
     } catch (error) {
-      console.error('Error deleting account:', error);
+      console.error("Error deleting account:", error);
       toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'No se pudo eliminar la cuenta. Por favor, inténtalo de nuevo.',
+        variant: "destructive",
+        title: "Error",
+        description:
+          "No se pudo eliminar la cuenta. Por favor, inténtalo de nuevo.",
       });
     } finally {
       setIsDeleting(false);
@@ -150,7 +183,9 @@ export default function ProfilePage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Perfil de Usuario</h2>
+          <h2 className="text-2xl font-bold tracking-tight">
+            Perfil de Usuario
+          </h2>
           <p className="text-muted-foreground">
             Gestiona la información de tu perfil y preferencias de cuenta.
           </p>
@@ -179,7 +214,10 @@ export default function ProfilePage() {
                     <Avatar className="h-24 w-24">
                       <AvatarImage src={user?.avatar} alt={user?.name} />
                       <AvatarFallback>
-                        {user?.name?.split(' ').map(n => n[0]).join('')}
+                        {user?.name
+                          ?.split(" ")
+                          .map((n) => n[0])
+                          .join("")}
                       </AvatarFallback>
                     </Avatar>
                     {isEditing && (
@@ -192,7 +230,9 @@ export default function ProfilePage() {
 
                 <div className="space-y-6 md:col-span-2">
                   <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Información personal</h3>
+                    <h3 className="text-lg font-medium">
+                      Información personal
+                    </h3>
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                       <FormField
                         control={form.control}
@@ -206,7 +246,9 @@ export default function ProfilePage() {
                                 value={field.value}
                                 onChange={field.onChange}
                                 disabled={!isEditing || isLoading}
-                                icon={<User className="h-4 w-4 text-muted-foreground" />}
+                                icon={
+                                  <User className="h-4 w-4 text-muted-foreground" />
+                                }
                               />
                             </FormControl>
                             <FormMessage />
@@ -227,7 +269,9 @@ export default function ProfilePage() {
                                 value={field.value}
                                 onChange={field.onChange}
                                 disabled={!isEditing || isLoading}
-                                icon={<Mail className="h-4 w-4 text-muted-foreground" />}
+                                icon={
+                                  <Mail className="h-4 w-4 text-muted-foreground" />
+                                }
                               />
                             </FormControl>
                             <FormMessage />
@@ -248,7 +292,9 @@ export default function ProfilePage() {
                                 value={field.value}
                                 onChange={field.onChange}
                                 disabled={!isEditing || isLoading}
-                                icon={<Phone className="h-4 w-4 text-muted-foreground" />}
+                                icon={
+                                  <Phone className="h-4 w-4 text-muted-foreground" />
+                                }
                               />
                             </FormControl>
                             <FormMessage />
@@ -268,7 +314,9 @@ export default function ProfilePage() {
                                 value={field.value}
                                 onChange={field.onChange}
                                 disabled={!isEditing || isLoading}
-                                icon={<Building className="h-4 w-4 text-muted-foreground" />}
+                                icon={
+                                  <Building className="h-4 w-4 text-muted-foreground" />
+                                }
                               />
                             </FormControl>
                             <FormMessage />
@@ -279,7 +327,9 @@ export default function ProfilePage() {
                   </div>
 
                   <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Información profesional</h3>
+                    <h3 className="text-lg font-medium">
+                      Información profesional
+                    </h3>
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                       <FormField
                         control={form.control}
@@ -293,7 +343,9 @@ export default function ProfilePage() {
                                 value={field.value}
                                 onChange={field.onChange}
                                 disabled={!isEditing || isLoading}
-                                icon={<Briefcase className="h-4 w-4 text-muted-foreground" />}
+                                icon={
+                                  <Briefcase className="h-4 w-4 text-muted-foreground" />
+                                }
                               />
                             </FormControl>
                             <FormMessage />
@@ -304,7 +356,9 @@ export default function ProfilePage() {
                   </div>
 
                   <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Información de contacto</h3>
+                    <h3 className="text-lg font-medium">
+                      Información de contacto
+                    </h3>
                     <div className="grid grid-cols-1 gap-4">
                       <FormField
                         control={form.control}
@@ -318,7 +372,9 @@ export default function ProfilePage() {
                                 value={field.value}
                                 onChange={field.onChange}
                                 disabled={!isEditing || isLoading}
-                                icon={<MapPin className="h-4 w-4 text-muted-foreground" />}
+                                icon={
+                                  <MapPin className="h-4 w-4 text-muted-foreground" />
+                                }
                               />
                             </FormControl>
                             <FormMessage />
@@ -338,7 +394,9 @@ export default function ProfilePage() {
                                 value={field.value}
                                 onChange={field.onChange}
                                 disabled={!isEditing || isLoading}
-                                icon={<GlobeIcon className="h-4 w-4 text-muted-foreground" />}
+                                icon={
+                                  <GlobeIcon className="h-4 w-4 text-muted-foreground" />
+                                }
                               />
                             </FormControl>
                             <FormMessage />
@@ -382,7 +440,9 @@ export default function ProfilePage() {
                                   value={field.value}
                                   onChange={field.onChange}
                                   disabled={!isEditing || isLoading}
-                                  icon={<FileText className="h-4 w-4 text-muted-foreground" />}
+                                  icon={
+                                    <FileText className="h-4 w-4 text-muted-foreground" />
+                                  }
                                 />
                               </FormControl>
                               <FormMessage />
@@ -458,11 +518,12 @@ export default function ProfilePage() {
             <div>
               <h4 className="font-medium text-destructive">Eliminar cuenta</h4>
               <p className="text-sm text-muted-foreground">
-                Una vez que elimines tu cuenta, no hay vuelta atrás. Por favor, ten en cuenta que esta acción es permanente.
+                Una vez que elimines tu cuenta, no hay vuelta atrás. Por favor,
+                ten en cuenta que esta acción es permanente.
               </p>
             </div>
-            <Button 
-              variant="destructive" 
+            <Button
+              variant="destructive"
               onClick={() => setShowDeleteDialog(true)}
               disabled={isDeleting}
               className="whitespace-nowrap"
@@ -489,19 +550,24 @@ export default function ProfilePage() {
           <AlertDialogHeader>
             <div className="flex items-center gap-2 text-destructive">
               <AlertTriangle className="h-5 w-5" />
-              <AlertDialogTitle>¿Estás seguro de eliminar tu cuenta?</AlertDialogTitle>
+              <AlertDialogTitle>
+                ¿Estás seguro de eliminar tu cuenta?
+              </AlertDialogTitle>
             </div>
             <AlertDialogDescription className="pt-2">
-              Esta acción no se puede deshacer. Esto eliminará permanentemente tu cuenta y todos los datos asociados.
+              Esta acción no se puede deshacer. Esto eliminará permanentemente
+              tu cuenta y todos los datos asociados.
               <span className="mt-2 block font-medium">
                 ¿Estás seguro de que quieres continuar?
               </span>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleDeleteAccount} 
+            <AlertDialogCancel disabled={isDeleting}>
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteAccount}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               disabled={isDeleting}
             >
@@ -510,7 +576,9 @@ export default function ProfilePage() {
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Eliminando...
                 </>
-              ) : 'Sí, eliminar cuenta'}
+              ) : (
+                "Sí, eliminar cuenta"
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

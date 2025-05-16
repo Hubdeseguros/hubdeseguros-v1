@@ -27,15 +27,19 @@ const EmptyTableCard = ({
   actionLabel,
   onAction,
   bgColor = "bg-blue-50",
-  borderColor = "border-blue-200"
+  borderColor = "border-blue-200",
 }: EmptyTableCardProps) => (
   <div
     className={`flex flex-col items-center justify-center py-16 rounded-xl shadow-md border ${bgColor} ${borderColor} max-w-lg mx-auto my-12 min-h-[320px] transition-shadow`}
     role="status"
     aria-live="polite"
   >
-    <div className="mb-4 min-h-[64px] flex items-center justify-center">{icon}</div>
-    <h2 className="text-xl font-bold mb-2 text-blue-900 text-center">{title}</h2>
+    <div className="mb-4 min-h-[64px] flex items-center justify-center">
+      {icon}
+    </div>
+    <h2 className="text-xl font-bold mb-2 text-blue-900 text-center">
+      {title}
+    </h2>
     <p className="text-gray-600 mb-6 text-center">{description}</p>
     {actionLabel && onAction && (
       <button
