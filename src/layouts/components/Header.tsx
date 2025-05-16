@@ -2,13 +2,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import { Mail, Search, Check, AlertCircle, BellRing, Bell } from 'lucide-react';
+import { Bell, Mail, Search, Check, AlertCircle, BellRing } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
-import UserMenu from '@/components/UserMenu';
 
 interface Breadcrumb {
   label: string;
@@ -300,7 +299,12 @@ const Header = () => {
           
           <Separator orientation="vertical" className="h-8" />
           
-          <UserMenu />
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-hubseguros-primary flex items-center justify-center text-white font-medium">
+              {user?.name.charAt(0)}
+            </div>
+            <span className="font-medium text-sm hidden md:inline-block">{user?.name}</span>
+          </div>
         </div>
       </div>
     </header>
