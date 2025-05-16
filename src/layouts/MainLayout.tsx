@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState, useRef, useEffect, useCallback } from 'react';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import { SidebarProvider } from '@/components/ui/sidebar';
@@ -8,26 +8,39 @@ interface MainLayoutProps {
 }
 
 export const MainLayout = ({ children }: MainLayoutProps) => {
-  // Estado para manejar el overlay en dispositivos móviles
+  // Usar un ref para el estado del overlay para evitar re-renders innecesarios
+  const mobileMenuOpenRef = useRef(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
+  // Actualizar el ref cuando cambie el estado
+  useEffect(() => {
+    mobileMenuOpenRef.current = mobileMenuOpen;
+  }, [mobileMenuOpen]);
+
+  // Función memoizada para manejar el clic en el overlay
+  const handleOverlayClick = useCallback(() => {
+    if (mobileMenuOpenRef.current) {
+      setMobileMenuOpen(false);
+    }
+  }, []);
+
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={!mobileMenuOpen}>
       <div className="min-h-screen flex w-full overflow-hidden">
-        {/* Sidebar (en versión desktop y overlay en mobile) */}
+        {/* Sidebar (en versión desktop y overlay en móvil) */}
         <div className={`
           fixed inset-y-0 left-0 z-50 transform lg:relative lg:translate-x-0
           transition duration-300 ease-in-out
           ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}>
-          <Sidebar />
+          <Sidebar onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)} />
         </div>
 
         {/* Overlay para cerrar el sidebar en móvil */}
         {mobileMenuOpen && (
           <div
             className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-            onClick={() => setMobileMenuOpen(false)}
+            onClick={handleOverlayClick}
           />
         )}
         
