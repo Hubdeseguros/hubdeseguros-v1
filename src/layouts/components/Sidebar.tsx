@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '@/components/ui/button';
+import { useSidebar } from '@/components/ui/sidebar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -54,9 +55,15 @@ const Sidebar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [collapsed, setCollapsed] = useState(false);
+  const { state: sidebarState, toggleSidebar } = useSidebar();
   const [activeKey, setActiveKey] = useState('');
   const [menuSections, setMenuSections] = useState<MenuSection[]>([]);
+
+  const collapsed = sidebarState !== 'expanded';
+
+  const handleToggle = () => {
+    toggleSidebar();
+  };
 
   useEffect(() => {
     if (user) {
@@ -520,26 +527,20 @@ const Sidebar = () => {
   if (!user) return null;
 
   return (
-    <div className={`h-screen bg-[#1e2e4a] transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'} flex flex-col shadow-lg`}>
-      {/* Logo y título */}
-      <div className={`flex items-center p-4 ${collapsed ? 'justify-center' : 'justify-between'} border-b border-[#2a3c5a]`}>
-        {!collapsed && (
-          <div className="flex items-center">
-            <span className="text-white font-bold text-xl">HubSeguros</span>
-          </div>
-        )}
-        {collapsed && (
-          <div className="flex items-center justify-center">
-            <span className="text-white font-bold text-xl">HS</span>
-          </div>
-        )}
+    <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
+      {/* Header del sidebar */}
+      <div className="flex items-center justify-between p-4">
+        <div className="flex items-center gap-2">
+          <img src="/logo.png" alt="Logo" className="h-8 w-8" />
+          <h1 className="text-xl font-bold">Hub de Seguros</h1>
+        </div>
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => setCollapsed(!collapsed)}
-          className="text-white hover:bg-[#2a3c5a]"
+          onClick={handleToggle}
+          className="hidden md:block"
         >
-          {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+          {collapsed ? <ChevronRight /> : <ChevronLeft />}
         </Button>
       </div>
 
