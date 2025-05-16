@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -58,69 +58,77 @@ const Sidebar = () => {
   const { state: sidebarState, toggleSidebar } = useSidebar();
   const [activeKey, setActiveKey] = useState('');
   const [menuSections, setMenuSections] = useState<MenuSection[]>([]);
-  const [openSubMenus, setOpenSubMenus] = useState<Set<string>>(new Set());
+  const [openMenuItems, setOpenMenuItems] = useState<Record<string, boolean>>({});
 
   const collapsed = sidebarState !== 'expanded';
 
-  const handleToggle = useCallback(() => {
-    toggleSidebar();
-  }, [toggleSidebar]);
-
+  // Cargar el menú basado en el rol del usuario
   useEffect(() => {
     if (user) {
-      const menuConfig = useMemo(() => getMenuByRole(user.role), [user.role]);
+      const menuConfig = getMenuByRole(user.role);
       setMenuSections(menuConfig);
     }
   }, [user]);
 
+  // Detectar la ruta activa y abrir los submenús correspondientes
   useEffect(() => {
     const path = location.pathname;
+    const newOpenItems: Record<string, boolean> = {};
+    let foundActiveKey = '';
+
     if (menuSections) {
-      for (const section of menuSections) {
-        for (const item of section.items) {
+      // Buscar coincidencias en los items principales y submenús
+      menuSections.forEach(section => {
+        section.items.forEach(item => {
+          // Verificar si la ruta coincide con el item principal
           if (path === item.path || path.startsWith(item.path + '/')) {
-            setActiveKey(item.key);
+            foundActiveKey = item.key;
             if (item.subMenu) {
-              setOpenSubMenus(prev => new Set([...prev, item.key]));
+              newOpenItems[item.key] = true;
             }
-            break;
           }
+          
+          // Verificar si la ruta coincide con algún subitem
           if (item.subMenu) {
-            for (const subItem of item.subMenu) {
+            item.subMenu.forEach(subItem => {
               if (path === subItem.path || path.startsWith(subItem.path + '/')) {
-                setActiveKey(subItem.key);
-                setOpenSubMenus(prev => new Set([...prev, item.key]));
-                break;
+                foundActiveKey = subItem.key;
+                newOpenItems[item.key] = true;
               }
-            }
+            });
           }
-        }
-      }
+        });
+      });
     }
+
+    // Actualizar el estado solo si hay cambios
+    if (foundActiveKey !== activeKey) {
+      setActiveKey(foundActiveKey);
+    }
+    
+    setOpenMenuItems(prev => ({
+      ...prev,
+      ...newOpenItems
+    }));
   }, [location.pathname, menuSections]);
 
-  const handleItemClick = useCallback((path: string, key: string, target?: string) => {
+  // Manejar clic en un item del menú
+  const handleItemClick = (path: string, key: string, target?: string) => {
     if (target === '_blank') {
       window.open(path, '_blank');
     } else {
-      if (activeKey !== key) {
-        setActiveKey(key);
-      }
       navigate(path);
     }
-  }, [navigate, activeKey]);
+  };
 
-  const toggleSubMenu = useCallback((key: string) => {
-    setOpenSubMenus(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(key)) {
-        newSet.delete(key);
-      } else {
-        newSet.add(key);
-      }
-      return newSet;
-    });
-  }, []);
+  // Alternar la apertura/cierre de un submenú
+  const toggleSubMenu = (key: string, event: React.MouseEvent) => {
+    event.stopPropagation();
+    setOpenMenuItems(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
 
   const getMenuByRole = (role: string): MenuSection[] => {
     const roleRoute = role.toLowerCase();
@@ -602,7 +610,7 @@ const Sidebar = () => {
         <Button
           variant="ghost"
           size="icon"
-          onClick={handleToggle}
+          onClick={toggleSidebar}
           className="hidden md:block"
         >
           {collapsed ? <ChevronRight /> : <ChevronLeft />}
@@ -614,105 +622,83 @@ const Sidebar = () => {
         <div className="flex items-center">
           <div className="flex-shrink-0">
             <div className="w-8 h-8 rounded-full bg-blue-700 flex items-center justify-center text-white font-medium">
-              {user.name.charAt(0)}
+              {user?.name?.charAt(0) || 'U'}
             </div>
           </div>
           {!collapsed && (
             <div className="ml-3 overflow-hidden">
-              <p className="text-sm font-medium text-white truncate">{user.name}</p>
-              <p className="text-xs text-gray-300 truncate">{user.role}</p>
+              <p className="text-sm font-medium text-white truncate">{user?.name || 'Usuario'}</p>
+              <p className="text-xs text-gray-300 truncate">{user?.role || 'Rol'}</p>
             </div>
           )}
         </div>
       </div>
 
       {/* Menú de navegación */}
-      <div className="flex-1 overflow-y-auto py-4">
+      <nav className="flex-1 overflow-y-auto py-2">
         {menuSections.map((section, sectionIndex) => (
-          <div key={`section-${sectionIndex}`}>
+          <div key={`section-${sectionIndex}`} className="mb-2">
             {section.isDivider ? (
               <Separator className="my-3 bg-[#2a3c5a]" />
             ) : (
-              <div className="mb-4">
+              <div className="mb-2">
                 {!collapsed && section.title && (
-                  <h3 className="text-xs font-semibold tracking-wider uppercase text-gray-400 mb-2 px-4">{section.title}</h3>
+                  <h3 className="text-xs font-semibold tracking-wider uppercase text-gray-400 mb-2 px-4">
+                    {section.title}
+                  </h3>
                 )}
                 <ul>
                   {section.items.map((item) => (
-                    <li key={item.key}>
-                      <TooltipProvider delayDuration={300}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div 
-                              className={`flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-[#2a3c5a] rounded-md transition-colors duration-150 cursor-pointer min-h-[40px] select-none ${
-                                activeKey === item.key ? 'bg-[#2a3c5a] font-medium text-blue-400' : ''
-                              }`}
-                              style={{ minWidth: collapsed ? 48 : 0 }}
-                              tabIndex={0}
-                              onKeyDown={e => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                  if (item.subMenu) {
-                                    toggleSubMenu(item.key);
-                                  } else {
-                                    handleItemClick(item.path, item.key, item.target);
-                                  }
-                                }
-                              }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (item.subMenu) {
-                                  toggleSubMenu(item.key);
-                                } else {
-                                  handleItemClick(item.path, item.key, item.target);
-                                }
-                              }}
-                            >
-                              <div className="mr-2 min-w-[24px] flex justify-center items-center">
-                                {item.icon && <item.icon size={18} />}
-                              </div>
-                              {!collapsed && (
-                                <span className="ml-1">{item.label}</span>
-                              )}
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{item.label}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                    <li key={item.key} className="mb-0.5">
+                      {/* Item principal */}
+                      <div 
+                        className={`flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-[#2a3c5a] rounded-md 
+                          transition-all duration-150 cursor-pointer select-none 
+                          ${activeKey === item.key ? 'bg-[#2a3c5a] font-medium text-blue-400' : ''}`}
+                        onClick={(e) => {
+                          if (item.subMenu) {
+                            toggleSubMenu(item.key, e);
+                          } else {
+                            handleItemClick(item.path, item.key, item.target);
+                          }
+                        }}
+                      >
+                        <div className="mr-2 min-w-[24px] flex justify-center items-center">
+                          {item.icon && <item.icon size={18} />}
+                        </div>
+                        {!collapsed && (
+                          <div className="flex justify-between items-center w-full">
+                            <span>{item.label}</span>
+                            {item.subMenu && (
+                              <ChevronRight 
+                                size={16} 
+                                className={`transition-transform duration-200 ${openMenuItems[item.key] ? 'rotate-90' : ''}`} 
+                              />
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Submenú */}
                       {item.subMenu && (
-                        <div className={`ml-6 mt-1 transition-all duration-200 ${
-                          openSubMenus.has(item.key) ? 'opacity-100' : 'opacity-0 invisible'
-                        }`}>
+                        <div 
+                          className={`overflow-hidden transition-all duration-200 ease-in-out pl-6 
+                            ${openMenuItems[item.key] ? 'max-h-96 opacity-100 mt-1' : 'max-h-0 opacity-0'}`}
+                        >
                           <ul className="border-l border-[#2a3c5a] pl-2">
                             {item.subMenu.map((subItem) => (
-                              <li key={subItem.key}>
-                                <TooltipProvider delayDuration={300}>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <div 
-                                        className={`flex items-center px-4 py-1.5 text-sm text-gray-300 hover:bg-[#2a3c5a] rounded-md transition-colors duration-150 cursor-pointer min-h-[36px] select-none ${
-                                          activeKey === subItem.key ? 'bg-[#2a3c5a] font-medium text-blue-400' : ''
-                                        }`}
-                                        style={{ minWidth: collapsed ? 48 : 0 }}
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          handleItemClick(subItem.path, subItem.key, subItem.target);
-                                        }}
-                                      >
-                                        <div className="mr-2 min-w-[24px] flex justify-center items-center">
-                                          {subItem.icon && <subItem.icon size={16} />}
-                                        </div>
-                                        {!collapsed && (
-                                          <span className="ml-1">{subItem.label}</span>
-                                        )}
-                                      </div>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                      <p>{subItem.label}</p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </TooltipProvider>
+                              <li key={subItem.key} className="mb-0.5">
+                                <div 
+                                  className={`flex items-center px-4 py-1.5 text-sm text-gray-300 hover:bg-[#2a3c5a] rounded-md 
+                                    transition-colors duration-150 cursor-pointer select-none 
+                                    ${activeKey === subItem.key ? 'bg-[#2a3c5a] font-medium text-blue-400' : ''}`}
+                                  onClick={() => handleItemClick(subItem.path, subItem.key, subItem.target)}
+                                >
+                                  <div className="mr-2 min-w-[24px] flex justify-center items-center">
+                                    {subItem.icon && <subItem.icon size={16} />}
+                                  </div>
+                                  {!collapsed && <span>{subItem.label}</span>}
+                                </div>
                               </li>
                             ))}
                           </ul>
@@ -725,18 +711,18 @@ const Sidebar = () => {
             )}
           </div>
         ))}
-      </div>
+      </nav>
 
       {/* Footer del sidebar */}
       <div className="border-t border-[#2a3c5a] p-4">
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-blue-700 flex items-center justify-center text-white font-medium">
-              <LogOut size={18} />
-            </div>
-            <span className="text-sm text-gray-300">Cerrar Sesión</span>
-          </div>
-        </div>
+        <Button 
+          variant="ghost" 
+          className="w-full flex items-center justify-start text-gray-300 hover:bg-[#2a3c5a] hover:text-white"
+          onClick={logout}
+        >
+          <LogOut size={18} className="mr-2" />
+          {!collapsed && <span>Cerrar Sesión</span>}
+        </Button>
       </div>
     </div>
   );
