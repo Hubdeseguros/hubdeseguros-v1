@@ -194,20 +194,7 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
     }));
   };
 
-  // Efecto para manejar el estado de los submenús cuando se colapsa la barra lateral
-  useEffect(() => {
-    if (collapsed) {
-      // Cerrar todos los submenús al colapsar
-      const updatedMenu = menuSections.map(section => ({
-        ...section,
-        items: section.items.map(item => ({
-          ...item,
-          isOpen: false
-        }))
-      }));
-      setMenuSections(updatedMenu);
-    }
-  }, [collapsed]);
+  // No cerramos los submenús al colapsar el sidebar
 
   const getMenuByRole = (role: string): MenuSection[] => {
     const roleRoute = role.toLowerCase();
@@ -761,10 +748,10 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
                       {/* Submenú */}
                       {item.subMenu && (
                         <div 
-                          className={`overflow-hidden transition-all duration-200 ease-in-out pl-6 
+                          className={`overflow-hidden transition-all duration-200 ease-in-out ${collapsed ? 'pl-2' : 'pl-6'}
                             ${openMenuItems[item.key] ? 'max-h-96 opacity-100 mt-1' : 'max-h-0 opacity-0'}`}
                         >
-                          <ul className="border-l border-[#2a3c5a] pl-2">
+                          <ul className={`border-l border-[#2a3c5a] ${collapsed ? 'pl-0' : 'pl-2'}`}>
                             {item.subMenu.map((subItem) => (
                               <li key={subItem.key} className="mb-0.5">
                                 <div 
