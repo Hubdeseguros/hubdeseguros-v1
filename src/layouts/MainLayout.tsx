@@ -33,7 +33,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
           transition duration-300 ease-in-out
           ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}>
-          <Sidebar onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)} />
+          <Sidebar />
         </div>
 
         {/* Overlay para cerrar el sidebar en móvil */}
@@ -69,3 +69,4 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
     </SidebarProvider>
   );
 };
+
