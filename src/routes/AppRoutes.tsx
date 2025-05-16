@@ -90,15 +90,22 @@ const AppRoutes = () => {
                 <ClientsPage />
               </Suspense>
             } />
+            <Route path="crm" element={<Placeholder title="Asistente Comercial/CRM" />} />
           </Route>
         </Route>
 
         {/* Rutas para AGENTE */}
         <Route path="/agente" element={<PrivateRoute allowedRoles={['AGENTE', 'ADMIN']} />}>
           <Route path="dashboard" element={<AgentDashboard />} />
-          <Route path="clientes" element={<Placeholder title="Clientes" />} />
-          <Route path="clientes/listado" element={<Placeholder title="Listado de Clientes" />} />
-          <Route path="clientes/crm" element={<Placeholder title="Asistente Comercial/CRM" />} />
+          <Route path="clientes">
+            <Route index element={<Navigate to="listado" replace />} />
+            <Route path="listado" element={
+              <Suspense fallback={<LoadingFallback />}>
+                <ClientsPage />
+              </Suspense>
+            } />
+            <Route path="crm" element={<Placeholder title="Asistente Comercial/CRM" />} />
+          </Route>
           <Route path="polizas" element={<Placeholder title="Pólizas" />} />
           <Route path="polizas/listado" element={<Placeholder title="Listado de Pólizas" />} />
           <Route path="polizas/cumplimiento" element={<Placeholder title="Cumplimiento, Judicial, etc" />} />
