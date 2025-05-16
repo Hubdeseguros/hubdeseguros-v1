@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { Client, ClientFormData } from '@/features/clients/types';
-import { clientService } from '@/features/clients/services/clientService';
+import { useState, useEffect } from "react";
+import { Client, ClientFormData } from "@/features/clients/types";
+import { clientService } from "@/features/clients/services/clientService";
 
 export const useClients = () => {
   const [data, setData] = useState<Client[]>([]);
@@ -44,4 +44,4 @@ export const useClients = () => {
     fetchClients,
     createClient,
   };
-}; 
+};

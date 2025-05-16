@@ -1,5 +1,5 @@
-import React from "react"
-import { useForm } from "react-hook-form"
+import React from "react";
+import { useForm } from "react-hook-form";
 import {
   Form,
   FormItem,
@@ -7,17 +7,17 @@ import {
   FormControl,
   FormMessage,
   FormField,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Select } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
-import { usePolicies, Policy } from "./usePolicies"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { usePolicies, Policy } from "./usePolicies";
 
 type PolicyFormProps = {
-  initialData?: Policy
-  onSubmit: (data: Omit<Policy, "id">) => void
-  onCancel: () => void
-}
+  initialData?: Policy;
+  onSubmit: (data: Omit<Policy, "id">) => void;
+  onCancel: () => void;
+};
 
 export const PolicyForm: React.FC<PolicyFormProps> = ({
   initialData,
@@ -32,7 +32,7 @@ export const PolicyForm: React.FC<PolicyFormProps> = ({
       type: "",
       status: "Activa",
     },
-  })
+  });
 
   const handleSubmit = form.handleSubmit(async (data) => {
     if (initialData) {
@@ -41,7 +41,7 @@ export const PolicyForm: React.FC<PolicyFormProps> = ({
       await addPolicy(data);
     }
     onSubmit(data);
-  })
+  });
 
   return (
     <Form {...form}>
@@ -118,5 +118,5 @@ export const PolicyForm: React.FC<PolicyFormProps> = ({
         </div>
       </form>
     </Form>
-  )
-} 
+  );
+};

@@ -9,7 +9,15 @@ export type Policy = {
   status: "Activa" | "Vencida";
 };
 
-function mapPolicyRow(row: any): Policy {
+interface PolicyRow {
+  id: string;
+  numero_poliza: string;
+  cliente_id: string;
+  producto_id?: string;
+  estado: string;
+}
+
+function mapPolicyRow(row: PolicyRow): Policy {
   return {
     id: row.id,
     number: row.numero_poliza,
@@ -24,14 +32,21 @@ function statusUiToDb(status: "Activa" | "Vencida"): "VIGENTE" | "VENCIDA" {
   return status === "Activa" ? "VIGENTE" : "VENCIDA";
 }
 
-function policyToDb(policy: Omit<Policy, "id"> & { fecha_inicio?: string; fecha_fin?: string }) {
+function policyToDb(
+  policy: Omit<Policy, "id"> & { fecha_inicio?: string; fecha_fin?: string },
+) {
   return {
     numero_poliza: policy.number,
     cliente_id: policy.client,
     producto_id: policy.type,
     estado: statusUiToDb(policy.status),
-    fecha_inicio: policy['fecha_inicio'] || new Date().toISOString().slice(0,10),
-    fecha_fin: policy['fecha_fin'] || new Date(Date.now() + 365*24*60*60*1000).toISOString().slice(0,10),
+    fecha_inicio:
+      policy["fecha_inicio"] || new Date().toISOString().slice(0, 10),
+    fecha_fin:
+      policy["fecha_fin"] ||
+      new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .slice(0, 10),
   };
 }
 
@@ -63,7 +78,10 @@ export function usePolicies() {
 
   const updatePolicy = async (id: string, policy: Omit<Policy, "id">) => {
     const dbPayload = policyToDb(policy);
-    const { error } = await supabase.from("polizas").update(dbPayload).eq("id", id);
+    const { error } = await supabase
+      .from("polizas")
+      .update(dbPayload)
+      .eq("id", id);
     if (error) setError(error.message);
     else await fetchPolicies();
   };
@@ -78,5 +96,13 @@ export function usePolicies() {
     fetchPolicies();
   }, []);
 
-  return { policies, loading, error, addPolicy, updatePolicy, deletePolicy, fetchPolicies };
+  return {
+    policies,
+    loading,
+    error,
+    addPolicy,
+    updatePolicy,
+    deletePolicy,
+    fetchPolicies,
+  };
 }

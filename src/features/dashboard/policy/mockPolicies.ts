@@ -1,1 +1,1 @@
-// Eliminar este archivo, ya no es necesario. 
+// Eliminar este archivo, ya no es necesario.
