@@ -4,7 +4,7 @@ const SIDEBAR_COOKIE_NAME = "sidebar:state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 
 export interface SidebarContextType {
-  state: 'expanded' | 'collapsed';
+  state: "expanded" | "collapsed";
   open: boolean;
   setOpen: (open: boolean) => void;
   openMobile: boolean;
@@ -13,7 +13,9 @@ export interface SidebarContextType {
   toggleSidebar: () => void;
 }
 
-export const SidebarContext = React.createContext<SidebarContextType | null>(null);
+export const SidebarContext = React.createContext<SidebarContextType | null>(
+  null,
+);
 
 export function useSidebar() {
   const context = React.useContext(SidebarContext);
@@ -28,7 +30,10 @@ export interface SidebarProviderProps {
   children: React.ReactNode;
 }
 
-export function SidebarProvider({ defaultOpen = false, children }: SidebarProviderProps) {
+export function SidebarProvider({
+  defaultOpen = false,
+  children,
+}: SidebarProviderProps) {
   const [open, setOpen] = React.useState(defaultOpen);
   const [openMobile, setOpenMobile] = React.useState(false);
   const isMobile = useIsMobile();
@@ -39,10 +44,12 @@ export function SidebarProvider({ defaultOpen = false, children }: SidebarProvid
 
   // Actualizar el estado inicial desde la cookie
   React.useEffect(() => {
-    const cookie = document.cookie.split('; ').find(row => row.startsWith(SIDEBAR_COOKIE_NAME));
+    const cookie = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith(SIDEBAR_COOKIE_NAME));
     if (cookie) {
-      const value = cookie.split('=')[1];
-      const openState = value === 'true';
+      const value = cookie.split("=")[1];
+      const openState = value === "true";
       if (openState !== open) {
         setOpen(openState);
       }
@@ -57,7 +64,7 @@ export function SidebarProvider({ defaultOpen = false, children }: SidebarProvid
   return (
     <SidebarContext.Provider
       value={{
-        state: open ? 'expanded' : 'collapsed',
+        state: open ? "expanded" : "collapsed",
         open,
         setOpen,
         openMobile,
@@ -66,9 +73,7 @@ export function SidebarProvider({ defaultOpen = false, children }: SidebarProvid
         toggleSidebar,
       }}
     >
-      <div className="flex h-full w-full flex-col">
-        {children}
-      </div>
+      <div className="flex h-full w-full flex-col">{children}</div>
     </SidebarContext.Provider>
   );
 }
@@ -82,8 +87,8 @@ function useIsMobile() {
 
   React.useEffect(() => {
     checkIsMobile();
-    window.addEventListener('resize', checkIsMobile);
-    return () => window.removeEventListener('resize', checkIsMobile);
+    window.addEventListener("resize", checkIsMobile);
+    return () => window.removeEventListener("resize", checkIsMobile);
   }, []);
 
   return isMobile;

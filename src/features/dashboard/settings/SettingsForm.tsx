@@ -1,5 +1,5 @@
-import React from "react"
-import { useForm } from "react-hook-form"
+import React from "react";
+import { useForm } from "react-hook-form";
 import {
   Form,
   FormItem,
@@ -7,22 +7,22 @@ import {
   FormControl,
   FormMessage,
   FormField,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Select } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
-import { GlobalSettings } from "./mockSettings"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { GlobalSettings } from "./mockSettings";
 
 type SettingsFormProps = {
-  initialData: GlobalSettings
-  onSubmit: (data: GlobalSettings) => void
-}
+  initialData: GlobalSettings;
+  onSubmit: (data: GlobalSettings) => void;
+};
 
 export const SettingsForm: React.FC<SettingsFormProps> = ({
   initialData,
   onSubmit,
 }) => {
-  const form = useForm<GlobalSettings>({ defaultValues: initialData })
+  const form = useForm<GlobalSettings>({ defaultValues: initialData });
 
   return (
     <Form {...form}>
@@ -85,5 +85,5 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({
         <Button type="submit">Guardar Cambios</Button>
       </form>
     </Form>
-  )
-} 
+  );
+};

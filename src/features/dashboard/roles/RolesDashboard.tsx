@@ -1,7 +1,7 @@
-import React from "react"
-import { Card } from "@/components/ui/card"
-import { RolesTable } from "./RolesTable"
-import { mockRoles } from "./mockRoles"
+import React from "react";
+import { Card } from "@/components/ui/card";
+import { RolesTable } from "./RolesTable";
+import { mockRoles } from "./mockRoles";
 
 export const RolesDashboard: React.FC = () => {
   return (
@@ -12,11 +12,17 @@ export const RolesDashboard: React.FC = () => {
           <div className="text-2xl font-bold">{mockRoles.length}</div>
         </Card>
         <Card className="p-4">
-          <div className="text-sm text-muted-foreground">Permisos Disponibles</div>
-          <div className="text-2xl font-bold">{mockRoles.map(r => r.permissions.length).reduce((a, b) => a + b, 0)}</div>
+          <div className="text-sm text-muted-foreground">
+            Permisos Disponibles
+          </div>
+          <div className="text-2xl font-bold">
+            {mockRoles
+              .map((r) => r.permissions.length)
+              .reduce((a, b) => a + b, 0)}
+          </div>
         </Card>
       </div>
       <RolesTable />
     </div>
-  )
-} 
+  );
+};

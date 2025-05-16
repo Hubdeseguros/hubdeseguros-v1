@@ -1,10 +1,10 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from "react";
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 
 export interface SidebarState {
-  state: 'expanded' | 'collapsed';
+  state: "expanded" | "collapsed";
   open: boolean;
   setOpen: (open: boolean) => void;
   openMobile: boolean;
@@ -24,10 +24,12 @@ export function useSidebarState(defaultOpen = false): SidebarState {
 
   // Actualizar el estado inicial desde la cookie
   useEffect(() => {
-    const cookie = document.cookie.split('; ').find(row => row.startsWith(SIDEBAR_COOKIE_NAME));
+    const cookie = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith(SIDEBAR_COOKIE_NAME));
     if (cookie) {
-      const value = cookie.split('=')[1];
-      const openState = value === 'true';
+      const value = cookie.split("=")[1];
+      const openState = value === "true";
       if (openState !== open) {
         setOpen(openState);
       }
@@ -40,7 +42,7 @@ export function useSidebarState(defaultOpen = false): SidebarState {
   }, [open]);
 
   return {
-    state: open ? 'expanded' : 'collapsed',
+    state: open ? "expanded" : "collapsed",
     open,
     setOpen,
     openMobile,
@@ -59,8 +61,8 @@ function useIsMobile() {
 
   useEffect(() => {
     checkIsMobile();
-    window.addEventListener('resize', checkIsMobile);
-    return () => window.removeEventListener('resize', checkIsMobile);
+    window.addEventListener("resize", checkIsMobile);
+    return () => window.removeEventListener("resize", checkIsMobile);
   }, []);
 
   return isMobile;
