@@ -157,7 +157,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     setUser(null);
     localStorage.removeItem('hubseguros_user');
-    navigate('/login');
+    navigate('/landing');
     toast({
       title: "Sesión finalizada",
       description: "Has cerrado sesión correctamente",

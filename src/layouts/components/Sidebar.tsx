@@ -147,10 +147,14 @@ const Sidebar = () => {
 
   // Manejar clic en un item del menú
   const handleItemClick = (path: string, key: string, target?: string) => {
+    setActiveKey(key);
     if (target === '_blank') {
       window.open(path, '_blank');
     } else {
       navigate(path);
+    }
+    if (window.innerWidth < 1024) {
+      toggleSidebar();
     }
   };
 
