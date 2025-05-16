@@ -1,10 +1,11 @@
+
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
-import { useUser } from "@/hooks/useUser"; // Hook de usuario autenticado
+import { useAuth } from "@/hooks/useAuth"; // Corregido: usar useAuth en vez de useUser
 
 export function usePaymentNotifications() {
-  const { user } = useUser();
+  const { user } = useAuth(); // Extraemos el user de useAuth, consistente con el resto del sistema
 
   useEffect(() => {
     if (!user) return;
@@ -35,4 +36,4 @@ export function usePaymentNotifications() {
       supabase.removeChannel(channel);
     };
   }, [user]);
-} 
+}
