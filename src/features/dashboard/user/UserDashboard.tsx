@@ -34,10 +34,10 @@ const stats = [
 
 // Tareas pendientes de ejemplo
 const pendingTasks = [
-  { id: '1', title: 'Renovación de póliza de auto', priority: 'alta' as 'alta', dueDate: '18/05/2023', completed: false },
-  { id: '2', title: 'Completar información personal', priority: 'media' as 'media', dueDate: '22/05/2023', completed: false },
-  { id: '3', title: 'Subir documentos de identidad', priority: 'baja' as 'baja', dueDate: '25/05/2023', completed: true },
-  { id: '4', title: 'Confirmar cobertura adicional', priority: 'media' as 'media', dueDate: '01/06/2023', completed: false }
+  { id: '1', title: 'Renovación de póliza de auto', priority: 'alta' as const, dueDate: '18/05/2023', completed: false },
+  { id: '2', title: 'Completar información personal', priority: 'media' as const, dueDate: '22/05/2023', completed: false },
+  { id: '3', title: 'Subir documentos de identidad', priority: 'baja' as const, dueDate: '25/05/2023', completed: true },
+  { id: '4', title: 'Confirmar cobertura adicional', priority: 'media' as const, dueDate: '01/06/2023', completed: false }
 ];
 
 const UserDashboard = () => {

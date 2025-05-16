@@ -100,28 +100,28 @@ const pendingTasks = [
   { 
     id: "1", 
     title: "Revisar usuarios inactivos", 
-    priority: 'alta' as 'alta', 
+    priority: 'alta' as const, 
     dueDate: "Hoy", 
     completed: false 
   },
   { 
     id: "2", 
     title: "Aprobar solicitudes de agentes", 
-    priority: 'media' as 'media', 
+    priority: 'media' as const, 
     dueDate: "Mañana", 
     completed: false 
   },
   { 
     id: "3", 
     title: "Actualizar permisos de sistema", 
-    priority: 'baja' as 'baja', 
+    priority: 'baja' as const, 
     dueDate: "25/05/2023", 
     completed: true 
   },
   { 
     id: "4", 
     title: "Revisar logs de errores", 
-    priority: 'alta' as 'alta', 
+    priority: 'alta' as const, 
     dueDate: "25/05/2023", 
     completed: false 
   }

@@ -2,7 +2,19 @@ import { supabase } from '@/integrations/supabase/client';
 import type { Client, ClientFormData } from '../types';
 
 // Map database row to typed Client
-function mapDbToClient(row: any): Client {
+function mapDbToClient(row: {
+  id: string;
+  nombre: string;
+  apellido: string;
+  email?: string;
+  telefono?: string;
+  numero_documento?: string;
+  tipo_documento?: string;
+  direccion?: string;
+  created_at?: string;
+  updated_at?: string;
+  estado?: boolean;
+}): Client {
   return {
     id: row.id,
     first_name: row.nombre,

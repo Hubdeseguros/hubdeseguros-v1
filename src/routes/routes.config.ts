@@ -474,4 +474,3 @@ export const getRoutesByRole = (role: UserRole): RouteConfig => {
   }
 };
 
-const { unreadCount } = useNotifications();

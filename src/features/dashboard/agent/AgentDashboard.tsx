@@ -41,10 +41,10 @@ const stats = [
 
 // Tareas pendientes de ejemplo
 const pendingTasks = [
-  { id: '1', title: 'Llamar a Juan Pérez', priority: 'alta' as 'alta', dueDate: 'Hoy', completed: false },
-  { id: '2', title: 'Renovar póliza #12345', priority: 'alta' as 'alta', dueDate: 'Mañana', completed: false },
-  { id: '3', title: 'Enviar cotización a María', priority: 'media' as 'media', dueDate: '25/05/2023', completed: true },
-  { id: '4', title: 'Seguimiento de siniestro', priority: 'media' as 'media', dueDate: '25/05/2023', completed: false }
+  { id: '1', title: 'Llamar a Juan Pérez', priority: 'alta' as const, dueDate: 'Hoy', completed: false },
+  { id: '2', title: 'Renovar póliza #12345', priority: 'alta' as const, dueDate: 'Mañana', completed: false },
+  { id: '3', title: 'Enviar cotización a María', priority: 'media' as const, dueDate: '25/05/2023', completed: true },
+  { id: '4', title: 'Seguimiento de siniestro', priority: 'media' as const, dueDate: '25/05/2023', completed: false }
 ];
 
 const AgentDashboard = () => {
