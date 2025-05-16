@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -36,10 +37,14 @@ export function ClientsPage() {
     });
   };
 
+  // Matching the expected types in ClientsTable props:
   const handleSelectClient = (id: string) => {};
   const handleSelectAllClients = (selected: boolean) => {};
-  const handleEditClient = (id: string) => {};
-  const handleDeleteClient = (id: string) => {};
+
+  // >>>> FIX: Change to accept `client: Client` (not id)
+  const handleEditClient = (client: Client) => {};
+  const handleDeleteClient = (clientId: string) => {};
+
   const handlePageSizeChange = (newSize: number) => {};
 
   return (
