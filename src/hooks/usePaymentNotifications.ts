@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
@@ -27,7 +26,7 @@ export function usePaymentNotifications() {
             description: notif.content,
             variant: "default",
           });
-        }
+        },
       )
       .subscribe();
 

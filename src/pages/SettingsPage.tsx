@@ -1,14 +1,28 @@
-import { useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { Switch } from '@/components/ui/switch';
-import { useToast } from '@/components/ui/use-toast';
-import { Loader2, Bell, Lock, Shield, UserCog, CreditCard, Globe } from 'lucide-react';
+import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  Loader2,
+  Bell,
+  Lock,
+  Shield,
+  UserCog,
+  CreditCard,
+  Globe,
+} from "lucide-react";
 
 type SettingsSection = {
   id: string;
@@ -29,8 +43,11 @@ export default function SettingsPage() {
     weeklyReport: false,
   });
 
-  const handleNotificationChange = (key: keyof typeof notifications, value: boolean) => {
-    setNotifications(prev => ({
+  const handleNotificationChange = (
+    key: keyof typeof notifications,
+    value: boolean,
+  ) => {
+    setNotifications((prev) => ({
       ...prev,
       [key]: value,
     }));
@@ -40,16 +57,18 @@ export default function SettingsPage() {
     try {
       setIsLoading(true);
       // Here you would typically make an API call to save the notification preferences
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       toast({
-        title: 'Preferencias guardadas',
-        description: 'Tus preferencias de notificación se han actualizado correctamente.',
+        title: "Preferencias guardadas",
+        description:
+          "Tus preferencias de notificación se han actualizado correctamente.",
       });
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'No se pudieron guardar las preferencias. Por favor, inténtalo de nuevo.',
-        variant: 'destructive',
+        title: "Error",
+        description:
+          "No se pudieron guardar las preferencias. Por favor, inténtalo de nuevo.",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -58,19 +77,23 @@ export default function SettingsPage() {
 
   const settingsSections: SettingsSection[] = [
     {
-      id: 'notifications',
-      title: 'Notificaciones',
-      description: 'Configura cómo y cuándo recibir notificaciones',
+      id: "notifications",
+      title: "Notificaciones",
+      description: "Configura cómo y cuándo recibir notificaciones",
       icon: <Bell className="h-5 w-5" />,
-      roles: ['ADMIN', 'AGENTE', 'CLIENTE'],
+      roles: ["ADMIN", "AGENTE", "CLIENTE"],
       component: (
         <div className="space-y-6">
           <div className="space-y-4">
-            <h3 className="text-lg font-medium">Preferencias de notificación</h3>
+            <h3 className="text-lg font-medium">
+              Preferencias de notificación
+            </h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between space-x-2">
                 <div>
-                  <Label htmlFor="email-notifications">Notificaciones por correo</Label>
+                  <Label htmlFor="email-notifications">
+                    Notificaciones por correo
+                  </Label>
                   <p className="text-sm text-muted-foreground">
                     Recibir notificaciones importantes por correo electrónico
                   </p>
@@ -78,13 +101,17 @@ export default function SettingsPage() {
                 <Switch
                   id="email-notifications"
                   checked={notifications.email}
-                  onCheckedChange={(checked) => handleNotificationChange('email', checked)}
+                  onCheckedChange={(checked) =>
+                    handleNotificationChange("email", checked)
+                  }
                 />
               </div>
               <Separator />
               <div className="flex items-center justify-between space-x-2">
                 <div>
-                  <Label htmlFor="push-notifications">Notificaciones push</Label>
+                  <Label htmlFor="push-notifications">
+                    Notificaciones push
+                  </Label>
                   <p className="text-sm text-muted-foreground">
                     Recibir notificaciones en el navegador
                   </p>
@@ -92,7 +119,9 @@ export default function SettingsPage() {
                 <Switch
                   id="push-notifications"
                   checked={notifications.push}
-                  onCheckedChange={(checked) => handleNotificationChange('push', checked)}
+                  onCheckedChange={(checked) =>
+                    handleNotificationChange("push", checked)
+                  }
                 />
               </div>
               <Separator />
@@ -107,7 +136,7 @@ export default function SettingsPage() {
                   id="weekly-report"
                   checked={notifications.weeklyReport}
                   onCheckedChange={(checked) =>
-                    handleNotificationChange('weeklyReport', checked)
+                    handleNotificationChange("weeklyReport", checked)
                   }
                 />
               </div>
@@ -123,11 +152,11 @@ export default function SettingsPage() {
       ),
     },
     {
-      id: 'security',
-      title: 'Seguridad',
-      description: 'Administra tu contraseña y seguridad de la cuenta',
+      id: "security",
+      title: "Seguridad",
+      description: "Administra tu contraseña y seguridad de la cuenta",
       icon: <Lock className="h-5 w-5" />,
-      roles: ['ADMIN', 'AGENTE', 'CLIENTE'],
+      roles: ["ADMIN", "AGENTE", "CLIENTE"],
       component: (
         <div className="space-y-6">
           <div className="space-y-4">
@@ -135,15 +164,25 @@ export default function SettingsPage() {
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="current-password">Contraseña actual</Label>
-                <Input id="current-password" type="password" className="max-w-sm" />
+                <Input
+                  id="current-password"
+                  type="password"
+                  className="max-w-sm"
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="new-password">Nueva contraseña</Label>
                 <Input id="new-password" type="password" className="max-w-sm" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirm-password">Confirmar nueva contraseña</Label>
-                <Input id="confirm-password" type="password" className="max-w-sm" />
+                <Label htmlFor="confirm-password">
+                  Confirmar nueva contraseña
+                </Label>
+                <Input
+                  id="confirm-password"
+                  type="password"
+                  className="max-w-sm"
+                />
               </div>
             </div>
           </div>
@@ -156,14 +195,14 @@ export default function SettingsPage() {
         </div>
       ),
     },
-    ...(user?.role === 'ADMIN' || user?.role === 'AGENTE'
+    ...(user?.role === "ADMIN" || user?.role === "AGENTE"
       ? [
           {
-            id: 'appearance',
-            title: 'Apariencia',
-            description: 'Personaliza la apariencia de la aplicación',
+            id: "appearance",
+            title: "Apariencia",
+            description: "Personaliza la apariencia de la aplicación",
             icon: <Globe className="h-5 w-5" />,
-            roles: ['ADMIN', 'AGENTE'],
+            roles: ["ADMIN", "AGENTE"],
             component: (
               <div className="space-y-6">
                 <div className="space-y-4">
@@ -191,20 +230,23 @@ export default function SettingsPage() {
           },
         ]
       : []),
-    ...(user?.role === 'ADMIN'
+    ...(user?.role === "ADMIN"
       ? [
           {
-            id: 'admin',
-            title: 'Administración',
-            description: 'Configuraciones avanzadas del sistema',
+            id: "admin",
+            title: "Administración",
+            description: "Configuraciones avanzadas del sistema",
             icon: <Shield className="h-5 w-5" />,
-            roles: ['ADMIN'],
+            roles: ["ADMIN"],
             component: (
               <div className="space-y-6">
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Configuración del sistema</h3>
+                  <h3 className="text-lg font-medium">
+                    Configuración del sistema
+                  </h3>
                   <p className="text-sm text-muted-foreground">
-                    Configuraciones avanzadas del sistema. Ten cuidado con los cambios que realices.
+                    Configuraciones avanzadas del sistema. Ten cuidado con los
+                    cambios que realices.
                   </p>
                 </div>
                 <div className="space-y-4">
@@ -212,7 +254,8 @@ export default function SettingsPage() {
                     <div>
                       <Label htmlFor="maintenance">Modo mantenimiento</Label>
                       <p className="text-sm text-muted-foreground">
-                        El modo mantenimiento deshabilita el acceso al público general
+                        El modo mantenimiento deshabilita el acceso al público
+                        general
                       </p>
                     </div>
                     <Switch id="maintenance" />
@@ -237,7 +280,7 @@ export default function SettingsPage() {
 
   // Filter sections based on user role
   const filteredSections = settingsSections.filter((section) =>
-    section.roles.includes(user?.role || 'CLIENTE')
+    section.roles.includes(user?.role || "CLIENTE"),
   );
 
   return (
@@ -253,7 +296,11 @@ export default function SettingsPage() {
         <div className="space-between flex flex-col md:flex-row">
           <TabsList className="grid w-full md:grid-cols-2 lg:w-1/3">
             {filteredSections.map((section) => (
-              <TabsTrigger key={section.id} value={section.id} className="justify-start">
+              <TabsTrigger
+                key={section.id}
+                value={section.id}
+                className="justify-start"
+              >
                 <span className="mr-2">{section.icon}</span>
                 {section.title}
               </TabsTrigger>
@@ -261,7 +308,11 @@ export default function SettingsPage() {
           </TabsList>
         </div>
         {filteredSections.map((section) => (
-          <TabsContent key={section.id} value={section.id} className="space-y-4">
+          <TabsContent
+            key={section.id}
+            value={section.id}
+            className="space-y-4"
+          >
             <Card>
               <CardHeader>
                 <CardTitle>{section.title}</CardTitle>
