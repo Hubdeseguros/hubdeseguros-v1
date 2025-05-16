@@ -7,6 +7,9 @@ import GlobalEffects from "@/components/GlobalEffects";
 import { MainLayout } from "./layouts/MainLayout";
 import { Toaster } from "@/components/ui/toaster";
 
+// Importar estilos para ocultar la opción de listado de clientes
+import "./styles/hideClientList.css";
+
 const queryClient = new QueryClient();
 
 const App = () => {
