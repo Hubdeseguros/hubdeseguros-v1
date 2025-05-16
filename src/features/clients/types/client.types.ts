@@ -83,6 +83,7 @@ export interface ClientFormData {
   mobile: string;
   address: Omit<ClientAddress, 'id'>;
   isBusiness: boolean;
+  status?: ClientStatusValue;
 }
 
 export interface DateRange {

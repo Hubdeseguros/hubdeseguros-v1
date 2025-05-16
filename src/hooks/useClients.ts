@@ -12,7 +12,7 @@ export const useClients = () => {
     setError(null);
     try {
       const clients = await clientService.getAll();
-      setData(clients);
+      setData(clients.data || []);
     } catch (err) {
       setError(err as Error);
     } finally {
@@ -24,8 +24,10 @@ export const useClients = () => {
     setLoading(true);
     setError(null);
     try {
-      await clientService.create(client);
-      await fetchClients();
+      const result = await clientService.create(client);
+      if (result) {
+        await fetchClients();
+      }
     } catch (err) {
       setError(err as Error);
     } finally {

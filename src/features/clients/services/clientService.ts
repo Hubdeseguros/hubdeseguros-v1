@@ -41,7 +41,7 @@ function mapDbToClient(row: any): Client {
     },
     contacts: row.contacts ? JSON.parse(row.contacts) : [],
     documents: row.documents ? JSON.parse(row.documents) : [],
-    status: row.status ? JSON.parse(row.status) : { id: '1', name: 'Activo', color: '#10B981' },
+    status: row.status ? JSON.parse(row.status) : { id: '1', name: 'Activo', color: '#10B981', value: 'ACTIVE' },
     categories: row.categories ? JSON.parse(row.categories) : [],
     policies: row.policies ? JSON.parse(row.policies) : [],
     notes: row.notes,
