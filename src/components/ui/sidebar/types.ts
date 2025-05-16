@@ -1,9 +1,6 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react';
 
-export type MenuIcon = React.ComponentType<{
-  size?: string | number;
-  className?: string;
-}>;
+export type MenuIcon = React.ComponentType<{ size?: string | number; className?: string }>;
 
 export interface MenuItem {
   key: string;
@@ -27,7 +24,7 @@ export interface SidebarProps {
 }
 
 export interface SidebarContext {
-  state: "expanded" | "collapsed";
+  state: 'expanded' | 'collapsed';
   open: boolean;
   setOpen: (open: boolean) => void;
   openMobile: boolean;

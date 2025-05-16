@@ -1,14 +1,14 @@
-import React from "react";
-import { usePayments } from "@/hooks/usePayments";
-import PaymentList from "@/components/payments/PaymentList";
-import PaymentForm from "@/components/payments/PaymentForm";
-import PaymentDetails from "@/components/payments/PaymentDetails";
+import React from 'react';
+import { usePayments } from '@/hooks/usePayments';
+import PaymentList from '@/components/payments/PaymentList';
+import PaymentForm from '@/components/payments/PaymentForm';
+import PaymentDetails from '@/components/payments/PaymentDetails';
 
 export default function PaymentsPage() {
   const { data: payments, loading, error, createPayment } = usePayments();
   const [selected, setSelected] = React.useState<string | null>(null);
 
-  const selectedPayment = payments.find((p) => p.id === selected);
+  const selectedPayment = payments.find(p => p.id === selected);
 
   return (
     <div className="container mx-auto p-4">
@@ -16,10 +16,7 @@ export default function PaymentsPage() {
       {error && <div className="text-red-500">{error.message}</div>}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
-          <PaymentList
-            payments={payments}
-            onSelect={(p) => setSelected(p.id)}
-          />
+          <PaymentList payments={payments} onSelect={p => setSelected(p.id)} />
         </div>
         <div>
           <h2 className="font-semibold mb-2">Nuevo Pago</h2>
@@ -34,4 +31,4 @@ export default function PaymentsPage() {
       </div>
     </div>
   );
-}
+} 

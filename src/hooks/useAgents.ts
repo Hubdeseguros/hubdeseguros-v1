@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { Agent, AgentFormData } from "@/features/agents/types";
-import { agentService } from "@/features/agents/services/agentService";
+import { useState, useEffect } from 'react';
+import { Agent, AgentFormData } from '@/features/agents/types';
+import { agentService } from '@/features/agents/services/agentService';
 
 export const useAgents = () => {
   const [data, setData] = useState<Agent[]>([]);
@@ -44,4 +44,4 @@ export const useAgents = () => {
     fetchAgents,
     createAgent,
   };
-};
+}; 

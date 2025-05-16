@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useCallback } from "react";
 import * as notifService from "@/lib/notifications";
 import { useAuth } from "@/hooks/useAuth";
@@ -26,18 +27,17 @@ export function useNotifications() {
       setNotifications(
         (rawData ?? []).map((n) => ({
           id: n.id,
-          title:
-            n.type === "SMS"
-              ? "Notificación SMS"
-              : n.type === "EMAIL"
-                ? "Notificación Email"
-                : n.type === "PUSH"
-                  ? "Push"
-                  : "Webhook",
+          title: n.type === "SMS"
+            ? "Notificación SMS"
+            : n.type === "EMAIL"
+            ? "Notificación Email"
+            : n.type === "PUSH"
+            ? "Push"
+            : "Webhook",
           description: n.content || "",
           date: n.created_at || "",
           read: n.status !== "PENDING",
-        })),
+        }))
       );
     } finally {
       setLoading(false);

@@ -1,12 +1,12 @@
-import React from "react";
-import { Card } from "@/components/ui/card";
-import { ApiKeysTable } from "./ApiKeysTable";
-import { mockApiKeys } from "./mockApiKeys";
+import React from "react"
+import { Card } from "@/components/ui/card"
+import { ApiKeysTable } from "./ApiKeysTable"
+import { mockApiKeys } from "./mockApiKeys"
 
 export const ApiKeysDashboard: React.FC = () => {
-  const total = mockApiKeys.length;
-  const activos = mockApiKeys.filter((k) => k.status === "Activo").length;
-  const inactivos = mockApiKeys.filter((k) => k.status === "Inactivo").length;
+  const total = mockApiKeys.length
+  const activos = mockApiKeys.filter((k) => k.status === "Activo").length
+  const inactivos = mockApiKeys.filter((k) => k.status === "Inactivo").length
 
   return (
     <div className="space-y-6">
@@ -26,5 +26,5 @@ export const ApiKeysDashboard: React.FC = () => {
       </div>
       <ApiKeysTable />
     </div>
-  );
-};
+  )
+} 
