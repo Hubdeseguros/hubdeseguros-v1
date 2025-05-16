@@ -138,7 +138,6 @@ const AppRoutes = () => {
           <Route path="dashboard" element={<AgentDashboard />} />
           <Route path="clientes">
             <Route index element={<ClientsPage />} />
-            <Route path="listado" element={<ClientsPage />} />
             <Route path="nuevo" element={<NewClientPage />} />
             <Route path=":clientId" element={<ClientDetailPage />} />
             <Route path="editar/:clientId" element={<EditClientPage />} />
@@ -341,7 +340,6 @@ const AppRoutes = () => {
           <Route path="dashboard" element={<AgencyDashboard />} />
           <Route path="clientes">
             <Route index element={<ClientsPage />} />
-            <Route path="listado" element={<ClientsPage />} />
             <Route path="nuevo" element={<NewClientPage />} />
             <Route path=":clientId" element={<ClientDetailPage />} />
             <Route path="editar/:clientId" element={<EditClientPage />} />
@@ -531,7 +529,6 @@ const AppRoutes = () => {
           <Route path="vista-general" element={<AdminDashboard />} />
           <Route path="clientes">
             <Route index element={<ClientsPage />} />
-            <Route path="listado" element={<ClientsPage />} />
             <Route path="nuevo" element={<NewClientPage />} />
             <Route path=":clientId" element={<ClientDetailPage />} />
             <Route path="editar/:clientId" element={<EditClientPage />} />
