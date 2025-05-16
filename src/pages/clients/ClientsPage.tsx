@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -18,6 +19,30 @@ export function ClientsPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [filters, setFilters] = useState<Partial<ClientFilters>>({});
+
+  // Add missing handler functions
+  const handleDeleteSelected = () => {
+    toast({
+      title: "Eliminar seleccionados",
+      description: "Funcionalidad para eliminar los clientes seleccionados no implementada aún.",
+      variant: "destructive"
+    });
+  };
+
+  const handleExportSelected = () => {
+    toast({
+      title: "Exportar seleccionados",
+      description: "Funcionalidad para exportar los clientes seleccionados no implementada aún.",
+      variant: "default"
+    });
+  };
+
+  // The following handlers may also be missing, add placeholders to avoid future errors
+  const handleSelectClient = (id: string) => {};
+  const handleSelectAllClients = (selected: boolean) => {};
+  const handleEditClient = (id: string) => {};
+  const handleDeleteClient = (id: string) => {};
+  const handlePageSizeChange = (newSize: number) => {};
 
   // Resto del código...
   
@@ -59,3 +84,4 @@ export function ClientsPage() {
 }
 
 export default ClientsPage;
+
