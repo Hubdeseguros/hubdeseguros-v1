@@ -1,8 +1,7 @@
 import { ReactNode, useState, useRef, useEffect, useCallback } from 'react';
-import { Sidebar } from '@/components/ui/sidebar';
-import { SidebarProvider } from '@/components/ui/sidebar/useSidebar';
-import { menuSections } from './components/SidebarMenu';
+import Sidebar from './components/Sidebar';
 import Header from './components/Header';
+import { SidebarProvider } from '@/components/ui/sidebar';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -34,7 +33,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
           transition duration-300 ease-in-out
           ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}>
-          <Sidebar menuSections={menuSections} onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)} />
+          <Sidebar onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)} />
         </div>
 
         {/* Overlay para cerrar el sidebar en móvil */}
