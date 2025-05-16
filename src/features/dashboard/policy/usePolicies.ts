@@ -9,15 +9,7 @@ export type Policy = {
   status: "Activa" | "Vencida";
 };
 
-interface PolicyRow {
-  id: string;
-  numero_poliza: string;
-  cliente_id: string;
-  producto_id?: string;
-  estado: string;
-}
-
-function mapPolicyRow(row: PolicyRow): Policy {
+function mapPolicyRow(row: any): Policy {
   return {
     id: row.id,
     number: row.numero_poliza,
