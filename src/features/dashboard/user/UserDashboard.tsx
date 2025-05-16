@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import DashboardCard from '@/components/dashboard/DashboardCard';
 import TaskList from '@/components/dashboard/TaskList';
 import { Shield, AlertCircle, CreditCard } from 'lucide-react';
-import { addNotification, notifyPagoRealizado } from "@/lib/notifications";
 import { toast } from "@/components/ui/use-toast";
 
 // Datos de ejemplo para el dashboard
@@ -42,10 +41,8 @@ const pendingTasks = [
 ];
 
 const UserDashboard = () => {
-  async function handlePagoRealizado() {
-    await notifyPagoRealizado(user.id);
-    toast({ title: "Pago realizado", description: "Tu pago fue registrado exitosamente.", variant: "success" });
-  }
+  // Eliminar handler de pago falso que usaba user no definido
+  // async function handlePagoRealizado() {...}
 
   return (
     <div className="space-y-6">
@@ -54,7 +51,6 @@ const UserDashboard = () => {
         <p className="text-muted-foreground">Bienvenido a tu panel de control personalizado</p>
       </div>
       
-      {/* Estadísticas principales */}
       <div className="grid gap-6 md:grid-cols-3">
         {stats.map((stat, index) => (
           <Link key={index} to={stat.linkTo}>
@@ -68,7 +64,6 @@ const UserDashboard = () => {
           </Link>
         ))}
       </div>
-
       {/* Sección de pólizas */}
       <div>
         <h2 className="text-xl font-semibold mb-4">Mis Pólizas</h2>
@@ -118,7 +113,6 @@ const UserDashboard = () => {
           </Link>
         </div>
       </div>
-      
       {/* Tareas pendientes */}
       <div>
         <h2 className="text-xl font-semibold mb-4">Tareas Pendientes</h2>
