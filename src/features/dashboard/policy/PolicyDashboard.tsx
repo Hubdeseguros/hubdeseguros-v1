@@ -1,7 +1,7 @@
-import React from "react";
-import { Card } from "@/components/ui/card";
-import { PolicyTable } from "./PolicyTable";
-import { useNavigate } from "react-router-dom";
+import React from "react"
+import { Card } from "@/components/ui/card"
+import { PolicyTable } from "./PolicyTable"
+import { useNavigate } from "react-router-dom"
 
 export const PolicyDashboard: React.FC = () => {
   // Usa valores ficticios por ahora, o bien calcula con los datos reales si están disponibles
@@ -37,5 +37,5 @@ export const PolicyDashboard: React.FC = () => {
       </div>
       <PolicyTable />
     </div>
-  );
-};
+  )
+}

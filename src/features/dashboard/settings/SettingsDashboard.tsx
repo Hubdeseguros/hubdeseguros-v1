@@ -1,16 +1,16 @@
-import React, { useState } from "react";
-import { Card } from "@/components/ui/card";
-import { SettingsForm } from "./SettingsForm";
-import { mockSettings, GlobalSettings } from "./mockSettings";
-import { toast } from "@/components/ui/use-toast";
+import React, { useState } from "react"
+import { Card } from "@/components/ui/card"
+import { SettingsForm } from "./SettingsForm"
+import { mockSettings, GlobalSettings } from "./mockSettings"
+import { toast } from "@/components/ui/use-toast"
 
 export const SettingsDashboard: React.FC = () => {
-  const [settings, setSettings] = useState<GlobalSettings>(mockSettings);
+  const [settings, setSettings] = useState<GlobalSettings>(mockSettings)
 
   const handleSave = (data: GlobalSettings) => {
-    setSettings(data);
-    toast({ title: "Configuración actualizada correctamente" });
-  };
+    setSettings(data)
+    toast({ title: "Configuración actualizada correctamente" })
+  }
 
   return (
     <div className="space-y-6">
@@ -34,5 +34,5 @@ export const SettingsDashboard: React.FC = () => {
       </div>
       <SettingsForm initialData={settings} onSubmit={handleSave} />
     </div>
-  );
-};
+  )
+} 

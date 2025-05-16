@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 
 export type Notification = {
@@ -14,9 +15,7 @@ export type Notification = {
   transaction_id: string | null;
 };
 
-export async function getNotifications(
-  recipient: string,
-): Promise<Notification[]> {
+export async function getNotifications(recipient: string): Promise<Notification[]> {
   const { data, error } = await supabase
     .from("payment_notifications")
     .select("*")
