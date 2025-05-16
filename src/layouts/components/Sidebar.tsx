@@ -102,7 +102,10 @@ const Sidebar = () => {
     if (target === '_blank') {
       window.open(path, '_blank');
     } else {
-      setActiveKey(key);
+      // Solo actualizamos el activeKey si es diferente al actual
+      if (activeKey !== key) {
+        setActiveKey(key);
+      }
       navigate(path);
     }
   };
@@ -197,7 +200,13 @@ const Sidebar = () => {
                 key: 'listado-pagos',
                 label: 'Listado de pagos',
                 icon: DollarSign,
-                path: `/${roleRoute}/cobros/pagos`
+                path: `/${roleRoute}/cobros/listado`
+              },
+              {
+                key: 'pagos-pendientes',
+                label: 'Pagos Pendientes',
+                icon: DollarSign,
+                path: `/${roleRoute}/cobros/pendientes`
               },
               {
                 key: 'recibos',
@@ -251,6 +260,64 @@ const Sidebar = () => {
             label: 'Diligencias',
             icon: Mail,
             path: `/${roleRoute}/diligencias`
+          }
+        ]
+      },
+      {
+        title: "ADMINISTRACIÓN",
+        items: [
+          {
+            key: 'productos',
+            label: 'Productos',
+            icon: Box,
+            path: `/${roleRoute}/productos`
+          },
+          {
+            key: 'sucursales',
+            label: 'Sucursales',
+            icon: MapPin,
+            path: `/${roleRoute}/sucursales`
+          },
+          {
+            key: 'usuarios',
+            label: 'Usuarios',
+            icon: Users,
+            path: `/${roleRoute}/usuarios`
+          },
+          {
+            key: 'roles',
+            label: 'Roles',
+            icon: Shield,
+            path: `/${roleRoute}/roles`
+          },
+          {
+            key: 'permisos',
+            label: 'Permisos',
+            icon: Grid,
+            path: `/${roleRoute}/permisos`
+          }
+        ]
+      },
+      {
+        title: "REPORTES",
+        items: [
+          {
+            key: 'reportes-venta',
+            label: 'Reportes de Venta',
+            icon: BarChart2,
+            path: `/${roleRoute}/reportes/venta`
+          },
+          {
+            key: 'reportes-cobranza',
+            label: 'Reportes de Cobranza',
+            icon: DollarSign,
+            path: `/${roleRoute}/reportes/cobranza`
+          },
+          {
+            key: 'reportes-cliente',
+            label: 'Reportes de Cliente',
+            icon: FileUser,
+            path: `/${roleRoute}/reportes/cliente`
           }
         ]
       }
@@ -583,61 +650,6 @@ const Sidebar = () => {
                                 activeKey === item.key ? 'bg-[#2a3c5a] font-medium text-blue-400' : ''
                               }`}
                               style={{ minWidth: collapsed ? 48 : 0 }}
-                              tabIndex={0}
-                              onKeyDown={e => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                  if (item.subMenu) {
-                                    toggleSubMenu(item.key);
-                                  } else {
-                                    handleItemClick(item.path, item.key, item.target);
-                                  }
-                                }
-                              }}
-                              onClick={() => {
-                                if (item.subMenu) {
-                                  toggleSubMenu(item.key);
-                                } else {
-                                  handleItemClick(item.path, item.key, item.target);
-                                }
-                              }}
-                              aria-current={activeKey === item.key ? "page" : undefined}
-                              aria-label={item.label}
-                              role="menuitem"
-                            >
-                              <div className="mr-2 min-w-[24px] flex justify-center items-center">
-                                <item.icon size={18} />
-                              </div>
-                              {!collapsed && (
-                                <span className="ml-1">{item.label}</span>
-                              )}
-                              {!collapsed && item.subMenu && (
-                                <div className="ml-auto">
-                                  <ChevronRight size={16} className={`transition-transform duration-150 ${item.isOpen ? 'rotate-90' : ''}`} />
-                                </div>
-                              )}
-                            </div>
-                          </TooltipTrigger>
-                          {collapsed && (
-                            <TooltipContent side="right">
-                              <p>{item.label}</p>
-                            </TooltipContent>
-                          )}
-                        </Tooltip>
-                      </TooltipProvider>
-                      
-                      {/* Submenú */}
-                      {!collapsed && item.subMenu && item.isOpen && (
-                        <ul className="ml-6 mt-1 border-l border-[#2a3c5a] pl-2">
-                          {item.subMenu.map((subItem) => (
-                            <li key={subItem.key}>
-                              <div 
-                                className={`flex items-center px-4 py-1.5 text-sm text-gray-300 hover:bg-[#2a3c5a] rounded-md transition-colors duration-150 cursor-pointer min-h-[36px] select-none ${
-                                  activeKey === subItem.key ? 'bg-[#2a3c5a] font-medium text-blue-400' : ''
-                                }`}
-                                tabIndex={0}
-                                style={{ minWidth: 0 }}
-                                onKeyDown={e => {
-                                  if (e.key === 'Enter' || e.key === ' ') {
                                     handleItemClick(subItem.path, subItem.key, subItem.target);
                                   }
                                 }}

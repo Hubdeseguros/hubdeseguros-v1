@@ -1,5 +1,5 @@
 
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState, useRef, useEffect, useCallback } from 'react';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 
@@ -8,9 +8,22 @@ interface MainLayoutProps {
 }
 
 export const MainLayout = ({ children }: MainLayoutProps) => {
-  // Estado para manejar el overlay en dispositivos móviles
+  // Usar un ref para el estado del overlay para evitar re-renders innecesarios
+  const mobileMenuOpenRef = useRef(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
+  // Actualizar el ref cuando cambie el estado
+  useEffect(() => {
+    mobileMenuOpenRef.current = mobileMenuOpen;
+  }, [mobileMenuOpen]);
+
+  // Función memoizada para manejar el clic en el overlay
+  const handleOverlayClick = useCallback(() => {
+    if (mobileMenuOpenRef.current) {
+      setMobileMenuOpen(false);
+    }
+  }, []);
+
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Sidebar (en versión desktop y overlay en mobile) */}
@@ -26,7 +39,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
       {mobileMenuOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={() => setMobileMenuOpen(false)}
+          onClick={handleOverlayClick}
         />
       )}
       
