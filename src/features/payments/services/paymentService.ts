@@ -3,7 +3,18 @@ import { supabase } from '@/integrations/supabase/client';
 import { Payment, PaymentFormData } from '../types';
 
 // Helper conversion for payment status and method
-function mapPagoRow(row: any): Payment {
+interface PaymentRow {
+  id: string;
+  poliza_id: string;
+  monto: string | number;
+  fecha_pago: string;
+  metodo_pago?: string;
+  estado: string;
+  created_at: string;
+  updated_at: string;
+}
+
+function mapPagoRow(row: PaymentRow): Payment {
   return {
     id: row.id,
     policy_id: row.poliza_id,
