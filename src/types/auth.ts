@@ -10,6 +10,12 @@ export interface User {
   role: UserRole;
   level?: UserLevel;
   avatar?: string;
+  phone?: string;
+  company?: string;
+  position?: string;
+  address?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface AuthState {

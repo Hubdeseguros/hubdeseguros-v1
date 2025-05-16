@@ -10,6 +10,8 @@ const Login = lazy(() => import('../pages/Login'));
 const Register = lazy(() => import('../pages/Register'));
 const NotFound = lazy(() => import('../pages/NotFound'));
 const Landing = lazy(() => import('../pages/Landing'));
+const ProfilePage = lazy(() => import('../pages/ProfilePage'));
+const SettingsPage = lazy(() => import('../pages/SettingsPage'));
 
 // Dashboards específicos por rol
 const UserDashboard = lazy(() => import('../features/dashboard/user/UserDashboard'));
@@ -69,6 +71,8 @@ const AppRoutes = () => {
           <Route path="documentos" element={<Placeholder title="Documentos" />} />
           <Route path="cotizaciones" element={<Placeholder title="Cotizaciones" />} />
           <Route path="notificaciones" element={<NotificationsPage />} />
+          <Route path="perfil" element={<ProfilePage />} />
+          <Route path="configuracion" element={<SettingsPage />} />
           <Route path="contacto-soporte" element={<Placeholder title="Contacto con Soporte" />} />
         </Route>
 
