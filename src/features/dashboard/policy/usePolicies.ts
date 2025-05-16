@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -20,12 +19,17 @@ function mapPolicyRow(row: any): Policy {
   };
 }
 
+// Map UI status value to DB enum literal
+function statusUiToDb(status: "Activa" | "Vencida"): "VIGENTE" | "VENCIDA" {
+  return status === "Activa" ? "VIGENTE" : "VENCIDA";
+}
+
 function policyToDb(policy: Omit<Policy, "id"> & { fecha_inicio?: string; fecha_fin?: string }) {
   return {
     numero_poliza: policy.number,
     cliente_id: policy.client,
     producto_id: policy.type,
-    estado: policy.status === "Activa" ? "VIGENTE" : "VENCIDA",
+    estado: statusUiToDb(policy.status),
     fecha_inicio: policy['fecha_inicio'] || new Date().toISOString().slice(0,10),
     fecha_fin: policy['fecha_fin'] || new Date(Date.now() + 365*24*60*60*1000).toISOString().slice(0,10),
   };
