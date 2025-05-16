@@ -14,6 +14,10 @@ export interface User {
   company?: string;
   position?: string;
   address?: string;
+  bio?: string;
+  website?: string;
+  documentType?: string;
+  documentNumber?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
