@@ -1,8 +1,6 @@
-
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { UserRole } from '../types/auth';
-import { MainLayout } from '../layouts/MainLayout';
 import { toast } from '@/components/ui/use-toast';
 import { useEffect } from 'react';
 
@@ -49,26 +47,14 @@ const PrivateRoute = ({
       description: `No tienes permisos para acceder a esta sección. Serás redirigido al panel correspondiente a tu rol.`,
     });
     
-    // Redirigir al dashboard correspondiente según el rol
-    switch (user.role) {
-      case 'CLIENTE':
-        return <Navigate to="/usuario/dashboard" replace />;
-      case 'AGENTE':
-        return <Navigate to="/agente/dashboard" replace />;
-      case 'AGENCIA':
-        return <Navigate to="/agencia/dashboard" replace />;
-      case 'ADMIN':
-        return <Navigate to="/admin/dashboard" replace />;
-      default:
-        return <Navigate to="/dashboard" replace />;
-    }
+    // Redirigir al dashboard correspondiente al rol del usuario
+    return <Navigate to={`/${user.role.toLowerCase()}/dashboard`} replace />;
   }
 
-  // Si todo está bien, renderiza el layout principal con las rutas hijas
   return (
-    <MainLayout>
-      <Outlet />
-    </MainLayout>
+    <>
+      {children || <Outlet />}
+    </>
   );
 };
 
