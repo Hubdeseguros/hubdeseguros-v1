@@ -1,6 +1,5 @@
-
 import { supabase } from '@/integrations/supabase/client';
-import { Client, ClientFormData } from '../types';
+import type { Client, ClientFormData } from '../types';
 
 // Map database row to typed Client
 function mapDbToClient(row: any): Client {
@@ -27,9 +26,8 @@ function mapClientFormToDb(data: ClientFormData) {
     email: data.email,
     telefono: data.phone,
     numero_documento: data.document_id,
-    tipo_documento: data.document_type,
+    tipo_documento: data.document_type as "DNI" | "PASAPORTE" | "RUC",
     direccion: data.address,
-    // Estado maps to boolean (true = ACTIVE, false = INACTIVE, null = PENDING)
     estado: data.status === 'ACTIVE' ? true : data.status === 'INACTIVE' ? false : null,
   };
 }
@@ -38,7 +36,6 @@ export const clientService = {
   getAll: async (): Promise<Client[]> => {
     const { data, error } = await supabase.from('clientes').select('*');
     if (error) throw error;
-    // Map all db rows to Client[]
     return (data ?? []).map(mapDbToClient);
   },
   getById: async (id: string): Promise<Client | null> => {
@@ -67,7 +64,7 @@ export const clientService = {
       email: data.email ?? '',
       phone: data.phone ?? null,
       document_id: data.document_id ?? '',
-      document_type: data.document_type ?? '',
+      document_type: data.document_type as "DNI" | "PASAPORTE" | "RUC" ?? 'DNI',
       address: data.address ?? null,
       status: data.status ?? 'PENDING',
     });

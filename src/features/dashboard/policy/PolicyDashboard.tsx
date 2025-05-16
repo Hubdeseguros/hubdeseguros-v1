@@ -1,14 +1,14 @@
 import React from "react"
 import { Card } from "@/components/ui/card"
 import { PolicyTable } from "./PolicyTable"
-import { mockPolicies } from "./mockPolicies"
 import { useNavigate } from "react-router-dom"
 
 export const PolicyDashboard: React.FC = () => {
-  const total = mockPolicies.length
-  const activas = mockPolicies.filter((p) => p.status === "Activa").length
-  const vencidas = mockPolicies.filter((p) => p.status === "Vencida").length
-  const navigate = useNavigate()
+  // Usa valores ficticios por ahora, o bien calcula con los datos reales si están disponibles
+  const total = 0; // Cambia según tu fuente real de datos en el futuro
+  const activas = 0;
+  const vencidas = 0;
+  const navigate = useNavigate();
 
   return (
     <div className="space-y-6">
@@ -38,4 +38,4 @@ export const PolicyDashboard: React.FC = () => {
       <PolicyTable />
     </div>
   )
-} 
+}
