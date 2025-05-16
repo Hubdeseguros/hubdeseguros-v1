@@ -2,6 +2,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Payment, PaymentFormData } from '../types';
 
+// Helper conversion for payment status and method
 function mapPagoRow(row: any): Payment {
   return {
     id: row.id,
@@ -38,7 +39,7 @@ export const paymentService = {
   },
   create: async (data: PaymentFormData): Promise<Payment> => {
     const insertData = paymentFormToDb(data);
-    const { data: created, error } = await supabase.from('pagos').insert([insertData]).select().single();
+    const { data: created, error } = await supabase.from('pagos').insert(insertData).select().single();
     if (error) throw error;
     return mapPagoRow(created);
   },

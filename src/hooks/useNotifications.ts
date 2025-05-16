@@ -1,19 +1,44 @@
 
 import { useEffect, useState, useCallback } from "react";
 import * as notifService from "@/lib/notifications";
-import { useAuth } from "@/hooks/useAuth"; // Usar el hook correcto
+import { useAuth } from "@/hooks/useAuth";
+
+// FE notification type for UI:
+export type UINotification = {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  read: boolean;
+};
 
 export function useNotifications() {
-  const { user } = useAuth(); // Extraer user del nuevo hook
-  const [notifications, setNotifications] = useState<notifService.Notification[]>([]);
+  const { user } = useAuth();
+  const [notifications, setNotifications] = useState<UINotification[]>([]);
   const [loading, setLoading] = useState(false);
 
   const fetchNotifications = useCallback(async () => {
     if (!user) return;
     setLoading(true);
     try {
-      const data = await notifService.getNotifications(user.id);
-      setNotifications(data);
+      const rawData = await notifService.getNotifications(user.id);
+
+      // Map BE notifications to UI notifications, mark as read if SENT/FAILED
+      setNotifications(
+        (rawData ?? []).map((n) => ({
+          id: n.id,
+          title: n.type === "SMS"
+            ? "Notificación SMS"
+            : n.type === "EMAIL"
+            ? "Notificación Email"
+            : n.type === "PUSH"
+            ? "Push"
+            : "Webhook",
+          description: n.content || "",
+          date: n.created_at || "",
+          read: n.status !== "PENDING",
+        }))
+      );
     } finally {
       setLoading(false);
     }
@@ -21,7 +46,6 @@ export function useNotifications() {
 
   useEffect(() => {
     fetchNotifications();
-    // Opcional: suscripción en tiempo real con supabase.channel
   }, [fetchNotifications]);
 
   const markAsRead = async (id: string) => {

@@ -26,17 +26,17 @@ export async function getNotifications(recipient: string): Promise<Notification[
 }
 
 export async function markAsRead(id: string) {
-  // Not provided in schema, so just a stub or ignore; could update a "read" Boolean if available.
+  // No `read` field yet
 }
 
 export async function markAllAsRead(user_id: string) {
-  // Not provided in schema, so just a stub or ignore.
+  // No `read` field yet
 }
 
-export async function addNotification(notification: Partial<Notification>) {
+export async function addNotification(notification: Notification) {
   const { error } = await supabase
     .from("payment_notifications")
-    .insert([notification]);
+    .insert(notification);
   if (error) throw error;
 }
 

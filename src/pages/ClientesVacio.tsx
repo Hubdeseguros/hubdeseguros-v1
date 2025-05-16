@@ -1,3 +1,4 @@
+import { UserPlus } from "lucide-react";
 import EmptyTableCard from "@/components/common/EmptyTableCard";
 
 export default function ClientesVacio() {
@@ -12,4 +13,4 @@ export default function ClientesVacio() {
       borderColor="border-blue-200"
     />
   );
-} 
+}

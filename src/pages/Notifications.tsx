@@ -1,3 +1,4 @@
+
 import { useNotifications } from "@/hooks/useNotifications";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -18,13 +19,13 @@ export default function NotificationsPage() {
         {loading && <p>Cargando...</p>}
         {!loading && notifications.length === 0 && <p>No tienes notificaciones.</p>}
         {notifications.map((n) => (
-          <Alert key={n.id} variant={n.type as any} className={n.read ? "opacity-60" : ""}>
+          <Alert key={n.id} variant="default" className={n.read ? "opacity-60" : ""}>
             <AlertTitle>{n.title}</AlertTitle>
             <AlertDescription>{n.description}</AlertDescription>
             <div className="flex justify-between items-center mt-2">
               <span className="text-xs text-muted-foreground">{new Date(n.date).toLocaleString()}</span>
               {!n.read && (
-                <Button size="xs" variant="ghost" onClick={() => markAsRead(n.id)}>
+                <Button size="sm" variant="ghost" onClick={() => markAsRead(n.id)}>
                   Marcar como leída
                 </Button>
               )}
@@ -34,4 +35,4 @@ export default function NotificationsPage() {
       </div>
     </div>
   );
-} 
+}

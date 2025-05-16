@@ -26,9 +26,8 @@ function policyToDb(policy: Omit<Policy, "id"> & { fecha_inicio?: string; fecha_
     cliente_id: policy.client,
     producto_id: policy.type,
     estado: policy.status === "Activa" ? "VIGENTE" : "VENCIDA",
-    // In a real app, you'd ask for fecha_inicio/fecha_fin; here, fake values:
     fecha_inicio: policy['fecha_inicio'] || new Date().toISOString().slice(0,10),
-    fecha_fin: policy['fecha_fin'] || new Date(Date.now() + 365*24*60*60*1000).toISOString().slice(0,10)
+    fecha_fin: policy['fecha_fin'] || new Date(Date.now() + 365*24*60*60*1000).toISOString().slice(0,10),
   };
 }
 
