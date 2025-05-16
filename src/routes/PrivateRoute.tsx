@@ -1,18 +1,19 @@
-import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
-import { UserRole } from "../types/auth";
-import { MainLayout } from "../layouts/MainLayout";
-import { toast } from "@/components/ui/use-toast";
-import { useEffect } from "react";
+
+import { Navigate, Outlet } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import { UserRole } from '../types/auth';
+import { MainLayout } from '../layouts/MainLayout';
+import { toast } from '@/components/ui/use-toast';
+import { useEffect } from 'react';
 
 interface PrivateRouteProps {
   allowedRoles?: UserRole[];
   requiresAuthentication?: boolean;
 }
 
-const PrivateRoute = ({
+const PrivateRoute = ({ 
   allowedRoles = [],
-  requiresAuthentication = true,
+  requiresAuthentication = true
 }: PrivateRouteProps) => {
   const { isAuthenticated, user } = useAuth();
 
@@ -20,10 +21,10 @@ const PrivateRoute = ({
     // Informar al usuario sobre su contexto actual cuando entra en una ruta protegida
     if (isAuthenticated && user) {
       const roleText = {
-        CLIENTE: "cliente",
-        AGENTE: "agente de seguros",
-        AGENCIA: "agencia",
-        ADMIN: "administrador",
+        'CLIENTE': 'cliente',
+        'AGENTE': 'agente de seguros',
+        'AGENCIA': 'agencia',
+        'ADMIN': 'administrador'
       }[user.role];
 
       toast({
@@ -33,9 +34,9 @@ const PrivateRoute = ({
     }
   }, [isAuthenticated, user]);
 
-  // Si se requiere autenticación y el usuario no está autenticado, redirige al landing
+  // Si se requiere autenticación y el usuario no está autenticado, redirige al login
   if (requiresAuthentication && !isAuthenticated) {
-    return <Navigate to="/landing" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   // Si se especifican roles permitidos y el usuario no tiene el rol adecuado
@@ -45,16 +46,16 @@ const PrivateRoute = ({
       title: "Acceso restringido",
       description: `No tienes permisos para acceder a esta sección. Serás redirigido al panel correspondiente a tu rol.`,
     });
-
+    
     // Redirigir al dashboard correspondiente según el rol
     switch (user.role) {
-      case "CLIENTE":
+      case 'CLIENTE':
         return <Navigate to="/usuario/dashboard" replace />;
-      case "AGENTE":
+      case 'AGENTE':
         return <Navigate to="/agente/dashboard" replace />;
-      case "AGENCIA":
+      case 'AGENCIA':
         return <Navigate to="/agencia/dashboard" replace />;
-      case "ADMIN":
+      case 'ADMIN':
         return <Navigate to="/admin/dashboard" replace />;
       default:
         return <Navigate to="/dashboard" replace />;

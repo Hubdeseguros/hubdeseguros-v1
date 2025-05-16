@@ -8,9 +8,7 @@ export default function ClientesVacio() {
       title="¡Aún no tienes clientes!"
       description="Agrega tu primer cliente y comienza a construir tu cartera. Gestiona fácilmente sus pólizas y siniestros desde aquí."
       actionLabel="Agregar cliente"
-      onAction={() => {
-        /* lógica para abrir modal/formulario */
-      }}
+      onAction={() => {/* lógica para abrir modal/formulario */}}
       bgColor="bg-blue-50"
       borderColor="border-blue-200"
     />

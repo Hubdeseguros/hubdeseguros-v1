@@ -8,11 +8,9 @@ export default function PolizasVacio() {
       title="No hay pólizas registradas"
       description="Registra tu primera póliza y comienza a proteger a tus clientes. Lleva el control de renovaciones y vencimientos."
       actionLabel="Agregar póliza"
-      onAction={() => {
-        /* lógica para abrir modal/formulario */
-      }}
+      onAction={() => {/* lógica para abrir modal/formulario */}}
       bgColor="bg-green-50"
       borderColor="border-green-200"
     />
   );
-}
+} 

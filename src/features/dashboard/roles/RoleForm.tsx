@@ -1,5 +1,5 @@
-import React from "react";
-import { useForm } from "react-hook-form";
+import React from "react"
+import { useForm } from "react-hook-form"
 import {
   Form,
   FormItem,
@@ -7,16 +7,16 @@ import {
   FormControl,
   FormMessage,
   FormField,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Role, allPermissions } from "./mockRoles";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Role, allPermissions } from "./mockRoles"
 
 type RoleFormProps = {
-  initialData?: Role;
-  onSubmit: (data: Omit<Role, "id">) => void;
-  onCancel: () => void;
-};
+  initialData?: Role
+  onSubmit: (data: Omit<Role, "id">) => void
+  onCancel: () => void
+}
 
 export const RoleForm: React.FC<RoleFormProps> = ({
   initialData,
@@ -25,9 +25,9 @@ export const RoleForm: React.FC<RoleFormProps> = ({
 }) => {
   const form = useForm<Omit<Role, "id">>({
     defaultValues: initialData || { name: "", permissions: [] },
-  });
+  })
 
-  const handleSubmit = form.handleSubmit((data) => onSubmit(data));
+  const handleSubmit = form.handleSubmit((data) => onSubmit(data))
 
   return (
     <Form {...form}>
@@ -62,11 +62,9 @@ export const RoleForm: React.FC<RoleFormProps> = ({
                         checked={field.value.includes(perm)}
                         onChange={(e) => {
                           if (e.target.checked) {
-                            field.onChange([...field.value, perm]);
+                            field.onChange([...field.value, perm])
                           } else {
-                            field.onChange(
-                              field.value.filter((p: string) => p !== perm),
-                            );
+                            field.onChange(field.value.filter((p: string) => p !== perm))
                           }
                         }}
                       />
@@ -87,5 +85,5 @@ export const RoleForm: React.FC<RoleFormProps> = ({
         </div>
       </form>
     </Form>
-  );
-};
+  )
+} 
