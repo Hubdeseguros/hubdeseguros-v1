@@ -46,14 +46,22 @@ export function ClientsTable({
     loadStatusOptions();
   }, []);
 
-  const getStatusColor = (statusId: string) => {
-    const status = statusOptions.find(s => s.id === statusId);
-    return status?.color || '#6B7280';
+  const getStatusColor = (statusField: Client["status"]) => {
+    if (typeof statusField === "string") {
+      const status = statusOptions.find((s) => s.value === statusField);
+      return status?.color || '#6B7280';
+    } else {
+      return statusField.color || '#6B7280';
+    }
   };
 
-  const getStatusName = (statusId: string) => {
-    const status = statusOptions.find(s => s.id === statusId);
-    return status?.name || 'Desconocido';
+  const getStatusName = (statusField: Client["status"]) => {
+    if (typeof statusField === "string") {
+      const status = statusOptions.find((s) => s.value === statusField);
+      return status?.name || statusField;
+    } else {
+      return statusField.name || "Desconocido";
+    }
   };
 
   const formatDate = (dateString?: string) => {
@@ -61,8 +69,8 @@ export function ClientsTable({
     return format(new Date(dateString), 'PPP', { locale: es });
   };
 
-  const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+  const getInitials = (first: string, last: string) => {
+    return `${first.charAt(0)}${last.charAt(0)}`.toUpperCase();
   };
 
   return (
@@ -100,20 +108,20 @@ export function ClientsTable({
                   <Checkbox
                     checked={selectedClients.includes(client.id)}
                     onCheckedChange={() => onSelectClient(client.id)}
-                    aria-label={`Seleccionar ${client.firstName} ${client.lastName}`}
+                    aria-label={`Seleccionar ${client.first_name} ${client.last_name}`}
                   />
                 </TableCell>
                 <TableCell className="font-medium">
                   <div className="flex items-center space-x-3">
                     <Avatar className="h-9 w-9">
-                      <AvatarImage src={`https://ui-avatars.com/api/?name=${client.firstName}+${client.lastName}`} />
+                      <AvatarImage src={`https://ui-avatars.com/api/?name=${client.first_name}+${client.last_name}`} />
                       <AvatarFallback>
-                        {getInitials(client.firstName, client.lastName)}
+                        {getInitials(client.first_name, client.last_name)}
                       </AvatarFallback>
                     </Avatar>
                     <div>
                       <div className="font-medium">
-                        {client.firstName} {client.lastName}
+                        {client.first_name} {client.last_name}
                       </div>
                       <div className="text-sm text-muted-foreground">
                         {client.email}
@@ -123,9 +131,9 @@ export function ClientsTable({
                 </TableCell>
                 <TableCell>
                   <div>
-                    <div>{client.documentType}</div>
+                    <div>{client.document_type}</div>
                     <div className="text-sm text-muted-foreground">
-                      {client.documentNumber}
+                      {client.document_number}
                     </div>
                   </div>
                 </TableCell>
@@ -139,11 +147,11 @@ export function ClientsTable({
                   <Badge 
                     className="text-xs" 
                     style={{ 
-                      backgroundColor: getStatusColor(client.status.id),
+                      backgroundColor: getStatusColor(client.status),
                       color: 'white'
                     }}
                   >
-                    {getStatusName(client.status.id)}
+                    {getStatusName(client.status)}
                   </Badge>
                 </TableCell>
                 <TableCell>
@@ -166,9 +174,9 @@ export function ClientsTable({
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div>{formatDate(client.createdAt)}</div>
+                  <div>{formatDate(client.created_at)}</div>
                   <div className="text-sm text-muted-foreground">
-                    por {client.createdBy || 'Sistema'}
+                    por {client.created_by || 'Sistema'}
                   </div>
                 </TableCell>
                 <TableCell className="text-right">
