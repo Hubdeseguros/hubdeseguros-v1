@@ -35,6 +35,10 @@ const Placeholder = lazy(() => import("../components/common/Placeholder"));
 
 // Páginas de módulos
 const ClientsPage = lazy(() => import("../features/clients/pages/ClientsPage"));
+const ClientDetailPage = lazy(() => import("../features/clients/pages/ClientDetailPage"));
+const EditClientPage = lazy(() => import("../features/clients/pages/EditClientPage"));
+const NewClientPage = lazy(() => import("../features/clients/pages/NewClientPage"));
+
 const PoliciesPage = lazy(
   () => import("../features/policies/pages/PoliciesPage"),
 );
@@ -137,12 +141,17 @@ const AppRoutes = () => {
           <Route path="dashboard" element={<AgentDashboard />} />
           <Route path="clientes">
             <Route index element={<ClientsPage />} />
-            <Route path="nuevo" element={<ClientsPage />} />
-            <Route path="editar/:id" element={<ClientsPage />} />
+            <Route path="nuevo" element={<NewClientPage />} />
+            <Route path=":clientId" element={<ClientDetailPage />} />
+            <Route path="editar/:clientId" element={<EditClientPage />} />
           </Route>
-          <Route path="clientes/listado" element={<ClientsPage />} />
+          <Route path="polizas" element={<PoliciesPage />} />
+          <Route path="siniestros" element={<ClaimsPage />} />
+          <Route path="ventas" element={<SalesPage />} />
+          <Route path="perfil" element={<ProfilePage />} />
+          <Route path="configuracion" element={<SettingsPage />} />
           <Route
-            path="clientes/crm"
+            path="crm"
             element={<Placeholder title="Asistente Comercial/CRM" />}
           />
 
