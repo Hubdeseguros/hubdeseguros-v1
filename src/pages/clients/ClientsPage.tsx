@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import type { Client, ClientFilters } from '../../features/clients/types';
 import { clientService } from '../../features/clients/services/clientService';
 import { ClientsTable } from '../../features/clients/components/ClientsTable';
@@ -37,15 +36,12 @@ export function ClientsPage() {
     });
   };
 
-  // The following handlers may also be missing, add placeholders to avoid future errors
   const handleSelectClient = (id: string) => {};
   const handleSelectAllClients = (selected: boolean) => {};
   const handleEditClient = (id: string) => {};
   const handleDeleteClient = (id: string) => {};
   const handlePageSizeChange = (newSize: number) => {};
 
-  // Resto del código...
-  
   return (
     <div className="container mx-auto py-6">
       <div className="flex items-center justify-between mb-6">
@@ -57,7 +53,7 @@ export function ClientsPage() {
       </div>
       
       <div className="space-y-4">
-        <Filters onFilterChange={setFilters} />
+        <Filters filters={filters} onChange={setFilters} onReset={() => setFilters({})} />
         <ClientActions 
           selectedCount={selectedClients.length} 
           onDelete={handleDeleteSelected} 
@@ -84,4 +80,3 @@ export function ClientsPage() {
 }
 
 export default ClientsPage;
-

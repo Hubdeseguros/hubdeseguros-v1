@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ClientFormData } from '@/features/clients/types';
 
@@ -27,8 +28,34 @@ const ClientForm: React.FC<Props> = ({ initialData, onSubmit, loading }) => {
     status: 'ACTIVE'
   });
 
+  // Handles both normal and nested address.* fields
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name.startsWith("address.")) {
+      const addressKey = name.replace("address.", "");
+      setForm(prev => ({
+        ...prev,
+        address: {
+          ...prev.address,
+          [addressKey]: value
+        }
+      }));
+    } else if (name === "isBusiness") {
+      setForm(prev => ({
+        ...prev,
+        isBusiness: value === "true"
+      }));
+    } else if (name === "status") {
+      setForm(prev => ({
+        ...prev,
+        status: value as ClientFormData['status']
+      }));
+    } else {
+      setForm(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -112,4 +139,4 @@ const ClientForm: React.FC<Props> = ({ initialData, onSubmit, loading }) => {
   );
 };
 
-export default ClientForm; 
+export default ClientForm;
