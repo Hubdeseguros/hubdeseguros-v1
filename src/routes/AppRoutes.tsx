@@ -353,15 +353,16 @@ const AppRoutes = () => {
           element={<PrivateRoute allowedRoles={["AGENCIA", "ADMIN"]} />}
         >
           <Route path="dashboard" element={<AgencyDashboard />} />
-          <Route path="clientes" element={<Placeholder title="Clientes" />} />
-          <Route
-            path="clientes/listado"
-            element={<Placeholder title="Listado de Clientes" />}
-          />
-          <Route
-            path="clientes/crm"
-            element={<Placeholder title="Asistente Comercial/CRM" />}
-          />
+          <Route path="clientes">
+            <Route index element={<ClientsPage />} />
+            <Route path="nuevo" element={<NewClientPage />} />
+            <Route path=":clientId" element={<ClientDetailPage />} />
+            <Route path="editar/:clientId" element={<EditClientPage />} />
+            <Route
+              path="crm"
+              element={<Placeholder title="Asistente Comercial/CRM" />}
+            />
+          </Route>
           <Route path="polizas" element={<Placeholder title="Pólizas" />} />
           <Route
             path="polizas/listado"
@@ -541,6 +542,12 @@ const AppRoutes = () => {
         >
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="vista-general" element={<AdminDashboard />} />
+          <Route path="clientes">
+            <Route index element={<ClientsPage />} />
+            <Route path="nuevo" element={<NewClientPage />} />
+            <Route path=":clientId" element={<ClientDetailPage />} />
+            <Route path="editar/:clientId" element={<EditClientPage />} />
+          </Route>
           <Route
             path="usuarios"
             element={<Placeholder title="Gestión de Usuarios" />}
