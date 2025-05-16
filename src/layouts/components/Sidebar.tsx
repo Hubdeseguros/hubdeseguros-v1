@@ -600,7 +600,7 @@ const Sidebar = () => {
   if (!user) return null;
 
   return (
-    <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
+    <div className={`flex h-full flex-col bg-sidebar text-sidebar-foreground ${collapsed ? 'w-16' : 'w-64'} transition-all duration-300`}>
       {/* Header del sidebar */}
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-2">
