@@ -64,6 +64,7 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
   const location = useLocation();
   const { state: sidebarState, toggleSidebar, open } = useSidebar();
   const collapsed = !open;
+  
   const [activeKey, setActiveKey] = useState('');
   const [menuSections, setMenuSections] = useState<MenuSection[]>([]);
   const [openMenuItems, setOpenMenuItems] = useState<Record<string, boolean>>({});
@@ -177,7 +178,8 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
     }
   };
 
-  const handleToggleCollapse = () => {
+  const handleToggleCollapse = (e: React.MouseEvent) => {
+    e.stopPropagation();
     toggleSidebar();
     // Si hay un manejador de menú móvil y estamos en móvil, lo cerramos
     if (onToggleMobileMenu && window.innerWidth < 1024) {
@@ -669,18 +671,21 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
     <div className={`flex h-full flex-col bg-sidebar text-sidebar-foreground ${collapsed ? 'w-16' : 'w-64'} transition-all duration-300`}>
       {/* Header del sidebar */}
       <div className="flex items-center justify-between p-4">
-        <div className="flex items-center gap-2">
-          <img src="/logo.png" alt="Logo" className="h-8 w-8" />
-          <h1 className="text-xl font-bold">Hub de Seguros</h1>
+        <div className="flex items-center space-x-2">
+          <img src="/logo.png" alt="Logo" className="h-8 w-auto" />
+          {!collapsed && <span className="font-bold text-lg">Hub de Seguros</span>}
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
+        <button
           onClick={handleToggleCollapse}
-          className="hidden md:block"
+          className="p-1 rounded-md hover:bg-gray-100 text-gray-300 hover:text-white"
+          aria-label={collapsed ? 'Expandir menú' : 'Colapsar menú'}
         >
-          {collapsed ? <ChevronRight /> : <ChevronLeft />}
-        </Button>
+          {collapsed ? (
+            <ChevronRight className="h-5 w-5" />
+          ) : (
+            <ChevronLeft className="h-5 w-5" />
+          )}
+        </button>
       </div>
 
       {/* Información del usuario */}
