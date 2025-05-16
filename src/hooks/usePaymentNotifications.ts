@@ -2,15 +2,14 @@
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
-import { useAuth } from "@/hooks/useAuth"; // Corregido: usar useAuth en vez de useUser
+import { useAuth } from "@/hooks/useAuth";
 
 export function usePaymentNotifications() {
-  const { user } = useAuth(); // Extraemos el user de useAuth, consistente con el resto del sistema
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!user) return;
 
-    // Suscribirse a nuevas notificaciones de pago para el usuario
     const channel = supabase
       .channel("realtime:payment_notifications")
       .on(
@@ -26,7 +25,7 @@ export function usePaymentNotifications() {
           toast({
             title: "Notificación de Pago",
             description: notif.content,
-            variant: notif.type === "EMAIL" || notif.type === "SMS" ? "success" : "info",
+            variant: "default",
           });
         }
       )

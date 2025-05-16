@@ -11,22 +11,24 @@ export type Policy = {
 };
 
 function mapPolicyRow(row: any): Policy {
-  // Mapear de valores de la base al frontend
   return {
     id: row.id,
     number: row.numero_poliza,
-    client: row.cliente_id, // Aquí se podría buscar el nombre del cliente si está en otra tabla
+    client: row.cliente_id,
     type: row.producto_id ?? "",
     status: row.estado === "VIGENTE" ? "Activa" : "Vencida",
   };
 }
 
-function policyToDb(policy: Omit<Policy, "id">) {
+function policyToDb(policy: Omit<Policy, "id"> & { fecha_inicio?: string; fecha_fin?: string }) {
   return {
     numero_poliza: policy.number,
     cliente_id: policy.client,
     producto_id: policy.type,
     estado: policy.status === "Activa" ? "VIGENTE" : "VENCIDA",
+    // In a real app, you'd ask for fecha_inicio/fecha_fin; here, fake values:
+    fecha_inicio: policy['fecha_inicio'] || new Date().toISOString().slice(0,10),
+    fecha_fin: policy['fecha_fin'] || new Date(Date.now() + 365*24*60*60*1000).toISOString().slice(0,10)
   };
 }
 
@@ -74,4 +76,4 @@ export function usePolicies() {
   }, []);
 
   return { policies, loading, error, addPolicy, updatePolicy, deletePolicy, fetchPolicies };
-} 
+}

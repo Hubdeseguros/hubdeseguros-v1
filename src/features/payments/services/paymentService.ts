@@ -20,7 +20,7 @@ function paymentFormToDb(data: PaymentFormData) {
     poliza_id: data.policy_id,
     monto: data.amount,
     fecha_pago: data.payment_date,
-    metodo_pago: data.method,
+    metodo_pago: data.method as "EFECTIVO" | "TARJETA" | "TRANSFERENCIA",
     estado: data.status === "COMPLETED" ? "PAGADO" : data.status === "PENDING" ? "PENDIENTE" : "ANULADO"
   };
 }
@@ -52,4 +52,4 @@ export const paymentService = {
     const { error } = await supabase.from('pagos').delete().eq('id', id);
     if (error) throw error;
   }
-}; 
+};
