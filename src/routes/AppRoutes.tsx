@@ -15,7 +15,6 @@ const NotFound = lazy(() => import('../pages/NotFound'));
 const Landing = lazy(() => import('../pages/Landing'));
 const ProfilePage = lazy(() => import('../pages/ProfilePage'));
 const SettingsPage = lazy(() => import('../pages/SettingsPage'));
-const ClientsPage = lazy(() => import('../pages/clients/ClientsPage'));
 
 // Dashboards específicos por rol
 const UserDashboard = lazy(() => import('../features/dashboard/user/UserDashboard'));
@@ -51,7 +50,7 @@ const AppRoutes = () => {
       case 'ADMIN':
         return '/admin/dashboard';
       default:
-        return '/landing';
+        return '/dashboard';
     }
   };
 
@@ -230,14 +229,6 @@ const AppRoutes = () => {
             <Route path="notificaciones" element={<Placeholder title="Notificaciones del Sistema" />} />
           </Route>
           <Route path="perfil" element={<ProfilePage />} />
-        </Route>
-
-        {/* Rutas para todos los usuarios autenticados */}
-        <Route path="/" element={<PrivateRoute />}>
-          <Route path="clientes">
-            <Route index element={<Navigate to="listado" replace />} />
-            <Route path="listado" element={<ClientsPage />} />
-          </Route>
         </Route>
 
         {/* Ruta 404 - Redirigir a landing */}

@@ -2,13 +2,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import { Bell, Mail, Search, Check, AlertCircle, BellRing } from 'lucide-react';
-import { UserMenu } from '@/components/UserMenu';
+import { Mail, Search, Check, AlertCircle, BellRing, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
+import UserMenu from '@/components/UserMenu';
 
 interface Breadcrumb {
   label: string;
