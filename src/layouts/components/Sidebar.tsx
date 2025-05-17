@@ -1,8 +1,10 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { useSidebar } from '@/components/ui/sidebar';
+// 🔴 Elimina este import duplicado
+// import { useSidebar } from '@/components/ui/sidebar';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -52,7 +54,7 @@ import {
   SidebarProvider,
   SidebarFooter,
   SidebarHeader,
-  useSidebar,
+  useSidebar, // ✅ SOLO SE IMPORTA AQUÍ
 } from "@/components/ui/sidebar";
 
 type MenuIcon = React.ComponentType<{ size?: string | number; className?: string }>;
@@ -158,3 +160,4 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+
