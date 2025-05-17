@@ -224,11 +224,7 @@ const AppRoutes = () => {
 
         {/* Rutas para todos los usuarios autenticados */}
         <Route path="/" element={<PrivateRoute />}>
-          <Suspense fallback={<LoadingFallback />}>
-                <ClientsPage />
-              </Suspense>
-            </PrivateRoute>
-          } />
+          <Route index element={<Navigate to="/landing" replace />} />
         </Route>
 
         {/* Ruta 404 - Redirigir a landing */}
