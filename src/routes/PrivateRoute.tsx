@@ -34,9 +34,9 @@ const PrivateRoute = ({
     }
   }, [isAuthenticated, user]);
 
-  // Si se requiere autenticación y el usuario no está autenticado, redirige al landing
+  // Si se requiere autenticación y el usuario no está autenticado, redirige al login
   if (requiresAuthentication && !isAuthenticated) {
-    return <Navigate to="/landing" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   // Si se especifican roles permitidos y el usuario no tiene el rol adecuado

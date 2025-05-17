@@ -10,16 +10,6 @@ export interface User {
   role: UserRole;
   level?: UserLevel;
   avatar?: string;
-  phone?: string;
-  company?: string;
-  position?: string;
-  address?: string;
-  bio?: string;
-  website?: string;
-  documentType?: string;
-  documentNumber?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
 }
 
 export interface AuthState {

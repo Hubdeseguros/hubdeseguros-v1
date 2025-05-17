@@ -71,9 +71,8 @@ const SidebarProvider = React.forwardRef<
     // This is the internal state of the sidebar.
     // We use openProp and setOpenProp for control from outside the component.
     // Usar useRef para evitar re-renders innecesarios
-    // Usar un estado más estable para evitar parpadeos
-    const [openState, setOpenState] = React.useState(defaultOpen)
-    const open = openProp ?? openState
+    const openRef = React.useRef(defaultOpen)
+    const open = openProp ?? openRef.current
     
     const setOpen = React.useCallback(
       (value: boolean | ((value: boolean) => boolean)) => {
@@ -81,7 +80,7 @@ const SidebarProvider = React.forwardRef<
         if (setOpenProp) {
           setOpenProp(openState)
         } else {
-          setOpenState(openState)
+          openRef.current = openState
         }
 
         // This sets the cookie to keep the sidebar state.
@@ -89,10 +88,6 @@ const SidebarProvider = React.forwardRef<
       },
       [setOpenProp]
     )
-
-    // Evitar re-renders innecesarios usando useMemo
-    const memoizedOpen = React.useMemo(() => open, [open])
-    const memoizedOpenState = React.useMemo(() => openState, [openState])
 
     // Actualizar el estado inicial desde la cookie
     React.useEffect(() => {
@@ -103,7 +98,7 @@ const SidebarProvider = React.forwardRef<
         if (setOpenProp) {
           setOpenProp(isOpen)
         } else {
-          setOpenState(isOpen)
+          openRef.current = isOpen
         }
       }
     }, [setOpenProp])
@@ -132,16 +127,17 @@ const SidebarProvider = React.forwardRef<
     }, [toggleSidebar])
 
     // Usar un estado más estable para las transiciones
-    const [transitionState, setTransitionState] = React.useState<"expanded" | "collapsed">(open ? "expanded" : "collapsed")
+    const [transitionState, setTransitionState] = React.useState(open ? "expanded" : "collapsed")
     
-    // Actualizar el estado de transición solo cuando cambie realmente
+    // Actualizar el estado de transición con un delay para evitar parpadeos
     React.useEffect(() => {
-      if (open !== memoizedOpen) {
+      const timeout = setTimeout(() => {
         setTransitionState(open ? "expanded" : "collapsed")
-      }
-    }, [open, memoizedOpen])
+      }, 100) // Pequeño delay para evitar parpadeos
+      return () => clearTimeout(timeout)
+    }, [open])
 
-    const state: "expanded" | "collapsed" = transitionState; // type enforced
+    const state = transitionState
 
     const contextValue = React.useMemo<SidebarContext>(
       () => ({
@@ -350,7 +346,7 @@ const SidebarInset = React.forwardRef<
       ref={ref}
       className={cn(
         "relative flex min-h-svh flex-1 flex-col bg-background",
-        "peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))] md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow",
+        "peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))] md:peer-data-[variant=inset]:m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow",
         className
       )}
       {...props}
