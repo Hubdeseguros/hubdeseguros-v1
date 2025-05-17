@@ -1,5 +1,5 @@
 
-// Ensure ONLY ONE React import at the top and no duplicate React declarations.
+// Ensure ONLY ONE React import at the very top and no duplicate or commented React imports.
 import * as React from "react"
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { cn } from "@/lib/utils";
@@ -27,4 +27,3 @@ const TooltipContent = React.forwardRef<
 TooltipContent.displayName = TooltipPrimitive.Content.displayName;
 
 export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider };
-
