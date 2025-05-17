@@ -1,17 +1,12 @@
 
-// Removed explicit import of React to avoid duplicate with jsxInject in Vite config
+import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 
-// Only one import of React is necessary if using automatic runtime, but with 
-// the Vite config's jsxInject, React import is already done globally, so 
-// explicit import is usually not required. 
-// However, if needed for types, re-enable as:
-// import React from 'react';
+// Solo una importación de React es necesaria, para evitar errores de referencia.
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
 );
-
