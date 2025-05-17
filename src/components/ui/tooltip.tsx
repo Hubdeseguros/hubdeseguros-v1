@@ -1,6 +1,6 @@
 
 // Only one React import at the very top - ensure no duplicate or commented imports remain.
-import * as React from "react"
+import * as React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { cn } from "@/lib/utils";
 
