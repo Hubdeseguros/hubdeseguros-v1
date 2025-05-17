@@ -96,11 +96,27 @@ const Sidebar = () => {
 
   const collapsed = sidebarState !== 'expanded';
 
+  // Nueva función utilitaria para filtrar cualquier item con path "/clientes/listado"
+  const filterClientesListado = (sections: MenuSection[]): MenuSection[] => {
+    return sections
+      .map(section => ({
+        ...section,
+        items: section.items
+          .filter(item => item.path !== "/clientes/listado")
+          .map(item => ({
+            ...item,
+            subMenu: item.subMenu
+              ? item.subMenu.filter(sub => sub.path !== "/clientes/listado")
+              : undefined,
+          })),
+      }));
+  };
+
   // Cargar el menú basado en el rol del usuario
   useEffect(() => {
     if (user) {
       const menuConfig = getMenuByRole(user.role);
-      setMenuSections(menuConfig);
+      setMenuSections(filterClientesListado(menuConfig));
     }
   }, [user]);
 
