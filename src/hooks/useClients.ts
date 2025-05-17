@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Client, ClientFormData } from '@/features/clients/types';
 import { clientService } from '@/features/clients/services/clientService';
@@ -13,7 +12,7 @@ export const useClients = () => {
     setError(null);
     try {
       const clients = await clientService.getAll();
-      setData(clients.data || []);
+      setData(clients);
     } catch (err) {
       setError(err as Error);
     } finally {
@@ -25,10 +24,8 @@ export const useClients = () => {
     setLoading(true);
     setError(null);
     try {
-      const result = await clientService.create(client);
-      if (result) {
-        await fetchClients();
-      }
+      await clientService.create(client);
+      await fetchClients();
     } catch (err) {
       setError(err as Error);
     } finally {
@@ -47,4 +44,4 @@ export const useClients = () => {
     fetchClients,
     createClient,
   };
-};
+}; 

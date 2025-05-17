@@ -83,29 +83,14 @@ const AppRoutes = () => {
             <Route path="notificaciones" element={<Placeholder title="Preferencias de Notificaciones" />} />
           </Route>
           <Route path="contacto-soporte" element={<Placeholder title="Contacto con Soporte" />} />
-          <Route path="clientes">
-            <Route index element={<Navigate to="listado" replace />} />
-            <Route path="listado" element={
-              <Suspense fallback={<LoadingFallback />}>
-                <ClientsPage />
-              </Suspense>
-            } />
-            <Route path="crm" element={<Placeholder title="Asistente Comercial/CRM" />} />
-          </Route>
         </Route>
 
         {/* Rutas para AGENTE */}
         <Route path="/agente" element={<PrivateRoute allowedRoles={['AGENTE', 'ADMIN']} />}>
           <Route path="dashboard" element={<AgentDashboard />} />
-          <Route path="clientes">
-            <Route index element={<Navigate to="listado" replace />} />
-            <Route path="listado" element={
-              <Suspense fallback={<LoadingFallback />}>
-                <ClientsPage />
-              </Suspense>
-            } />
-            <Route path="crm" element={<Placeholder title="Asistente Comercial/CRM" />} />
-          </Route>
+          <Route path="clientes" element={<Placeholder title="Clientes" />} />
+          <Route path="clientes/listado" element={<Placeholder title="Listado de Clientes" />} />
+          <Route path="clientes/crm" element={<Placeholder title="Asistente Comercial/CRM" />} />
           <Route path="polizas" element={<Placeholder title="Pólizas" />} />
           <Route path="polizas/listado" element={<Placeholder title="Listado de Pólizas" />} />
           <Route path="polizas/cumplimiento" element={<Placeholder title="Cumplimiento, Judicial, etc" />} />
@@ -249,13 +234,10 @@ const AppRoutes = () => {
 
         {/* Rutas para todos los usuarios autenticados */}
         <Route path="/" element={<PrivateRoute />}>
-          <Route path="/clientes/listado" element={
-            <PrivateRoute>
-              <Suspense fallback={<LoadingFallback />}>
-                <ClientsPage />
-              </Suspense>
-            </PrivateRoute>
-          } />
+          <Route path="clientes">
+            <Route index element={<Navigate to="listado" replace />} />
+            <Route path="listado" element={<ClientsPage />} />
+          </Route>
         </Route>
 
         {/* Ruta 404 - Redirigir a landing */}

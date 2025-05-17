@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ClientFormData } from '@/features/clients/types';
 
@@ -10,52 +9,18 @@ interface Props {
 
 const ClientForm: React.FC<Props> = ({ initialData, onSubmit, loading }) => {
   const [form, setForm] = useState<ClientFormData>(initialData || {
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     email: '',
     phone: '',
-    mobile: '',
-    documentNumber: '',
-    documentType: 'DNI',
-    address: {
-      street: '',
-      city: '',
-      state: '',
-      postalCode: '',
-      country: ''
-    },
-    isBusiness: false,
+    document_id: '',
+    document_type: '',
+    address: '',
     status: 'ACTIVE'
   });
 
-  // Handles both normal and nested address.* fields
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    if (name.startsWith("address.")) {
-      const addressKey = name.replace("address.", "");
-      setForm(prev => ({
-        ...prev,
-        address: {
-          ...prev.address,
-          [addressKey]: value
-        }
-      }));
-    } else if (name === "isBusiness") {
-      setForm(prev => ({
-        ...prev,
-        isBusiness: value === "true"
-      }));
-    } else if (name === "status") {
-      setForm(prev => ({
-        ...prev,
-        status: value as ClientFormData['status']
-      }));
-    } else {
-      setForm(prev => ({
-        ...prev,
-        [name]: value
-      }));
-    }
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -67,11 +32,11 @@ const ClientForm: React.FC<Props> = ({ initialData, onSubmit, loading }) => {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="block text-sm font-medium">Nombre</label>
-        <input name="firstName" value={form.firstName} onChange={handleChange} className="input" required />
+        <input name="first_name" value={form.first_name} onChange={handleChange} className="input" required />
       </div>
       <div>
         <label className="block text-sm font-medium">Apellido</label>
-        <input name="lastName" value={form.lastName} onChange={handleChange} className="input" required />
+        <input name="last_name" value={form.last_name} onChange={handleChange} className="input" required />
       </div>
       <div>
         <label className="block text-sm font-medium">Email</label>
@@ -82,54 +47,23 @@ const ClientForm: React.FC<Props> = ({ initialData, onSubmit, loading }) => {
         <input name="phone" value={form.phone} onChange={handleChange} className="input" />
       </div>
       <div>
-        <label className="block text-sm font-medium">Celular</label>
-        <input name="mobile" value={form.mobile} onChange={handleChange} className="input" />
+        <label className="block text-sm font-medium">Documento</label>
+        <input name="document_id" value={form.document_id} onChange={handleChange} className="input" required />
       </div>
       <div>
-        <label className="block text-sm font-medium">Número de Documento</label>
-        <input name="documentNumber" value={form.documentNumber} onChange={handleChange} className="input" required />
-      </div>
-      <div>
-        <label className="block text-sm font-medium">Tipo de Documento</label>
-        <select name="documentType" value={form.documentType} onChange={handleChange} className="input">
-          <option value="DNI">DNI</option>
-          <option value="PASAPORTE">Pasaporte</option>
-          <option value="RUC">RUC</option>
-        </select>
+        <label className="block text-sm font-medium">Tipo de documento</label>
+        <input name="document_type" value={form.document_type} onChange={handleChange} className="input" required />
       </div>
       <div>
         <label className="block text-sm font-medium">Dirección</label>
-        <div className="space-y-2">
-          <div>
-            <label className="block text-sm font-medium">Calle</label>
-            <input name="address.street" value={form.address.street} onChange={handleChange} className="input" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Ciudad</label>
-            <input name="address.city" value={form.address.city} onChange={handleChange} className="input" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Estado</label>
-            <input name="address.state" value={form.address.state} onChange={handleChange} className="input" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Código Postal</label>
-            <input name="address.postalCode" value={form.address.postalCode} onChange={handleChange} className="input" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium">País</label>
-            <input name="address.country" value={form.address.country} onChange={handleChange} className="input" />
-          </div>
-        </div>
+        <input name="address" value={form.address} onChange={handleChange} className="input" />
       </div>
       <div>
         <label className="block text-sm font-medium">Estado</label>
         <select name="status" value={form.status} onChange={handleChange} className="input">
           <option value="ACTIVE">Activo</option>
           <option value="INACTIVE">Inactivo</option>
-          <option value="POTENTIAL">Potencial</option>
-          <option value="IN_PROCESS">En proceso</option>
-          <option value="REJECTED">Rechazado</option>
+          <option value="PENDING">Pendiente</option>
         </select>
       </div>
       <button type="submit" className="btn-primary" disabled={loading}>
@@ -139,4 +73,4 @@ const ClientForm: React.FC<Props> = ({ initialData, onSubmit, loading }) => {
   );
 };
 
-export default ClientForm;
+export default ClientForm; 
