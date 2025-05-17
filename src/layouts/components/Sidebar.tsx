@@ -1,14 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { useSidebar } from '@/components/ui/sidebar';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import {
-  ChevronLeft, ChevronRight, LogOut, 
+  ChevronLeft, 
+  ChevronRight, 
+  LogOut, 
   BarChart2, 
   FileUser, 
   Laptop, 
@@ -20,7 +20,6 @@ import {
   Clipboard, 
   FilePieChart, 
   File, 
-  AlertTriangle, 
   Mail, 
   Settings, 
   Info, 
@@ -33,10 +32,8 @@ import {
   Paperclip,
   ArrowUpRight,
   Home,
-  Bell,
-  Check,
-  Clock,
-  AlertCircle
+  BellRing,
+  AlertTriangle
 } from 'lucide-react';
 
 type MenuIcon = React.ComponentType<{ size?: string | number; className?: string }>;
@@ -65,15 +62,16 @@ const Sidebar = () => {
   const [activeKey, setActiveKey] = useState('');
   const [menuSections, setMenuSections] = useState<MenuSection[]>([]);
   const [openMenuItems, setOpenMenuItems] = useState<Record<string, boolean>>({});
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState([
+  
+  // Datos de ejemplo para notificaciones
+  const notifications = [
     {
       id: '1',
       title: 'Nuevo mensaje',
       message: 'Tienes un nuevo mensaje del equipo de soporte',
       date: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
       read: false,
-      type: 'info'
+      type: 'info' as const
     },
     {
       id: '2',
@@ -81,7 +79,7 @@ const Sidebar = () => {
       message: 'Se ha registrado el pago de la póliza #12345',
       date: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
       read: false,
-      type: 'success'
+      type: 'success' as const
     },
     {
       id: '3',
@@ -89,73 +87,11 @@ const Sidebar = () => {
       message: 'La póliza #54321 vence en 15 días',
       date: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
       read: true,
-      type: 'warning'
+      type: 'warning' as const
     }
-  ]);
-  const notificationsRef = useRef<HTMLDivElement>(null);
-  
-  // Close notifications when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (notificationsRef.current && !notificationsRef.current.contains(event.target as Node)) {
-        setShowNotifications(false);
-      }
-    };
-    
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+  ];
   
   const unreadCount = notifications.filter(n => !n.read).length;
-  
-  const markAsRead = (id: string) => {
-    setNotifications(notifications.map(notification => 
-      notification.id === id ? { ...notification, read: true } : notification
-    ));
-  };
-  
-  const markAllAsRead = () => {
-    setNotifications(notifications.map(notification => ({
-      ...notification,
-      read: true
-    })));
-  };
-  
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case 'success':
-        return <Check className="h-4 w-4 text-green-500" />;
-      case 'warning':
-        return <AlertCircle className="h-4 w-4 text-yellow-500" />;
-      case 'error':
-        return <AlertCircle className="h-4 w-4 text-red-500" />;
-      default:
-        return <Bell className="h-4 w-4 text-blue-500" />;
-    }
-  };
-  
-  const formatTimeAgo = (date: Date) => {
-    const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
-    
-    let interval = Math.floor(seconds / 31536000);
-    if (interval >= 1) return `hace ${interval} año${interval === 1 ? '' : 's'}`;
-    
-    interval = Math.floor(seconds / 2592000);
-    if (interval >= 1) return `hace ${interval} mes${interval === 1 ? '' : 'es'}`;
-    
-    interval = Math.floor(seconds / 86400);
-    if (interval >= 1) return `hace ${interval} día${interval === 1 ? '' : 's'}`;
-    
-    interval = Math.floor(seconds / 3600);
-    if (interval >= 1) return `hace ${interval} hora${interval === 1 ? '' : 's'}`;
-    
-    interval = Math.floor(seconds / 60);
-    if (interval >= 1) return `hace ${interval} minuto${interval === 1 ? '' : 's'}`;
-    
-    return 'hace unos segundos';
-  };
 
   const collapsed = sidebarState !== 'expanded';
 
@@ -211,10 +147,14 @@ const Sidebar = () => {
 
   // Manejar clic en un item del menú
   const handleItemClick = (path: string, key: string, target?: string) => {
+    setActiveKey(key);
     if (target === '_blank') {
       window.open(path, '_blank');
     } else {
       navigate(path);
+    }
+    if (window.innerWidth < 1024) {
+      toggleSidebar();
     }
   };
 
@@ -812,96 +752,26 @@ const Sidebar = () => {
 
       {/* Footer del sidebar */}
       <div className="border-t border-[#2a3c5a] p-4 space-y-2">
-        {/* Notification Button */}
-        <div className="relative" ref={notificationsRef}>
-          <Button 
-            variant="ghost" 
-            size={collapsed ? 'icon' : 'default'}
-            className={`w-full flex items-center justify-${collapsed ? 'center' : 'start'} text-gray-300 hover:bg-[#2a3c5a] hover:text-white relative`}
-            onClick={() => setShowNotifications(!showNotifications)}
-          >
-            <div className="relative">
-              <Bell size={18} className={collapsed ? '' : 'mr-2'} />
-              {unreadCount > 0 && (
-                <Badge 
-                  className="absolute -top-2 -right-2 h-4 w-4 flex items-center justify-center p-0 text-xs"
-                  variant="destructive"
-                >
-                  {unreadCount > 9 ? '9+' : unreadCount}
-                </Badge>
-              )}
-            </div>
-            {!collapsed && <span>Notificaciones</span>}
-          </Button>
-          
-          {/* Notifications Dropdown */}
-          {showNotifications && (
-            <div className="absolute bottom-full left-0 mb-2 w-80 bg-[#1e293b] rounded-lg shadow-lg border border-gray-700 overflow-hidden z-50">
-              <div className="flex items-center justify-between p-3 border-b border-gray-700">
-                <h3 className="font-medium text-white">Notificaciones</h3>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="h-6 px-2 text-xs text-blue-400 hover:text-blue-300"
-                  onClick={markAllAsRead}
-                >
-                  Marcar todo como leído
-                </Button>
-              </div>
-              
-              <div className="max-h-96 overflow-y-auto">
-                {notifications.length > 0 ? (
-                  <div className="divide-y divide-gray-700">
-                    {notifications.map((notification) => (
-                      <div 
-                        key={notification.id}
-                        className={`p-3 hover:bg-[#2a3c5a] cursor-pointer ${!notification.read ? 'bg-[#1e3a8a30]' : ''}`}
-                        onClick={() => markAsRead(notification.id)}
-                      >
-                        <div className="flex items-start gap-2">
-                          <div className="mt-0.5">
-                            {getNotificationIcon(notification.type)}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex justify-between items-start">
-                              <h4 className={`text-sm font-medium ${!notification.read ? 'text-white' : 'text-gray-300'}`}>
-                                {notification.title}
-                              </h4>
-                              <span className="text-xs text-gray-400 ml-2 whitespace-nowrap">
-                                {formatTimeAgo(notification.date)}
-                              </span>
-                            </div>
-                            <p className="text-xs text-gray-400 mt-1 truncate">
-                              {notification.message}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="p-4 text-center text-gray-400 text-sm">
-                    No hay notificaciones
-                  </div>
-                )}
-              </div>
-              
-              <div className="p-2 border-t border-gray-700 text-center">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="text-xs text-blue-400 hover:text-blue-300"
-                  onClick={() => {
-                    // TODO: Navigate to notifications page
-                    setShowNotifications(false);
-                  }}
-                >
-                  Ver todas las notificaciones
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
+        {/* Notification Link */}
+        <Button 
+          variant="ghost" 
+          size={collapsed ? 'icon' : 'default'}
+          className={`w-full flex items-center justify-${collapsed ? 'center' : 'start'} text-gray-300 hover:bg-[#2a3c5a] hover:text-white relative`}
+          onClick={() => navigate('/notificaciones')}
+        >
+          <div className="relative">
+            <BellRing size={18} className={collapsed ? '' : 'mr-2'} />
+            {unreadCount > 0 && (
+              <Badge 
+                className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-xs"
+                variant="destructive"
+              >
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </Badge>
+            )}
+          </div>
+          {!collapsed && <span>Notificaciones</span>}
+        </Button>
         
         {/* Logout Button */}
         <Button 
