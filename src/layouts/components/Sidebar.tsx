@@ -48,17 +48,22 @@ interface MenuItem {
   target?: string;
 }
 
+interface SidebarProps {
+  onToggleMobileMenu?: () => void;
+}
+
 interface MenuSection {
   title?: string;
   items: MenuItem[];
   isDivider?: boolean;
 }
 
-const Sidebar = () => {
+const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const { state: sidebarState, toggleSidebar } = useSidebar();
+  const { state: sidebarState, toggleSidebar, open } = useSidebar();
+  const collapsed = !open;
   const [activeKey, setActiveKey] = useState('');
   const [menuSections, setMenuSections] = useState<MenuSection[]>([]);
   const [openMenuItems, setOpenMenuItems] = useState<Record<string, boolean>>({});
@@ -93,7 +98,7 @@ const Sidebar = () => {
   
   const unreadCount = notifications.filter(n => !n.read).length;
 
-  const collapsed = sidebarState !== 'expanded';
+  // El estado de colapso se deriva directamente del estado del sidebar
 
   // Cargar el menú basado en el rol del usuario
   useEffect(() => {
@@ -148,13 +153,35 @@ const Sidebar = () => {
   // Manejar clic en un item del menú
   const handleItemClick = (path: string, key: string, target?: string) => {
     setActiveKey(key);
+    
+    // Si el ítem tiene un submenú, no navegamos, solo expandimos/colapsamos
+    const menuItem = menuSections
+      .flatMap(section => section.items)
+      .find(item => item.key === key);
+      
+    if (menuItem?.subMenu) {
+      // Si tiene submenú, no hacemos nada aquí (se maneja en toggleSubMenu)
+      return;
+    }
+    
+    // Cerrar el menú móvil si está abierto
+    if (onToggleMobileMenu && window.innerWidth < 1024) {
+      onToggleMobileMenu();
+    }
+    
+    // Navegar a la ruta correspondiente
     if (target === '_blank') {
       window.open(path, '_blank');
     } else {
       navigate(path);
     }
-    if (window.innerWidth < 1024) {
-      toggleSidebar();
+  };
+
+  const handleToggleCollapse = () => {
+    toggleSidebar();
+    // Si hay un manejador de menú móvil y estamos en móvil, lo cerramos
+    if (onToggleMobileMenu && window.innerWidth < 1024) {
+      onToggleMobileMenu();
     }
   };
 
@@ -166,6 +193,21 @@ const Sidebar = () => {
       [key]: !prev[key]
     }));
   };
+
+  // Efecto para manejar el estado de los submenús cuando se colapsa la barra lateral
+  useEffect(() => {
+    if (collapsed) {
+      // Cerrar todos los submenús al colapsar
+      const updatedMenu = menuSections.map(section => ({
+        ...section,
+        items: section.items.map(item => ({
+          ...item,
+          isOpen: false
+        }))
+      }));
+      setMenuSections(updatedMenu);
+    }
+  }, [collapsed]);
 
   const getMenuByRole = (role: string): MenuSection[] => {
     const roleRoute = role.toLowerCase();
@@ -647,7 +689,7 @@ const Sidebar = () => {
         <Button
           variant="ghost"
           size="icon"
-          onClick={toggleSidebar}
+          onClick={handleToggleCollapse}
           className="hidden md:block"
         >
           {collapsed ? <ChevronRight /> : <ChevronLeft />}

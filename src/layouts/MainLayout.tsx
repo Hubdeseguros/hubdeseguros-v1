@@ -25,7 +25,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   }, []);
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={!mobileMenuOpen}>
       <div className="min-h-screen flex w-full overflow-hidden">
         {/* Sidebar (en versión desktop y overlay en móvil) */}
         <div className={`
@@ -33,7 +33,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
           transition duration-300 ease-in-out
           ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}>
-          <Sidebar />
+          <Sidebar onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)} />
         </div>
 
         {/* Overlay para cerrar el sidebar en móvil */}
