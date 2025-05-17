@@ -4,7 +4,6 @@ import { useAuth } from '../hooks/useAuth';
 import PrivateRoute from './PrivateRoute';
 import { UserRole } from '@/types/auth';
 import NotificationsPage from "@/pages/Notifications";
-import ClientsPage from '../pages/clients/ClientsPage';
 
 // Import types for better type checking
 import type { Notification } from '@/types/notifications';
@@ -16,6 +15,7 @@ const NotFound = lazy(() => import('../pages/NotFound'));
 const Landing = lazy(() => import('../pages/Landing'));
 const ProfilePage = lazy(() => import('../pages/ProfilePage'));
 const SettingsPage = lazy(() => import('../pages/SettingsPage'));
+const ClientsPage = lazy(() => import('../pages/clients/ClientsPage'));
 
 // Dashboards específicos por rol
 const UserDashboard = lazy(() => import('../features/dashboard/user/UserDashboard'));
@@ -84,7 +84,12 @@ const AppRoutes = () => {
           </Route>
           <Route path="contacto-soporte" element={<Placeholder title="Contacto con Soporte" />} />
           <Route path="clientes">
-            <Route index element={<Navigate to="crm" replace />} />
+            <Route index element={<Navigate to="listado" replace />} />
+            <Route path="listado" element={
+              <Suspense fallback={<LoadingFallback />}>
+                <ClientsPage />
+              </Suspense>
+            } />
             <Route path="crm" element={<Placeholder title="Asistente Comercial/CRM" />} />
           </Route>
         </Route>
@@ -93,7 +98,12 @@ const AppRoutes = () => {
         <Route path="/agente" element={<PrivateRoute allowedRoles={['AGENTE', 'ADMIN']} />}>
           <Route path="dashboard" element={<AgentDashboard />} />
           <Route path="clientes">
-            <Route index element={<Navigate to="crm" replace />} />
+            <Route index element={<Navigate to="listado" replace />} />
+            <Route path="listado" element={
+              <Suspense fallback={<LoadingFallback />}>
+                <ClientsPage />
+              </Suspense>
+            } />
             <Route path="crm" element={<Placeholder title="Asistente Comercial/CRM" />} />
           </Route>
           <Route path="polizas" element={<Placeholder title="Pólizas" />} />
@@ -159,10 +169,9 @@ const AppRoutes = () => {
         {/* Rutas para AGENCIA */}
         <Route path="/agencia" element={<PrivateRoute allowedRoles={['AGENCIA', 'ADMIN']} />}>
           <Route path="dashboard" element={<AgencyDashboard />} />
-          <Route path="clientes">
-            <Route index element={<Navigate to="crm" replace />} />
-            <Route path="crm" element={<Placeholder title="Asistente Comercial/CRM" />} />
-          </Route>
+          <Route path="clientes" element={<Placeholder title="Clientes" />} />
+          <Route path="clientes/listado" element={<Placeholder title="Listado de Clientes" />} />
+          <Route path="clientes/crm" element={<Placeholder title="Asistente Comercial/CRM" />} />
           <Route path="polizas" element={<Placeholder title="Pólizas" />} />
           <Route path="polizas/listado" element={<Placeholder title="Listado de Pólizas" />} />
           <Route path="polizas/cumplimiento" element={<Placeholder title="Cumplimiento, Judicial, etc" />} />

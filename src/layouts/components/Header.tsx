@@ -1,15 +1,14 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { Bell, Mail, Search, Check, AlertCircle, BellRing } from 'lucide-react';
 import { UserMenu } from '@/components/UserMenu';
-import { Button, ButtonProps } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
-import { cn } from '@/lib/utils';
 
 interface Breadcrumb {
   label: string;
@@ -179,8 +178,8 @@ const Header = () => {
   return (
     <header className="h-16 bg-white border-b border-gray-200">
       <div className="flex h-full items-center justify-between px-6">
-        {/* Breadcrumbs y título */}
-        <div className="flex items-center gap-4">
+        {/* Breadcrumbs */}
+        <div>
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
@@ -196,25 +195,22 @@ const Header = () => {
               ))}
             </BreadcrumbList>
           </Breadcrumb>
-          <h1 className="text-xl font-bold text-gray-900 mt-1">{pageTitle}</h1>
+          <h1 className="text-xl font-bold text-hubseguros-dark mt-1">{pageTitle}</h1>
         </div>
-
+        
         {/* Barra de búsqueda y acciones */}
         <div className="flex items-center gap-4">
-          {/* Campo de búsqueda */}
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
             <Input
               type="search"
               placeholder="Buscar..."
-              className="w-64 pl-8"
+              className="w-64 pl-9 rounded-full bg-gray-50"
             />
           </div>
-
-          {/* Separador */}
+          
           <Separator orientation="vertical" className="h-8" />
-
-          {/* Notificaciones */}
+          
           <div className="relative" ref={notificationsRef}>
             <Button 
               variant="ghost" 
@@ -227,7 +223,8 @@ const Header = () => {
                 <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500"></span>
               )}
             </Button>
-
+            
+            {/* Dropdown de notificaciones */}
             {showNotifications && (
               <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-50">
                 <div className="flex items-center justify-between p-3 border-b border-gray-200">
@@ -241,17 +238,14 @@ const Header = () => {
                     Marcar todo como leído
                   </Button>
                 </div>
-
+                
                 <div className="max-h-96 overflow-y-auto">
                   {notifications.length > 0 ? (
                     <div className="divide-y divide-gray-100">
                       {notifications.map((notification) => (
                         <div 
                           key={notification.id}
-                          className={cn(
-                            'p-3 hover:bg-gray-50 cursor-pointer',
-                            !notification.read && 'bg-blue-50'
-                          )}
+                          className={`p-3 hover:bg-gray-50 cursor-pointer ${!notification.read ? 'bg-blue-50' : ''}`}
                           onClick={() => markAsRead(notification.id)}
                         >
                           <div className="flex items-start gap-2">
@@ -260,10 +254,7 @@ const Header = () => {
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex justify-between items-start">
-                                <h4 className={cn(
-                                  'text-sm font-medium',
-                                  !notification.read ? 'text-gray-900' : 'text-gray-700'
-                                )}>
+                                <h4 className={`text-sm font-medium ${!notification.read ? 'text-gray-900' : 'text-gray-700'}`}>
                                   {notification.title}
                                 </h4>
                                 <span className="text-xs text-gray-500 ml-2 whitespace-nowrap">
@@ -284,7 +275,7 @@ const Header = () => {
                     </div>
                   )}
                 </div>
-
+                
                 <div className="p-2 border-t border-gray-200 text-center">
                   <Button 
                     variant="ghost" 
@@ -301,17 +292,7 @@ const Header = () => {
               </div>
             )}
           </div>
-
-          {/* Mensajes */}
-          <Button variant="ghost" size="icon" className="relative">
-            <Mail size={20} />
-            <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
-          </Button>
-
-          {/* Separador */}
-          <Separator orientation="vertical" className="h-8" />
-
-          {/* Menú de usuario */}
+          
           <Button variant="ghost" size="icon" className="relative">
             <Mail size={20} />
             <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>

@@ -33,8 +33,7 @@ import {
   ArrowUpRight,
   Home,
   BellRing,
-  AlertTriangle,
-  User
+  AlertTriangle
 } from 'lucide-react';
 
 type MenuIcon = React.ComponentType<{ size?: string | number; className?: string }>;
@@ -96,27 +95,11 @@ const Sidebar = () => {
 
   const collapsed = sidebarState !== 'expanded';
 
-  // Nueva función utilitaria para filtrar cualquier item con path "/clientes/listado"
-  const filterClientesListado = (sections: MenuSection[]): MenuSection[] => {
-    return sections
-      .map(section => ({
-        ...section,
-        items: section.items
-          .filter(item => item.path !== "/clientes/listado")
-          .map(item => ({
-            ...item,
-            subMenu: item.subMenu
-              ? item.subMenu.filter(sub => sub.path !== "/clientes/listado")
-              : undefined,
-          })),
-      }));
-  };
-
   // Cargar el menú basado en el rol del usuario
   useEffect(() => {
     if (user) {
       const menuConfig = getMenuByRole(user.role);
-      setMenuSections(filterClientesListado(menuConfig));
+      setMenuSections(menuConfig);
     }
   }, [user]);
 
@@ -196,9 +179,15 @@ const Sidebar = () => {
             key: 'clientes',
             label: 'Clientes',
             icon: FileUser,
-            path: '/clientes/crm',
+            path: '/clientes/listado',
             isOpen: true,
             subMenu: [
+              {
+                key: 'listado-clientes',
+                label: 'Listado de Clientes',
+                icon: FileUser,
+                path: '/clientes/listado'
+              },
               {
                 key: 'crm',
                 label: 'Asistente Comercial/CRM',
@@ -250,18 +239,24 @@ const Sidebar = () => {
                 key: 'listado-pagos',
                 label: 'Listado de pagos',
                 icon: DollarSign,
-                path: `/${roleRoute}/cobros/pagos`
+                path: `/${roleRoute}/cobros/listado`
               },
               {
-                key: 'recibos-cuadre',
-                label: 'Recibos y Cuadre de caja',
+                key: 'pagos-pendientes',
+                label: 'Pagos Pendientes',
                 icon: DollarSign,
+                path: `/${roleRoute}/cobros/pendientes`
+              },
+              {
+                key: 'recibos',
+                label: 'Recibos y Cuadre de caja',
+                icon: Box,
                 path: `/${roleRoute}/cobros/recibos`
               },
               {
-                key: 'liquidar-vendedores',
+                key: 'liquidar',
                 label: 'Liquidar vendedores',
-                icon: DollarSign,
+                icon: Clipboard,
                 path: `/${roleRoute}/cobros/liquidar`
               }
             ]
@@ -271,334 +266,312 @@ const Sidebar = () => {
             label: 'Informes',
             icon: FilePieChart,
             path: `/${roleRoute}/informes`
+          }
+        ]
+      },
+      {
+        isDivider: true,
+        items: []
+      },
+      {
+        title: "GESTIÓN",
+        items: [
+          {
+            key: 'archivos',
+            label: 'Archivos',
+            icon: File,
+            path: `/${roleRoute}/archivos`
           },
-          // En el rol usuario mostramos siempre los archivos y siniestros como secciones independientes
-          ...(role === 'CLIENTE' ? [
-            {
-              key: 'documentos',
-              label: 'Documentos',
-              icon: File,
-              path: `/${roleRoute}/documentos`
-            },
-            {
-              key: 'siniestros-usuario',
-              label: 'Siniestros',
-              icon: AlertTriangle,
-              path: `/${roleRoute}/siniestros`
-            }
-          ] : [
-            {
-              key: 'archivos',
-              label: 'Archivos',
-              icon: File,
-              path: `/${roleRoute}/archivos`
-            }
-          ]),
-          // Estas secciones son visibles para todos los roles menos para el CLIENTE
-          ...(role !== 'CLIENTE' ? [
-            {
-              key: 'siniestros',
-              label: 'Siniestros',
-              icon: AlertTriangle,
-              path: `/${roleRoute}/siniestros`
-            },
-            {
-              key: 'facturas',
-              label: 'Facturas',
-              icon: FileText,
-              path: `/${roleRoute}/facturas`
-            },
-            {
-              key: 'diligencias',
-              label: 'Diligencias',
-              icon: Clipboard,
-              path: `/${roleRoute}/diligencias`
-            }
-          ] : [])
+          {
+            key: 'siniestros',
+            label: 'Siniestros',
+            icon: AlertTriangle,
+            path: `/${roleRoute}/siniestros`
+          },
+          {
+            key: 'facturas',
+            label: 'Facturas',
+            icon: FileText,
+            path: `/${roleRoute}/facturas`
+          },
+          {
+            key: 'diligencias',
+            label: 'Diligencias',
+            icon: Mail,
+            path: `/${roleRoute}/diligencias`
+          }
+        ]
+      },
+      {
+        title: "ADMINISTRACIÓN",
+        items: [
+          {
+            key: 'productos',
+            label: 'Productos',
+            icon: Box,
+            path: `/${roleRoute}/productos`
+          },
+          {
+            key: 'sucursales',
+            label: 'Sucursales',
+            icon: MapPin,
+            path: `/${roleRoute}/sucursales`
+          },
+          {
+            key: 'usuarios',
+            label: 'Usuarios',
+            icon: Users,
+            path: `/${roleRoute}/usuarios`
+          },
+          {
+            key: 'roles',
+            label: 'Roles',
+            icon: Shield,
+            path: `/${roleRoute}/roles`
+          },
+          {
+            key: 'permisos',
+            label: 'Permisos',
+            icon: Grid,
+            path: `/${roleRoute}/permisos`
+          }
+        ]
+      },
+      {
+        title: "REPORTES",
+        items: [
+          {
+            key: 'reportes-venta',
+            label: 'Reportes de Venta',
+            icon: BarChart2,
+            path: `/${roleRoute}/reportes/venta`
+          },
+          {
+            key: 'reportes-cobranza',
+            label: 'Reportes de Cobranza',
+            icon: DollarSign,
+            path: `/${roleRoute}/reportes/cobranza`
+          },
+          {
+            key: 'reportes-cliente',
+            label: 'Reportes de Cliente',
+            icon: FileUser,
+            path: `/${roleRoute}/reportes/cliente`
+          }
         ]
       }
     ];
-    
-    // Menú para CLIENTE
-    if (role === 'CLIENTE') {
-      return [
-        ...baseMenu,
+
+    if (role === 'AGENCIA' || role === 'ADMIN') {
+      baseMenu.push(
         {
-          title: 'COMUNICACIONES',
-          items: [
-            {
-              key: 'notificaciones',
-              label: 'Notificaciones',
-              icon: BellRing,
-              path: `/${roleRoute}/notificaciones`,
-              ...(unreadCount > 0 ? {
-                badge: <Badge variant="destructive" className="ml-auto h-5">{unreadCount}</Badge>
-              } : {})
-            },
-            {
-              key: 'contacto-soporte',
-              label: 'Contacto con Soporte',
-              icon: Mail,
-              path: `/${roleRoute}/contacto-soporte`
-            }
-          ]
+          isDivider: true,
+          items: []
         },
         {
-          title: 'MI CUENTA',
+          title: "CONFIGURACIÓN",
           items: [
             {
-              key: 'perfil',
-              label: 'Mi Perfil',
-              icon: User,
-              path: `/${roleRoute}/perfil`
-            },
-            {
-              key: 'configuracion',
-              label: 'Configuración',
+              key: 'config-agencia',
+              label: 'Configuración Agencia',
               icon: Settings,
               path: `/${roleRoute}/configuracion`,
+              isOpen: true,
               subMenu: [
                 {
-                  key: 'config-general',
-                  label: 'General',
-                  icon: Settings,
-                  path: `/${roleRoute}/configuracion/general`
-                },
-                {
-                  key: 'config-seguridad',
-                  label: 'Seguridad y Privacidad',
-                  icon: Shield,
-                  path: `/${roleRoute}/configuracion/seguridad`
-                },
-                {
-                  key: 'config-notificaciones',
-                  label: 'Notificaciones',
-                  icon: BellRing,
-                  path: `/${roleRoute}/configuracion/notificaciones`
-                }
-              ]
-            }
-          ]
-        }
-      ];
-    }
-    
-    // Menú para AGENTE o AGENCIA
-    if (role === 'AGENTE' || role === 'AGENCIA') {
-      const baseMenuSections = [
-        ...baseMenu,
-        {
-          title: 'GESTIÓN',
-          items: [
-            {
-              key: 'perfil',
-              label: 'Mi Perfil',
-              icon: FileUser,
-              path: `/${roleRoute}/perfil`
-            },
-            {
-              key: 'configuracion',
-              label: 'Configuración',
-              icon: Settings,
-              path: `/${roleRoute}/configuracion`,
-              subMenu: [
-                {
-                  key: 'config-general',
-                  label: 'General',
-                  icon: Settings,
-                  path: `/${roleRoute}/configuracion/general`
-                },
-                {
-                  key: 'config-usuarios',
+                  key: 'usuarios',
                   label: 'Usuarios',
                   icon: Users,
                   path: `/${roleRoute}/configuracion/usuarios`
                 },
                 {
-                  key: 'config-informacion',
+                  key: 'info-agencia',
                   label: 'Información de agencia',
                   icon: Info,
                   path: `/${roleRoute}/configuracion/informacion`
                 },
                 {
-                  key: 'config-sedes',
+                  key: 'sedes',
                   label: 'Sedes',
                   icon: MapPin,
                   path: `/${roleRoute}/configuracion/sedes`
                 },
                 {
-                  key: 'config-aseguradoras',
+                  key: 'aseguradoras',
                   label: 'Aseguradoras',
                   icon: Shield,
                   path: `/${roleRoute}/configuracion/aseguradoras`
                 },
                 {
-                  key: 'config-ramos',
+                  key: 'ramos',
                   label: 'Ramos',
                   icon: Grid,
                   path: `/${roleRoute}/configuracion/ramos`
                 },
                 {
-                  key: 'config-vendedores',
+                  key: 'vendedores',
                   label: 'Vendedores',
-                  icon: Users,
+                  icon: List,
                   path: `/${roleRoute}/configuracion/vendedores`
                 },
                 {
-                  key: 'config-estados-siniestros',
+                  key: 'estados-siniestros',
                   label: 'Estados Siniestros',
-                  icon: List,
+                  icon: Mail,
                   path: `/${roleRoute}/configuracion/estados-siniestros`
                 },
                 {
-                  key: 'config-estados-arl',
+                  key: 'estados-arl',
                   label: 'Estados ARL',
-                  icon: List,
+                  icon: AlertTriangle,
                   path: `/${roleRoute}/configuracion/estados-arl`
                 },
                 {
-                  key: 'config-motivos-estados',
+                  key: 'motivos-estados',
                   label: 'Motivos estados póliza',
-                  icon: List,
+                  icon: FileText,
                   path: `/${roleRoute}/configuracion/motivos-estados`
                 },
                 {
-                  key: 'config-tipo-afiliacion',
+                  key: 'tipo-afiliacion',
                   label: 'Tipo afiliación',
-                  icon: List,
+                  icon: Clipboard,
                   path: `/${roleRoute}/configuracion/tipo-afiliacion`
                 },
                 {
-                  key: 'config-mensajeros',
+                  key: 'mensajeros',
                   label: 'Mensajeros',
-                  icon: Users,
+                  icon: Mail,
                   path: `/${roleRoute}/configuracion/mensajeros`
                 },
                 {
-                  key: 'config-coberturas',
+                  key: 'coberturas',
                   label: 'Coberturas',
-                  icon: Shield,
+                  icon: List,
                   path: `/${roleRoute}/configuracion/coberturas`
-                },
-                {
-                  key: 'config-seguridad',
-                  label: 'Seguridad',
-                  icon: Shield,
-                  path: `/${roleRoute}/configuracion/seguridad`
-                },
-                {
-                  key: 'config-notificaciones',
-                  label: 'Notificaciones',
-                  icon: BellRing,
-                  path: `/${roleRoute}/configuracion/notificaciones`
                 }
               ]
             },
             {
-              key: 'importar',
+              key: 'importar-plantillas',
               label: 'Importar Plantillas',
               icon: Upload,
               path: `/${roleRoute}/importar`,
               subMenu: [
                 {
-                  key: 'importar-aseguradoras',
+                  key: 'imp-aseguradoras',
                   label: 'Aseguradoras',
                   icon: Shield,
-                  path: `/${roleRoute}/importar/aseguradoras`
+                  path: `/${roleRoute}/importar/aseguradoras`,
+                  target: '_blank'
                 },
                 {
-                  key: 'importar-ramos',
+                  key: 'imp-ramos',
                   label: 'Ramos',
                   icon: Grid,
-                  path: `/${roleRoute}/importar/ramos`
+                  path: `/${roleRoute}/importar/ramos`,
+                  target: '_blank'
                 },
                 {
-                  key: 'importar-vendedores',
+                  key: 'imp-vendedores',
                   label: 'Vendedores',
-                  icon: Users,
-                  path: `/${roleRoute}/importar/vendedores`
+                  icon: List,
+                  path: `/${roleRoute}/importar/vendedores`,
+                  target: '_blank'
                 },
                 {
-                  key: 'importar-clientes',
+                  key: 'imp-clientes',
                   label: 'Clientes',
-                  icon: Users,
-                  path: `/${roleRoute}/importar/clientes`
+                  icon: FileUser,
+                  path: `/${roleRoute}/importar/clientes`,
+                  target: '_blank'
                 },
                 {
-                  key: 'importar-polizas',
+                  key: 'imp-polizas',
                   label: 'Pólizas',
-                  icon: FileText,
-                  path: `/${roleRoute}/importar/polizas`
+                  icon: Users,
+                  path: `/${roleRoute}/importar/polizas`,
+                  target: '_blank'
                 },
                 {
-                  key: 'importar-polizas-cumplimiento',
+                  key: 'imp-polizas-cumplimiento',
                   label: 'Pólizas de cumplimiento y judicial',
-                  icon: FileText,
-                  path: `/${roleRoute}/importar/polizas-cumplimiento`
+                  icon: Users,
+                  path: `/${roleRoute}/importar/polizas-cumplimiento`,
+                  target: '_blank'
                 },
                 {
-                  key: 'importar-campos-ramo',
+                  key: 'imp-campos-ramo',
                   label: 'Campos adicionales por ramo',
-                  icon: FileText,
+                  icon: Grid,
                   path: `/${roleRoute}/importar/campos-ramo`
                 },
                 {
-                  key: 'importar-anexos',
+                  key: 'imp-anexos',
                   label: 'Anexos',
                   icon: Paperclip,
-                  path: `/${roleRoute}/importar/anexos`
+                  path: `/${roleRoute}/importar/anexos`,
+                  target: '_blank'
                 },
                 {
-                  key: 'importar-cobros',
+                  key: 'imp-cobros',
                   label: 'Cobros',
                   icon: DollarSign,
-                  path: `/${roleRoute}/importar/cobros`
+                  path: `/${roleRoute}/importar/cobros`,
+                  target: '_blank'
                 },
                 {
-                  key: 'importar-vinculados',
-                  label: 'Vinculados',
-                  icon: UserPlus,
-                  path: `/${roleRoute}/importar/vinculados`
+                  key: 'imp-vinculados',
+                  label: 'Vinculados pólizas colectivas',
+                  icon: Users,
+                  path: `/${roleRoute}/importar/vinculados`,
+                  target: '_blank'
                 },
                 {
-                  key: 'importar-beneficiarios',
+                  key: 'imp-beneficiarios',
                   label: 'Beneficiarios',
                   icon: UserPlus,
-                  path: `/${roleRoute}/importar/beneficiarios`
+                  path: `/${roleRoute}/importar/beneficiarios`,
+                  target: '_blank'
                 },
                 {
-                  key: 'importar-crm',
-                  label: 'CRM',
+                  key: 'imp-crm',
+                  label: 'Asistente Comercial/CRM',
                   icon: Laptop,
-                  path: `/${roleRoute}/importar/crm`
+                  path: `/${roleRoute}/importar/crm`,
+                  target: '_blank'
                 },
                 {
-                  key: 'importar-siniestros',
-                  label: 'Siniestros',
+                  key: 'imp-siniestros',
+                  label: 'Importar Siniestros',
                   icon: AlertTriangle,
-                  path: `/${roleRoute}/importar/siniestros`
+                  path: `/${roleRoute}/importar/siniestros`,
+                  target: '_blank'
                 },
                 {
-                  key: 'importar-amparos',
-                  label: 'Amparos',
-                  icon: Shield,
-                  path: `/${roleRoute}/importar/amparos`
+                  key: 'imp-amparos',
+                  label: 'Importar Amparos Siniestros',
+                  icon: AlertTriangle,
+                  path: `/${roleRoute}/importar/amparos`,
+                  target: '_blank'
                 },
                 {
-                  key: 'importar-coberturas',
+                  key: 'imp-coberturas',
                   label: 'Coberturas',
-                  icon: Shield,
-                  path: `/${roleRoute}/importar/coberturas`
+                  icon: List,
+                  path: `/${roleRoute}/importar/coberturas`,
+                  target: '_blank'
                 },
                 {
-                  key: 'importar-tareas',
+                  key: 'imp-tareas',
                   label: 'Tareas',
                   icon: FileText,
-                  path: `/${roleRoute}/importar/tareas`
+                  path: `/${roleRoute}/importar/tareas`,
+                  target: '_blank'
                 },
                 {
-                  key: 'importar-datos-adicionales',
-                  label: 'Datos adicionales',
+                  key: 'imp-datos-adicionales',
+                  label: 'Importar datos adicionales de clientes',
                   icon: FileText,
                   path: `/${roleRoute}/importar/datos-adicionales`
                 }
@@ -606,208 +579,208 @@ const Sidebar = () => {
             }
           ]
         }
-      ];
-      
-      // Para agentes, agregamos una sección con métricas de ventas
-      if (role === 'AGENTE') {
-        return [
-          ...baseMenuSections,
-          {
-            title: "MÉTRICAS",
-            items: [
-              {
-                key: 'ventas',
-                label: 'Ventas',
-                icon: BarChart2,
-                path: `/${roleRoute}/ventas`
-              }
-            ]
-          }
-        ];
-      }
-      
-      return baseMenuSections;
+      );
     }
-    
-    // Menú para ADMIN
-    if (role === 'ADMIN') {
+
+    if (role === 'CLIENTE') {
       return [
-        ...baseMenu,
         {
-          title: 'ADMINISTRACIÓN',
+          title: "MI CUENTA",
           items: [
             {
-              key: 'usuarios',
-              label: 'Gestión de Usuarios',
+              key: 'inicio',
+              label: 'Inicio',
+              icon: Home,
+              path: `/usuario/dashboard`
+            },
+            {
+              key: 'mis-polizas',
+              label: 'Mis Pólizas',
               icon: Users,
-              path: `/admin/usuarios`
+              path: `/usuario/mis-polizas`
             },
             {
-              key: 'agencias',
-              label: 'Gestión de Agencias',
-              icon: Box,
-              path: `/admin/agencias`
+              key: 'siniestros',
+              label: 'Siniestros',
+              icon: AlertTriangle,
+              path: `/usuario/siniestros`
             },
             {
-              key: 'metricas',
-              label: 'Métricas y Reportes',
-              icon: BarChart2,
-              path: `/admin/metricas`
+              key: 'pagos',
+              label: 'Pagos',
+              icon: DollarSign,
+              path: `/usuario/pagos`
             },
             {
-              key: 'configuracion-sistema',
-              label: 'Configuración del Sistema',
-              icon: Settings,
-              path: `/admin/configuracion-sistema`,
-              subMenu: [
-                {
-                  key: 'config-general',
-                  label: 'General',
-                  icon: Settings,
-                  path: `/admin/configuracion-sistema/general`
-                },
-                {
-                  key: 'config-seguridad',
-                  label: 'Seguridad',
-                  icon: Shield,
-                  path: `/admin/configuracion-sistema/seguridad`
-                },
-                {
-                  key: 'config-notificaciones',
-                  label: 'Notificaciones',
-                  icon: BellRing,
-                  path: `/admin/configuracion-sistema/notificaciones`
-                },
-                {
-                  key: 'config-integraciones',
-                  label: 'Integraciones',
-                  icon: ArrowUpRight,
-                  path: `/admin/configuracion-sistema/integraciones`
-                }
-              ]
+              key: 'documentos',
+              label: 'Documentos',
+              icon: File,
+              path: `/usuario/documentos`
+            },
+            {
+              key: 'cotizaciones',
+              label: 'Cotizaciones',
+              icon: FileText,
+              path: `/usuario/cotizaciones`
             }
           ]
         }
       ];
     }
-    
-    // Por defecto, devolver menú base
     return baseMenu;
   };
-  
-  const renderMenuSection = (section: MenuSection, index: number) => {
-    if (section.isDivider) {
-      return <Separator key={index} className="my-4" />;
-    }
-    
-    return (
-      <div key={index} className="mb-8">
-        {section.title && (
-          <h3 className="px-4 text-xs text-muted-foreground font-semibold tracking-wider uppercase mb-2">
-            {collapsed ? '···' : section.title}
-          </h3>
-        )}
-        <ul className="space-y-1">
-          {section.items.map(item => renderMenuItem(item))}
-        </ul>
-      </div>
-    );
-  };
-  
-  const renderMenuItem = (item: MenuItem) => (
-    <li key={item.key} className="relative">
-      <Button
-        variant={activeKey === item.key ? "secondary" : "ghost"}
-        size="sm"
-        className={`w-full h-10 justify-start gap-2 ${activeKey === item.key ? 'font-medium' : ''}`}
-        onClick={() => handleItemClick(item.path, item.key, item.target)}
-      >
-        <item.icon size={20} />
-        {!collapsed && (
-          <>
-            <span className="flex-1 truncate">{item.label}</span>
-            {item.subMenu && (
-              <ChevronRight 
-                className={`h-4 w-4 shrink-0 transition-transform ${openMenuItems[item.key] ? 'rotate-90' : ''}`}
-                onClick={(e) => toggleSubMenu(item.key, e)}
-              />
-            )}
-          </>
-        )}
-      </Button>
-      
-      {!collapsed && item.subMenu && openMenuItems[item.key] && (
-        <ul className="ml-6 mt-1 space-y-1">
-          {item.subMenu.map(subItem => (
-            <li key={subItem.key}>
-              <Button
-                variant={activeKey === subItem.key ? "secondary" : "ghost"}
-                size="sm"
-                className={`w-full h-8 justify-start gap-2 text-sm ${activeKey === subItem.key ? 'font-medium' : ''}`}
-                onClick={() => handleItemClick(subItem.path, subItem.key, subItem.target)}
-              >
-                <subItem.icon size={16} />
-                <span className="flex-1 truncate">{subItem.label}</span>
-              </Button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </li>
-  );
+
+  if (!user) return null;
 
   return (
-    <aside 
-      className={`flex flex-col h-full bg-background border-r transition-all duration-300 ${
-        collapsed ? 'w-[60px]' : 'w-[260px]'
-      }`}
-    >
-      <div className="flex items-center h-16 px-3 border-b">
-        <div className="flex-1">
-          {!collapsed ? (
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 flex items-center justify-center rounded-full bg-primary text-primary-foreground">
-                <User className="h-5 w-5" />
-              </div>
-              <div className="flex flex-col overflow-hidden">
-                <span className="font-medium truncate">{user?.name || 'Usuario'}</span>
-                <span className="text-xs text-muted-foreground truncate">{user?.role}</span>
-              </div>
+    <div className={`flex h-full flex-col bg-sidebar text-sidebar-foreground ${collapsed ? 'w-16' : 'w-64'} transition-all duration-300`}>
+      {/* Header del sidebar */}
+      <div className="flex items-center justify-between p-4">
+        <div className="flex items-center gap-2">
+          <img src="/logo.png" alt="Logo" className="h-8 w-8" />
+          <h1 className="text-xl font-bold">Hub de Seguros</h1>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggleSidebar}
+          className="hidden md:block"
+        >
+          {collapsed ? <ChevronRight /> : <ChevronLeft />}
+        </Button>
+      </div>
+
+      {/* Información del usuario */}
+      <div className={`${collapsed ? 'py-4 px-2' : 'p-4'} border-b border-[#2a3c5a]`}>
+        <div className="flex items-center">
+          <div className="flex-shrink-0">
+            <div className="w-8 h-8 rounded-full bg-blue-700 flex items-center justify-center text-white font-medium">
+              {user?.name?.charAt(0) || 'U'}
             </div>
-          ) : (
-            <div className="h-8 w-8 mx-auto flex items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <User className="h-5 w-5" />
+          </div>
+          {!collapsed && (
+            <div className="ml-3 overflow-hidden">
+              <p className="text-sm font-medium text-white truncate">{user?.name || 'Usuario'}</p>
+              <p className="text-xs text-gray-300 truncate">{user?.role || 'Rol'}</p>
             </div>
           )}
         </div>
+      </div>
+
+      {/* Menú de navegación */}
+      <nav className="flex-1 overflow-y-auto py-2">
+        {menuSections.map((section, sectionIndex) => (
+          <div key={`section-${sectionIndex}`} className="mb-2">
+            {section.isDivider ? (
+              <Separator className="my-3 bg-[#2a3c5a]" />
+            ) : (
+              <div className="mb-2">
+                {!collapsed && section.title && (
+                  <h3 className="text-xs font-semibold tracking-wider uppercase text-gray-400 mb-2 px-4">
+                    {section.title}
+                  </h3>
+                )}
+                <ul>
+                  {section.items.map((item) => (
+                    <li key={item.key} className="mb-0.5">
+                      {/* Item principal */}
+                      <div 
+                        className={`flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-[#2a3c5a] rounded-md 
+                          transition-all duration-150 cursor-pointer select-none 
+                          ${activeKey === item.key ? 'bg-[#2a3c5a] font-medium text-blue-400' : ''}`}
+                        onClick={(e) => {
+                          if (item.subMenu) {
+                            toggleSubMenu(item.key, e);
+                          } else {
+                            handleItemClick(item.path, item.key, item.target);
+                          }
+                        }}
+                      >
+                        <div className="mr-2 min-w-[24px] flex justify-center items-center">
+                          {item.icon && <item.icon size={18} />}
+                        </div>
+                        {!collapsed && (
+                          <div className="flex justify-between items-center w-full">
+                            <span>{item.label}</span>
+                            {item.subMenu && (
+                              <ChevronRight 
+                                size={16} 
+                                className={`transition-transform duration-200 ${openMenuItems[item.key] ? 'rotate-90' : ''}`} 
+                              />
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Submenú */}
+                      {item.subMenu && (
+                        <div 
+                          className={`overflow-hidden transition-all duration-200 ease-in-out pl-6 
+                            ${openMenuItems[item.key] ? 'max-h-96 opacity-100 mt-1' : 'max-h-0 opacity-0'}`}
+                        >
+                          <ul className="border-l border-[#2a3c5a] pl-2">
+                            {item.subMenu.map((subItem) => (
+                              <li key={subItem.key} className="mb-0.5">
+                                <div 
+                                  className={`flex items-center px-4 py-1.5 text-sm text-gray-300 hover:bg-[#2a3c5a] rounded-md 
+                                    transition-colors duration-150 cursor-pointer select-none 
+                                    ${activeKey === subItem.key ? 'bg-[#2a3c5a] font-medium text-blue-400' : ''}`}
+                                  onClick={() => handleItemClick(subItem.path, subItem.key, subItem.target)}
+                                >
+                                  <div className="mr-2 min-w-[24px] flex justify-center items-center">
+                                    {subItem.icon && <subItem.icon size={16} />}
+                                  </div>
+                                  {!collapsed && <span>{subItem.label}</span>}
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        ))}
+      </nav>
+
+      {/* Footer del sidebar */}
+      <div className="border-t border-[#2a3c5a] p-4 space-y-2">
+        {/* Notification Link */}
         <Button 
           variant="ghost" 
-          size="icon" 
-          onClick={toggleSidebar}
-          className="ml-1"
+          size={collapsed ? 'icon' : 'default'}
+          className={`w-full flex items-center justify-${collapsed ? 'center' : 'start'} text-gray-300 hover:bg-[#2a3c5a] hover:text-white relative`}
+          onClick={() => navigate('/notificaciones')}
         >
-          {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+          <div className="relative">
+            <BellRing size={18} className={collapsed ? '' : 'mr-2'} />
+            {unreadCount > 0 && (
+              <Badge 
+                className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center p-0 text-xs"
+                variant="destructive"
+              >
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </Badge>
+            )}
+          </div>
+          {!collapsed && <span>Notificaciones</span>}
         </Button>
-      </div>
-      
-      <div className="flex-1 overflow-y-auto py-4">
-        <div className="px-2">
-          {menuSections.map((section, index) => renderMenuSection(section, index))}
-        </div>
-      </div>
-      
-      <div className="p-2 mt-auto border-t">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="w-full justify-start gap-2 text-destructive hover:text-destructive"
+        
+        {/* Logout Button */}
+        <Button 
+          variant="ghost" 
+          size={collapsed ? 'icon' : 'default'}
+          className={`w-full flex items-center justify-${collapsed ? 'center' : 'start'} text-gray-300 hover:bg-[#2a3c5a] hover:text-white`}
           onClick={logout}
         >
-          <LogOut size={20} />
-          {!collapsed && <span>Cerrar sesión</span>}
+          <LogOut size={18} className={collapsed ? '' : 'mr-2'} />
+          {!collapsed && <span>Cerrar Sesión</span>}
         </Button>
       </div>
-    </aside>
+    </div>
   );
 };
 
