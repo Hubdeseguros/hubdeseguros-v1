@@ -40,8 +40,7 @@ const AppRoutes = () => {
     if (!isAuthenticated) return '/landing';
     
     switch (user?.role) {
-      case 'CLIENTE':
-        return '/usuario/dashboard';
+      // El caso CLIENTE ha sido eliminado
       case 'AGENTE':
         return '/agente/dashboard';
       case 'AGENCIA':
@@ -63,25 +62,6 @@ const AppRoutes = () => {
         <Route path="/landing" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-
-        {/* Rutas para CLIENTE */}
-        <Route path="/usuario" element={<PrivateRoute allowedRoles={['CLIENTE', 'ADMIN']} />}>
-          <Route path="dashboard" element={<UserDashboard />} />
-          <Route path="mis-polizas" element={<Placeholder title="Mis Pólizas" />} />
-          <Route path="siniestros" element={<Placeholder title="Siniestros" />} />
-          <Route path="pagos" element={<Placeholder title="Pagos" />} />
-          <Route path="documentos" element={<Placeholder title="Documentos" />} />
-          <Route path="cotizaciones" element={<Placeholder title="Cotizaciones" />} />
-          <Route path="notificaciones" element={<NotificationsPage />} />
-          <Route path="perfil" element={<ProfilePage />} />
-          <Route path="configuracion" element={<SettingsPage />}>
-            <Route index element={<Navigate to="general" replace />} />
-            <Route path="general" element={<Placeholder title="Configuración General" />} />
-            <Route path="seguridad" element={<Placeholder title="Seguridad y Privacidad" />} />
-            <Route path="notificaciones" element={<Placeholder title="Preferencias de Notificaciones" />} />
-          </Route>
-          <Route path="contacto-soporte" element={<Placeholder title="Contacto con Soporte" />} />
-        </Route>
 
         {/* Rutas para AGENTE */}
         <Route path="/agente" element={<PrivateRoute allowedRoles={['AGENTE', 'ADMIN']} />}>

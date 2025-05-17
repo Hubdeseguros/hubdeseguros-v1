@@ -21,7 +21,7 @@ const mockUsers = [
     name: 'Cliente Demo', 
     email: 'cliente@demo.com', 
     password: 'password', 
-    role: 'CLIENTE' as UserRole,
+    role: 'AGENTE' as UserRole,  // Valor por defecto cambiado de CLIENTE a AGENTE
     level: 'BASICO' as UserLevel,
     phone: '+57 123 456 7890',
     company: 'Empresa del Cliente',
@@ -110,9 +110,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         
         // Navegar a la ruta correspondiente según el rol
         switch (foundUser.role) {
-          case 'CLIENTE':
-            navigate('/usuario/dashboard');
-            break;
           case 'AGENTE':
             navigate('/agente/dashboard');
             break;

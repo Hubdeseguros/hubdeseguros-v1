@@ -80,7 +80,7 @@ const Sidebar = () => {
   const { state: sidebarState, toggleSidebar } = useSidebar();
 
   // Determinar el menú del rol actual
-  const role = user?.role?.toUpperCase() || "CLIENTE";
+  const role = user?.role?.toUpperCase() || "AGENTE";  // Valor por defecto cambiado de CLIENTE a AGENTE
   const sections: SidebarMenuSection[] = SIDEBAR_MENUS[role] || [];
 
   return (
