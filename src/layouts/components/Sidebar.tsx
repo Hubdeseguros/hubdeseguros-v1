@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { useSidebar } from '@/components/ui/sidebar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   ChevronLeft, ChevronRight, LogOut, 
   BarChart2, 
@@ -30,7 +32,11 @@ import {
   UserPlus, 
   Paperclip,
   ArrowUpRight,
-  Home 
+  Home,
+  Bell,
+  Check,
+  Clock,
+  AlertCircle
 } from 'lucide-react';
 
 type MenuIcon = React.ComponentType<{ size?: string | number; className?: string }>;
@@ -58,13 +64,102 @@ const Sidebar = () => {
   const { state: sidebarState, toggleSidebar } = useSidebar();
   const [activeKey, setActiveKey] = useState('');
   const [menuSections, setMenuSections] = useState<MenuSection[]>([]);
+  const [openMenuItems, setOpenMenuItems] = useState<Record<string, boolean>>({});
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([
+    {
+      id: '1',
+      title: 'Nuevo mensaje',
+      message: 'Tienes un nuevo mensaje del equipo de soporte',
+      date: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
+      read: false,
+      type: 'info'
+    },
+    {
+      id: '2',
+      title: 'Pago recibido',
+      message: 'Se ha registrado el pago de la póliza #12345',
+      date: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
+      read: false,
+      type: 'success'
+    },
+    {
+      id: '3',
+      title: 'Recordatorio',
+      message: 'La póliza #54321 vence en 15 días',
+      date: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
+      read: true,
+      type: 'warning'
+    }
+  ]);
+  const notificationsRef = useRef<HTMLDivElement>(null);
+  
+  // Close notifications when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notificationsRef.current && !notificationsRef.current.contains(event.target as Node)) {
+        setShowNotifications(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+  
+  const unreadCount = notifications.filter(n => !n.read).length;
+  
+  const markAsRead = (id: string) => {
+    setNotifications(notifications.map(notification => 
+      notification.id === id ? { ...notification, read: true } : notification
+    ));
+  };
+  
+  const markAllAsRead = () => {
+    setNotifications(notifications.map(notification => ({
+      ...notification,
+      read: true
+    })));
+  };
+  
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case 'success':
+        return <Check className="h-4 w-4 text-green-500" />;
+      case 'warning':
+        return <AlertCircle className="h-4 w-4 text-yellow-500" />;
+      case 'error':
+        return <AlertCircle className="h-4 w-4 text-red-500" />;
+      default:
+        return <Bell className="h-4 w-4 text-blue-500" />;
+    }
+  };
+  
+  const formatTimeAgo = (date: Date) => {
+    const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+    
+    let interval = Math.floor(seconds / 31536000);
+    if (interval >= 1) return `hace ${interval} año${interval === 1 ? '' : 's'}`;
+    
+    interval = Math.floor(seconds / 2592000);
+    if (interval >= 1) return `hace ${interval} mes${interval === 1 ? '' : 'es'}`;
+    
+    interval = Math.floor(seconds / 86400);
+    if (interval >= 1) return `hace ${interval} día${interval === 1 ? '' : 's'}`;
+    
+    interval = Math.floor(seconds / 3600);
+    if (interval >= 1) return `hace ${interval} hora${interval === 1 ? '' : 's'}`;
+    
+    interval = Math.floor(seconds / 60);
+    if (interval >= 1) return `hace ${interval} minuto${interval === 1 ? '' : 's'}`;
+    
+    return 'hace unos segundos';
+  };
 
   const collapsed = sidebarState !== 'expanded';
 
-  const handleToggle = () => {
-    toggleSidebar();
-  };
-
+  // Cargar el menú basado en el rol del usuario
   useEffect(() => {
     if (user) {
       const menuConfig = getMenuByRole(user.role);
@@ -72,56 +167,64 @@ const Sidebar = () => {
     }
   }, [user]);
 
+  // Detectar la ruta activa y abrir los submenús correspondientes
   useEffect(() => {
     const path = location.pathname;
+    const newOpenItems: Record<string, boolean> = {};
+    let foundActiveKey = '';
+
     if (menuSections) {
-      for (const section of menuSections) {
-        for (const item of section.items) {
+      // Buscar coincidencias en los items principales y submenús
+      menuSections.forEach(section => {
+        section.items.forEach(item => {
+          // Verificar si la ruta coincide con el item principal
           if (path === item.path || path.startsWith(item.path + '/')) {
-            setActiveKey(item.key);
+            foundActiveKey = item.key;
             if (item.subMenu) {
-              toggleSubMenu(item.key);
+              newOpenItems[item.key] = true;
             }
-            break;
           }
+          
+          // Verificar si la ruta coincide con algún subitem
           if (item.subMenu) {
-            for (const subItem of item.subMenu) {
+            item.subMenu.forEach(subItem => {
               if (path === subItem.path || path.startsWith(subItem.path + '/')) {
-                setActiveKey(subItem.key);
-                toggleSubMenu(item.key);
-                break;
+                foundActiveKey = subItem.key;
+                newOpenItems[item.key] = true;
               }
-            }
+            });
           }
-        }
-      }
+        });
+      });
     }
+
+    // Actualizar el estado solo si hay cambios
+    if (foundActiveKey !== activeKey) {
+      setActiveKey(foundActiveKey);
+    }
+    
+    setOpenMenuItems(prev => ({
+      ...prev,
+      ...newOpenItems
+    }));
   }, [location.pathname, menuSections]);
 
+  // Manejar clic en un item del menú
   const handleItemClick = (path: string, key: string, target?: string) => {
     if (target === '_blank') {
       window.open(path, '_blank');
     } else {
-      // Solo actualizamos el activeKey si es diferente al actual
-      if (activeKey !== key) {
-        setActiveKey(key);
-      }
       navigate(path);
     }
   };
 
-  const toggleSubMenu = (key: string) => {
-    setMenuSections(prevSections => 
-      prevSections.map(section => ({
-        ...section,
-        items: section.items.map(item => {
-          if (item.key === key) {
-            return { ...item, isOpen: !item.isOpen };
-          }
-          return item;
-        })
-      }))
-    );
+  // Alternar la apertura/cierre de un submenú
+  const toggleSubMenu = (key: string, event: React.MouseEvent) => {
+    event.stopPropagation();
+    setOpenMenuItems(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
   };
 
   const getMenuByRole = (role: string): MenuSection[] => {
@@ -594,7 +697,7 @@ const Sidebar = () => {
   if (!user) return null;
 
   return (
-    <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
+    <div className={`flex h-full flex-col bg-sidebar text-sidebar-foreground ${collapsed ? 'w-16' : 'w-64'} transition-all duration-300`}>
       {/* Header del sidebar */}
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-2">
@@ -604,7 +707,7 @@ const Sidebar = () => {
         <Button
           variant="ghost"
           size="icon"
-          onClick={handleToggle}
+          onClick={toggleSidebar}
           className="hidden md:block"
         >
           {collapsed ? <ChevronRight /> : <ChevronLeft />}
@@ -616,59 +719,87 @@ const Sidebar = () => {
         <div className="flex items-center">
           <div className="flex-shrink-0">
             <div className="w-8 h-8 rounded-full bg-blue-700 flex items-center justify-center text-white font-medium">
-              {user.name.charAt(0)}
+              {user?.name?.charAt(0) || 'U'}
             </div>
           </div>
           {!collapsed && (
             <div className="ml-3 overflow-hidden">
-              <p className="text-sm font-medium text-white truncate">{user.name}</p>
-              <p className="text-xs text-gray-300 truncate">{user.role}</p>
+              <p className="text-sm font-medium text-white truncate">{user?.name || 'Usuario'}</p>
+              <p className="text-xs text-gray-300 truncate">{user?.role || 'Rol'}</p>
             </div>
           )}
         </div>
       </div>
 
       {/* Menú de navegación */}
-      <div className="flex-1 overflow-y-auto py-4">
+      <nav className="flex-1 overflow-y-auto py-2">
         {menuSections.map((section, sectionIndex) => (
-          <div key={`section-${sectionIndex}`}>
+          <div key={`section-${sectionIndex}`} className="mb-2">
             {section.isDivider ? (
               <Separator className="my-3 bg-[#2a3c5a]" />
             ) : (
-              <div className="mb-4">
+              <div className="mb-2">
                 {!collapsed && section.title && (
-                  <h3 className="text-xs font-semibold tracking-wider uppercase text-gray-400 mb-2 px-4">{section.title}</h3>
+                  <h3 className="text-xs font-semibold tracking-wider uppercase text-gray-400 mb-2 px-4">
+                    {section.title}
+                  </h3>
                 )}
                 <ul>
                   {section.items.map((item) => (
-                    <li key={item.key}>
-                      <TooltipProvider delayDuration={300}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div 
-                              className={`flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-[#2a3c5a] rounded-md transition-colors duration-150 cursor-pointer min-h-[40px] select-none ${
-                                activeKey === item.key ? 'bg-[#2a3c5a] font-medium text-blue-400' : ''
-                              }`}
-                              style={{ minWidth: collapsed ? 48 : 0 }}
-                                    handleItemClick(subItem.path, subItem.key, subItem.target);
-                                  }
-                                }}
-                                onClick={() => handleItemClick(subItem.path, subItem.key, subItem.target)}
-                                aria-current={activeKey === subItem.key ? "page" : undefined}
-                                aria-label={subItem.label}
-                                role="menuitem"
-                              >
-                                <div className="mr-2 min-w-[24px] flex justify-center items-center">
-                                  <subItem.icon size={18} />
+                    <li key={item.key} className="mb-0.5">
+                      {/* Item principal */}
+                      <div 
+                        className={`flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-[#2a3c5a] rounded-md 
+                          transition-all duration-150 cursor-pointer select-none 
+                          ${activeKey === item.key ? 'bg-[#2a3c5a] font-medium text-blue-400' : ''}`}
+                        onClick={(e) => {
+                          if (item.subMenu) {
+                            toggleSubMenu(item.key, e);
+                          } else {
+                            handleItemClick(item.path, item.key, item.target);
+                          }
+                        }}
+                      >
+                        <div className="mr-2 min-w-[24px] flex justify-center items-center">
+                          {item.icon && <item.icon size={18} />}
+                        </div>
+                        {!collapsed && (
+                          <div className="flex justify-between items-center w-full">
+                            <span>{item.label}</span>
+                            {item.subMenu && (
+                              <ChevronRight 
+                                size={16} 
+                                className={`transition-transform duration-200 ${openMenuItems[item.key] ? 'rotate-90' : ''}`} 
+                              />
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Submenú */}
+                      {item.subMenu && (
+                        <div 
+                          className={`overflow-hidden transition-all duration-200 ease-in-out pl-6 
+                            ${openMenuItems[item.key] ? 'max-h-96 opacity-100 mt-1' : 'max-h-0 opacity-0'}`}
+                        >
+                          <ul className="border-l border-[#2a3c5a] pl-2">
+                            {item.subMenu.map((subItem) => (
+                              <li key={subItem.key} className="mb-0.5">
+                                <div 
+                                  className={`flex items-center px-4 py-1.5 text-sm text-gray-300 hover:bg-[#2a3c5a] rounded-md 
+                                    transition-colors duration-150 cursor-pointer select-none 
+                                    ${activeKey === subItem.key ? 'bg-[#2a3c5a] font-medium text-blue-400' : ''}`}
+                                  onClick={() => handleItemClick(subItem.path, subItem.key, subItem.target)}
+                                >
+                                  <div className="mr-2 min-w-[24px] flex justify-center items-center">
+                                    {subItem.icon && <subItem.icon size={16} />}
+                                  </div>
+                                  {!collapsed && <span>{subItem.label}</span>}
                                 </div>
-                                <span>{subItem.label}</span>
-                                {subItem.target === '_blank' && (
-                                  <ArrowUpRight size={14} className="ml-1 text-xs" />
-                                )}
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       )}
                     </li>
                   ))}
@@ -677,17 +808,110 @@ const Sidebar = () => {
             )}
           </div>
         ))}
-      </div>
+      </nav>
 
-      {/* Footer con botón de cerrar sesión */}
-      <div className={`p-4 border-t border-[#2a3c5a] ${collapsed ? 'flex justify-center' : ''}`}>
+      {/* Footer del sidebar */}
+      <div className="border-t border-[#2a3c5a] p-4 space-y-2">
+        {/* Notification Button */}
+        <div className="relative" ref={notificationsRef}>
+          <Button 
+            variant="ghost" 
+            size={collapsed ? 'icon' : 'default'}
+            className={`w-full flex items-center justify-${collapsed ? 'center' : 'start'} text-gray-300 hover:bg-[#2a3c5a] hover:text-white relative`}
+            onClick={() => setShowNotifications(!showNotifications)}
+          >
+            <div className="relative">
+              <Bell size={18} className={collapsed ? '' : 'mr-2'} />
+              {unreadCount > 0 && (
+                <Badge 
+                  className="absolute -top-2 -right-2 h-4 w-4 flex items-center justify-center p-0 text-xs"
+                  variant="destructive"
+                >
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </Badge>
+              )}
+            </div>
+            {!collapsed && <span>Notificaciones</span>}
+          </Button>
+          
+          {/* Notifications Dropdown */}
+          {showNotifications && (
+            <div className="absolute bottom-full left-0 mb-2 w-80 bg-[#1e293b] rounded-lg shadow-lg border border-gray-700 overflow-hidden z-50">
+              <div className="flex items-center justify-between p-3 border-b border-gray-700">
+                <h3 className="font-medium text-white">Notificaciones</h3>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-6 px-2 text-xs text-blue-400 hover:text-blue-300"
+                  onClick={markAllAsRead}
+                >
+                  Marcar todo como leído
+                </Button>
+              </div>
+              
+              <div className="max-h-96 overflow-y-auto">
+                {notifications.length > 0 ? (
+                  <div className="divide-y divide-gray-700">
+                    {notifications.map((notification) => (
+                      <div 
+                        key={notification.id}
+                        className={`p-3 hover:bg-[#2a3c5a] cursor-pointer ${!notification.read ? 'bg-[#1e3a8a30]' : ''}`}
+                        onClick={() => markAsRead(notification.id)}
+                      >
+                        <div className="flex items-start gap-2">
+                          <div className="mt-0.5">
+                            {getNotificationIcon(notification.type)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex justify-between items-start">
+                              <h4 className={`text-sm font-medium ${!notification.read ? 'text-white' : 'text-gray-300'}`}>
+                                {notification.title}
+                              </h4>
+                              <span className="text-xs text-gray-400 ml-2 whitespace-nowrap">
+                                {formatTimeAgo(notification.date)}
+                              </span>
+                            </div>
+                            <p className="text-xs text-gray-400 mt-1 truncate">
+                              {notification.message}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-4 text-center text-gray-400 text-sm">
+                    No hay notificaciones
+                  </div>
+                )}
+              </div>
+              
+              <div className="p-2 border-t border-gray-700 text-center">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-xs text-blue-400 hover:text-blue-300"
+                  onClick={() => {
+                    // TODO: Navigate to notifications page
+                    setShowNotifications(false);
+                  }}
+                >
+                  Ver todas las notificaciones
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+        
+        {/* Logout Button */}
         <Button 
           variant="ghost" 
-          onClick={logout} 
-          className={`text-gray-300 hover:bg-[#2a3c5a] ${collapsed ? 'w-10 h-10 p-0' : 'w-full'}`}
+          size={collapsed ? 'icon' : 'default'}
+          className={`w-full flex items-center justify-${collapsed ? 'center' : 'start'} text-gray-300 hover:bg-[#2a3c5a] hover:text-white`}
+          onClick={logout}
         >
-          <LogOut size={18} />
-          {!collapsed && <span className="ml-2">Cerrar sesión</span>}
+          <LogOut size={18} className={collapsed ? '' : 'mr-2'} />
+          {!collapsed && <span>Cerrar Sesión</span>}
         </Button>
       </div>
     </div>
