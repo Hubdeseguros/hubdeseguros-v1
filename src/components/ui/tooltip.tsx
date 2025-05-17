@@ -1,8 +1,9 @@
 
-// Ensure there is only ONE import of React in this file!
-import * as React from "react";
+// Only one React import, or none if using automatic runtime!
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { cn } from "@/lib/utils";
+
+// No need to import React if Vite/tsconfig is set for automatic runtime
 
 const TooltipProvider = TooltipPrimitive.Provider;
 const Tooltip = TooltipPrimitive.Root;
@@ -25,4 +26,3 @@ const TooltipContent = React.forwardRef<
 TooltipContent.displayName = TooltipPrimitive.Content.displayName;
 
 export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider };
-
