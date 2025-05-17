@@ -1,5 +1,5 @@
 
-// Only a single import for React is needed!
+// Only ONE import for React at the top of the file!
 import * as React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { cn } from "@/lib/utils";
