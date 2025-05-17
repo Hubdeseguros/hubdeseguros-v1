@@ -71,8 +71,9 @@ const SidebarProvider = React.forwardRef<
     // This is the internal state of the sidebar.
     // We use openProp and setOpenProp for control from outside the component.
     // Usar useRef para evitar re-renders innecesarios
-    const openRef = React.useRef(defaultOpen)
-    const open = openProp ?? openRef.current
+    // Usar un estado más estable para evitar parpadeos
+    const [openState, setOpenState] = React.useState(defaultOpen)
+    const open = openProp ?? openState
     
     const setOpen = React.useCallback(
       (value: boolean | ((value: boolean) => boolean)) => {
@@ -80,7 +81,7 @@ const SidebarProvider = React.forwardRef<
         if (setOpenProp) {
           setOpenProp(openState)
         } else {
-          openRef.current = openState
+          setOpenState(openState)
         }
 
         // This sets the cookie to keep the sidebar state.
@@ -88,6 +89,10 @@ const SidebarProvider = React.forwardRef<
       },
       [setOpenProp]
     )
+
+    // Evitar re-renders innecesarios usando useMemo
+    const memoizedOpen = React.useMemo(() => open, [open])
+    const memoizedOpenState = React.useMemo(() => openState, [openState])
 
     // Actualizar el estado inicial desde la cookie
     React.useEffect(() => {
@@ -129,13 +134,12 @@ const SidebarProvider = React.forwardRef<
     // Usar un estado más estable para las transiciones
     const [transitionState, setTransitionState] = React.useState(open ? "expanded" : "collapsed")
     
-    // Actualizar el estado de transición con un delay para evitar parpadeos
+    // Actualizar el estado de transición solo cuando cambie realmente
     React.useEffect(() => {
-      const timeout = setTimeout(() => {
+      if (open !== memoizedOpen) {
         setTransitionState(open ? "expanded" : "collapsed")
-      }, 100) // Pequeño delay para evitar parpadeos
-      return () => clearTimeout(timeout)
-    }, [open])
+      }
+    }, [open, memoizedOpen])
 
     const state = transitionState
 
