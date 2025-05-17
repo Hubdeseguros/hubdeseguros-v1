@@ -4,8 +4,6 @@ import { useAuth } from '../hooks/useAuth';
 import PrivateRoute from './PrivateRoute';
 import { UserRole } from '@/types/auth';
 import NotificationsPage from "@/pages/Notifications";
-import ClientsPage from '../pages/clients/ClientsPage';
-
 // Import types for better type checking
 import type { Notification } from '@/types/notifications';
 
@@ -83,19 +81,11 @@ const AppRoutes = () => {
             <Route path="notificaciones" element={<Placeholder title="Preferencias de Notificaciones" />} />
           </Route>
           <Route path="contacto-soporte" element={<Placeholder title="Contacto con Soporte" />} />
-          <Route path="clientes">
-            <Route index element={<Navigate to="crm" replace />} />
-            <Route path="crm" element={<Placeholder title="Asistente Comercial/CRM" />} />
-          </Route>
         </Route>
 
         {/* Rutas para AGENTE */}
         <Route path="/agente" element={<PrivateRoute allowedRoles={['AGENTE', 'ADMIN']} />}>
           <Route path="dashboard" element={<AgentDashboard />} />
-          <Route path="clientes">
-            <Route index element={<Navigate to="crm" replace />} />
-            <Route path="crm" element={<Placeholder title="Asistente Comercial/CRM" />} />
-          </Route>
           <Route path="polizas" element={<Placeholder title="Pólizas" />} />
           <Route path="polizas/listado" element={<Placeholder title="Listado de Pólizas" />} />
           <Route path="polizas/cumplimiento" element={<Placeholder title="Cumplimiento, Judicial, etc" />} />
@@ -139,7 +129,6 @@ const AppRoutes = () => {
           <Route path="importar/aseguradoras" element={<Placeholder title="Importar Aseguradoras" />} />
           <Route path="importar/ramos" element={<Placeholder title="Importar Ramos" />} />
           <Route path="importar/vendedores" element={<Placeholder title="Importar Vendedores" />} />
-          <Route path="importar/clientes" element={<Placeholder title="Importar Clientes" />} />
           <Route path="importar/polizas" element={<Placeholder title="Importar Pólizas" />} />
           <Route path="importar/polizas-cumplimiento" element={<Placeholder title="Importar Pólizas de cumplimiento y judicial" />} />
           <Route path="importar/campos-ramo" element={<Placeholder title="Campos adicionales por ramo" />} />
@@ -159,10 +148,6 @@ const AppRoutes = () => {
         {/* Rutas para AGENCIA */}
         <Route path="/agencia" element={<PrivateRoute allowedRoles={['AGENCIA', 'ADMIN']} />}>
           <Route path="dashboard" element={<AgencyDashboard />} />
-          <Route path="clientes">
-            <Route index element={<Navigate to="crm" replace />} />
-            <Route path="crm" element={<Placeholder title="Asistente Comercial/CRM" />} />
-          </Route>
           <Route path="polizas" element={<Placeholder title="Pólizas" />} />
           <Route path="polizas/listado" element={<Placeholder title="Listado de Pólizas" />} />
           <Route path="polizas/cumplimiento" element={<Placeholder title="Cumplimiento, Judicial, etc" />} />
@@ -206,7 +191,6 @@ const AppRoutes = () => {
           <Route path="importar/aseguradoras" element={<Placeholder title="Importar Aseguradoras" />} />
           <Route path="importar/ramos" element={<Placeholder title="Importar Ramos" />} />
           <Route path="importar/vendedores" element={<Placeholder title="Importar Vendedores" />} />
-          <Route path="importar/clientes" element={<Placeholder title="Importar Clientes" />} />
           <Route path="importar/polizas" element={<Placeholder title="Importar Pólizas" />} />
           <Route path="importar/polizas-cumplimiento" element={<Placeholder title="Importar Pólizas de cumplimiento y judicial" />} />
           <Route path="importar/campos-ramo" element={<Placeholder title="Campos adicionales por ramo" />} />
@@ -240,9 +224,7 @@ const AppRoutes = () => {
 
         {/* Rutas para todos los usuarios autenticados */}
         <Route path="/" element={<PrivateRoute />}>
-          <Route path="/clientes/listado" element={
-            <PrivateRoute>
-              <Suspense fallback={<LoadingFallback />}>
+          <Suspense fallback={<LoadingFallback />}>
                 <ClientsPage />
               </Suspense>
             </PrivateRoute>

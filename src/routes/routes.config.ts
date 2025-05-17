@@ -119,18 +119,11 @@ export const agentRoutes: RouteConfig = {
       title: 'PRINCIPALES',
       items: [
         { 
-          key: 'clientes', 
-          label: 'Clientes', 
-          icon: Users, 
-          path: '/agente/clientes',
-          tooltip: 'Administra tu cartera de clientes'
-        },
-        { 
           key: 'polizas', 
           label: 'Pólizas', 
           icon: Shield, 
           path: '/agente/polizas',
-          tooltip: 'Gestiona las pólizas de tus clientes'
+          tooltip: 'Gestiona tus pólizas'
         },
         { 
           key: 'siniestros', 
@@ -171,7 +164,7 @@ export const agentRoutes: RouteConfig = {
           label: 'Leads', 
           icon: UserPlus, 
           path: '/agente/leads',
-          tooltip: 'Administra tus prospectos de clientes'
+          tooltip: 'Administra tus prospectos'
         },
         { 
           key: 'tareas', 
@@ -227,13 +220,6 @@ export const agencyRoutes: RouteConfig = {
     {
       title: 'PRINCIPALES',
       items: [
-        { 
-          key: 'clientes', 
-          label: 'Clientes', 
-          icon: Users, 
-          path: '/agencia/clientes',
-          tooltip: 'Administra la cartera de clientes'
-        },
         { 
           key: 'polizas', 
           label: 'Pólizas', 

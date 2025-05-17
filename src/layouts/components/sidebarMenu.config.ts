@@ -43,14 +43,7 @@ export const SIDEBAR_MENUS: Record<string, SidebarMenuSection[]> = {
         { key: "inicio", label: "Inicio", icon: LayoutDashboard, path: "/admin/dashboard" }
       ],
     },
-    {
-      key: "clientes",
-      title: "GESTIÓN DE CLIENTES",
-      items: [
-        { key: "clientes", label: "Listado de Clientes", icon: Users, path: "/admin/clientes/listado" },
-        { key: "crm", label: "Asistente Comercial/CRM", icon: Users, path: "/admin/clientes/crm" }
-      ],
-    },
+
     {
       key: "polizas",
       title: "GESTIÓN DE PÓLIZAS",
@@ -109,14 +102,12 @@ export const SIDEBAR_MENUS: Record<string, SidebarMenuSection[]> = {
         { key: "import-aseguradoras", label: "Aseguradoras", icon: Import, path: "/admin/importar/aseguradoras" },
         { key: "import-ramos", label: "Ramos", icon: Import, path: "/admin/importar/ramos" },
         { key: "import-vendedores", label: "Vendedores", icon: Import, path: "/admin/importar/vendedores" },
-        { key: "import-clientes", label: "Clientes", icon: Import, path: "/admin/importar/clientes" },
         { key: "import-polizas", label: "Pólizas", icon: Import, path: "/admin/importar/polizas" },
         { key: "import-cumplimiento", label: "Pólizas de cumplimiento", icon: Import, path: "/admin/importar/polizas-cumplimiento" },
         { key: "import-campos-ramo", label: "Campos adicionales por ramo", icon: Import, path: "/admin/importar/campos-ramo" },
         { key: "import-anexos", label: "Anexos", icon: Import, path: "/admin/importar/anexos" },
         { key: "import-cobros", label: "Cobros", icon: Import, path: "/admin/importar/cobros" },
-        { key: "import-amparos", label: "Amparos Siniestros", icon: Import, path: "/admin/importar/amparos" },
-        { key: "import-datos-clientes", label: "Datos adicionales de clientes", icon: Import, path: "/admin/importar/datos-clientes" },
+        { key: "import-amparos", label: "Amparos Siniestros", icon: Import, path: "/admin/importar/amparos" }
       ],
     },
   ],
@@ -127,19 +118,5 @@ export const SIDEBAR_MENUS: Record<string, SidebarMenuSection[]> = {
   ],
   AGENTE: [
     // ... igual que AGENCIA también puede heredar estructura, cambia paths base
-  ],
-  CLIENTE: [
-    {
-      key: "inicio",
-      title: "MI CUENTA",
-      items: [
-        { key: "home", label: "Inicio", icon: Home, path: "/usuario/dashboard" },
-        { key: "mis-polizas", label: "Mis Pólizas", icon: FileText, path: "/usuario/mis-polizas" },
-        { key: "siniestros", label: "Siniestros", icon: FileText, path: "/usuario/siniestros" },
-        { key: "pagos", label: "Pagos", icon: CreditCard, path: "/usuario/pagos" },
-        { key: "documentos", label: "Documentos", icon: File, path: "/usuario/documentos" },
-        { key: "cotizaciones", label: "Cotizaciones", icon: FileText, path: "/usuario/cotizaciones" },
-      ],
-    },
   ],
 };
