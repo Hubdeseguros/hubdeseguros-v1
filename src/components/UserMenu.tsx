@@ -36,26 +36,14 @@ export function UserMenu() {
 
   const handleProfileClick = () => {
     // Use the correct path based on user role
-    const profilePath = user.role === 'CLIENTE' 
-      ? '/usuario/perfil' 
-      : user.role === 'AGENTE' 
-        ? '/agente/perfil' 
-        : user.role === 'AGENCIA' 
-          ? '/agencia/perfil' 
-          : '/admin/perfil';
+    const profilePath = '/perfil';  
     navigate(profilePath);
     setIsOpen(false);
   };
 
   const handleSettingsClick = () => {
     // Use the correct path based on user role
-    const settingsPath = user.role === 'CLIENTE' 
-      ? '/usuario/configuracion' 
-      : user.role === 'AGENTE' 
-        ? '/agente/configuracion' 
-        : user.role === 'AGENCIA' 
-          ? '/agencia/configuracion' 
-          : '/admin/configuracion';
+    const settingsPath = '/configuracion';  
     navigate(settingsPath);
     setIsOpen(false);
   };

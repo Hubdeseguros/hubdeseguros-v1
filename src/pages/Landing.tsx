@@ -13,8 +13,6 @@ const Landing = () => {
   const getDashboardLink = () => {
     if (!isAuthenticated) return '/login';
     switch (user?.role) {
-      case 'CLIENTE':
-        return '/usuario/dashboard';
       case 'AGENTE':
         return '/agente/dashboard';
       case 'AGENCIA':
