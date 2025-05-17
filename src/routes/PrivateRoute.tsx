@@ -21,7 +21,7 @@ const PrivateRoute = ({
     // Informar al usuario sobre su contexto actual cuando entra en una ruta protegida
     if (isAuthenticated && user) {
       const roleText = {
-        // El rol CLIENTE ha sido eliminado
+        'CLIENTE': 'cliente',
         'AGENTE': 'agente de seguros',
         'AGENCIA': 'agencia',
         'ADMIN': 'administrador'

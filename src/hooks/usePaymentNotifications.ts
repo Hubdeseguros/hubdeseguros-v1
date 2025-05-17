@@ -1,6 +1,6 @@
 
 import { useEffect } from "react";
-import { supabase } from "@/integrations/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 

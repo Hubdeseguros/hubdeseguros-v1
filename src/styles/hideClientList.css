@@ -1,0 +1,15 @@
+/* Ocultar opción de Listado de Clientes del menú */
+a[href*="/clientes/listado"],
+li:has(a[href*="/clientes/listado"]),
+button:has(span:contains("Listado de Clientes")),
+div:has(> a[href*="/clientes/listado"]),
+div:has(> span:contains("Listado de Clientes")) {
+  display: none !important;
+  visibility: hidden !important;
+  position: absolute !important;
+  width: 0 !important;
+  height: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+}

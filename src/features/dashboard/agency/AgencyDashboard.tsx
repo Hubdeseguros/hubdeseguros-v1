@@ -21,7 +21,14 @@ const stats = [
     icon: <Users className="h-6 w-6" />,
     linkTo: "/agencia/agentes"
   },
-
+  {
+    title: "Clientes",
+    value: "342",
+    change: "+8 nuevos este mes",
+    timeframe: "Base total",
+    icon: <Users className="h-6 w-6" />,
+    linkTo: "/agencia/clientes"
+  },
   {
     title: "Pólizas",
     value: "524",

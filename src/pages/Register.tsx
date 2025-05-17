@@ -22,7 +22,7 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [selectedRole, setSelectedRole] = useState<UserRole>('AGENTE');  // Valor por defecto cambiado a AGENTE
+  const [selectedRole, setSelectedRole] = useState<UserRole>('CLIENTE');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -169,7 +169,7 @@ const Register = () => {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Roles disponibles</SelectLabel>
-                    {/* Eliminado el rol CLIENTE del select */}
+                    <SelectItem value="CLIENTE">Cliente</SelectItem>
                     <SelectItem value="AGENTE">Agente</SelectItem>
                     <SelectItem value="AGENCIA">Agencia</SelectItem>
                     <SelectItem value="ADMIN">Administrador</SelectItem>

@@ -44,6 +44,73 @@ export interface RouteConfig {
   sections: MenuSection[];
 }
 
+// Configuración de rutas para el rol de usuario (CLIENTE)
+export const userRoutes: RouteConfig = {
+  path: '/usuario/dashboard',
+  sections: [
+    {
+      title: 'PRINCIPALES',
+      items: [
+        { 
+          key: 'mis-polizas', 
+          label: 'Mis Pólizas', 
+          icon: Shield, 
+          path: '/usuario/mis-polizas',
+          tooltip: 'Administra tus pólizas contratadas'
+        },
+        { 
+          key: 'siniestros', 
+          label: 'Siniestros', 
+          icon: AlertCircle, 
+          path: '/usuario/siniestros',
+          tooltip: 'Reporta y da seguimiento a tus siniestros'
+        },
+        { 
+          key: 'pagos', 
+          label: 'Pagos', 
+          icon: CreditCard, 
+          path: '/usuario/pagos',
+          tooltip: 'Realiza y administra tus pagos'
+        },
+        { 
+          key: 'notificaciones', 
+          label: 'Notificaciones', 
+          icon: Bell, 
+          path: '/usuario/notificaciones',
+          notificationCount: 3,
+          tooltip: 'Centro de notificaciones'
+        }
+      ]
+    },
+    {
+      title: 'GESTIÓN',
+      items: [
+        { 
+          key: 'documentos', 
+          label: 'Documentos', 
+          icon: FileText, 
+          path: '/usuario/documentos',
+          tooltip: 'Accede a tus documentos importantes' 
+        },
+        { 
+          key: 'cotizaciones', 
+          label: 'Cotizaciones', 
+          icon: Calculator, 
+          path: '/usuario/cotizaciones',
+          tooltip: 'Solicita cotizaciones de seguros'
+        },
+        { 
+          key: 'contacto-soporte', 
+          label: 'Contacto con Soporte', 
+          icon: Contact, 
+          path: '/usuario/contacto-soporte',
+          tooltip: 'Contacta con nuestro equipo de soporte'
+        }
+      ]
+    }
+  ]
+};
+
 // Configuración de rutas para el rol de agente
 export const agentRoutes: RouteConfig = {
   path: '/agente/dashboard',
@@ -52,11 +119,18 @@ export const agentRoutes: RouteConfig = {
       title: 'PRINCIPALES',
       items: [
         { 
+          key: 'clientes', 
+          label: 'Clientes', 
+          icon: Users, 
+          path: '/agente/clientes',
+          tooltip: 'Administra tu cartera de clientes'
+        },
+        { 
           key: 'polizas', 
           label: 'Pólizas', 
           icon: Shield, 
           path: '/agente/polizas',
-          tooltip: 'Gestiona tus pólizas'
+          tooltip: 'Gestiona las pólizas de tus clientes'
         },
         { 
           key: 'siniestros', 
@@ -97,7 +171,7 @@ export const agentRoutes: RouteConfig = {
           label: 'Leads', 
           icon: UserPlus, 
           path: '/agente/leads',
-          tooltip: 'Administra tus prospectos'
+          tooltip: 'Administra tus prospectos de clientes'
         },
         { 
           key: 'tareas', 
@@ -153,6 +227,13 @@ export const agencyRoutes: RouteConfig = {
     {
       title: 'PRINCIPALES',
       items: [
+        { 
+          key: 'clientes', 
+          label: 'Clientes', 
+          icon: Users, 
+          path: '/agencia/clientes',
+          tooltip: 'Administra la cartera de clientes'
+        },
         { 
           key: 'polizas', 
           label: 'Pólizas', 
@@ -380,6 +461,8 @@ export const adminRoutes: RouteConfig = {
 
 export const getRoutesByRole = (role: UserRole): RouteConfig => {
   switch (role) {
+    case 'CLIENTE':
+      return userRoutes;
     case 'AGENTE':
       return agentRoutes;
     case 'AGENCIA':
@@ -387,6 +470,7 @@ export const getRoutesByRole = (role: UserRole): RouteConfig => {
     case 'ADMIN':
       return adminRoutes;
     default:
-      return agentRoutes;
+      return adminRoutes; // Por defecto, si es ADMIN mostramos la vista de administrador
   }
 };
+

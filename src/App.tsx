@@ -1,4 +1,3 @@
-
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
@@ -9,7 +8,7 @@ import { MainLayout } from "./layouts/MainLayout";
 import { Toaster } from "@/components/ui/toaster";
 
 // Importar estilos para ocultar la opción de listado de clientes
-// import "./styles/hideClientList.css"; // <-- Esta línea ha sido eliminada porque el archivo no existe
+import "./styles/hideClientList.css";
 
 const queryClient = new QueryClient();
 
@@ -20,8 +19,10 @@ const App = () => {
         <Toaster />
         <BrowserRouter>
           <AuthProvider>
-            <GlobalEffects />
-            <AppRoutes />
+            <MainLayout>
+              <GlobalEffects />
+              <AppRoutes />
+            </MainLayout>
           </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>

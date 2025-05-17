@@ -6,6 +6,14 @@ import { Users, Shield, ShoppingCart, AlertCircle } from 'lucide-react';
 // Datos de ejemplo para el dashboard
 const stats = [
   {
+    title: "Clientes",
+    value: "24",
+    change: "activos",
+    timeframe: "gestión de cartera",
+    icon: <Users className="h-6 w-6" />,
+    linkTo: "/agente/clientes"
+  },
+  {
     title: "Pólizas",
     value: "36",
     change: "activas",

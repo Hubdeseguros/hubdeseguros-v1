@@ -1,5 +1,5 @@
 
-import * as React from "react"
+// Remove all import * as React from "react" lines
 import { cn } from "@/lib/utils"
 
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
@@ -20,5 +20,3 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
 Input.displayName = "Input"
 
 export { Input }
-
-// Only a single import * as React from "react" should be at the top.

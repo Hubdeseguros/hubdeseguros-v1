@@ -62,7 +62,7 @@ export default function SettingsPage() {
       title: 'Notificaciones',
       description: 'Configura cómo y cuándo recibir notificaciones',
       icon: <Bell className="h-5 w-5" />,
-      roles: ['ADMIN', 'AGENTE'],
+      roles: ['ADMIN', 'AGENTE', 'CLIENTE'],
       component: (
         <div className="space-y-6">
           <div className="space-y-4">
@@ -127,7 +127,7 @@ export default function SettingsPage() {
       title: 'Seguridad',
       description: 'Administra tu contraseña y seguridad de la cuenta',
       icon: <Lock className="h-5 w-5" />,
-      roles: ['ADMIN', 'AGENTE'],
+      roles: ['ADMIN', 'AGENTE', 'CLIENTE'],
       component: (
         <div className="space-y-6">
           <div className="space-y-4">
