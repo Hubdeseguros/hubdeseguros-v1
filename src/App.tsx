@@ -19,10 +19,8 @@ const App = () => {
         <Toaster />
         <BrowserRouter>
           <AuthProvider>
-            <MainLayout>
-              <GlobalEffects />
-              <AppRoutes />
-            </MainLayout>
+            <GlobalEffects />
+            <AppRoutes />
           </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>
