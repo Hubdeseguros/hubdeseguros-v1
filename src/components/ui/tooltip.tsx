@@ -1,11 +1,10 @@
 
-// Add React import
+// Ensure ONLY ONE React import at the top and no duplicate React declarations.
 import * as React from "react"
-// Removed: import * as React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { cn } from "@/lib/utils";
 
-// No need to import React if Vite/tsconfig is set for automatic runtime
+// No need to import React again if Vite/tsconfig is set for automatic runtime
 
 const TooltipProvider = TooltipPrimitive.Provider;
 const Tooltip = TooltipPrimitive.Root;
