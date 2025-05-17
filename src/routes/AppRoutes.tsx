@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import PrivateRoute from './PrivateRoute';
 import { UserRole } from '@/types/auth';
 import NotificationsPage from "@/pages/Notifications";
+import ClientsPage from '../pages/clients/ClientsPage';
 
 // Import types for better type checking
 import type { Notification } from '@/types/notifications';
@@ -15,7 +16,6 @@ const NotFound = lazy(() => import('../pages/NotFound'));
 const Landing = lazy(() => import('../pages/Landing'));
 const ProfilePage = lazy(() => import('../pages/ProfilePage'));
 const SettingsPage = lazy(() => import('../pages/SettingsPage'));
-
 
 // Dashboards específicos por rol
 const UserDashboard = lazy(() => import('../features/dashboard/user/UserDashboard'));

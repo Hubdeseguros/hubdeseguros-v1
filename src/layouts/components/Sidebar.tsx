@@ -33,7 +33,8 @@ import {
   ArrowUpRight,
   Home,
   BellRing,
-  AlertTriangle
+  AlertTriangle,
+  User
 } from 'lucide-react';
 
 type MenuIcon = React.ComponentType<{ size?: string | number; className?: string }>;
@@ -753,7 +754,7 @@ const Sidebar = () => {
                 <User className="h-5 w-5" />
               </div>
               <div className="flex flex-col overflow-hidden">
-                <span className="font-medium truncate">{user?.displayName || user?.name || 'Usuario'}</span>
+                <span className="font-medium truncate">{user?.name || 'Usuario'}</span>
                 <span className="text-xs text-muted-foreground truncate">{user?.role}</span>
               </div>
             </div>
