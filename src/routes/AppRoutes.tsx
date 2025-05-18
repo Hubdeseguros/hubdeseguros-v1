@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import PrivateRoute from './PrivateRoute';
 import { UserRole } from '@/types/auth';
 import NotificationsPage from "@/pages/Notifications";
+import PolizasListado from "@/features/polizas/pages/PolizasListado";
 
 // Import types for better type checking
 import type { Notification } from '@/types/notifications';
@@ -25,7 +26,12 @@ const AdminDashboard = lazy(() => import('../features/dashboard/admin/AdminDashb
 // Páginas de ejemplo para cada sección
 const Placeholder = lazy(() => import('../components/common/Placeholder'));
 
+// Páginas de la aplicación
 const AgentSalesDashboard = lazy(() => import('../features/dashboard/agent/AgentSalesDashboard'));
+const Clientes = lazy(() => import('../pages/Clientes'));
+const ClientesVacio = lazy(() => import('../pages/ClientesVacio'));
+const GestionClientes = lazy(() => import('../features/clientes/pages/GestionClientes'));
+const CRMClientes = lazy(() => import('../features/clientes/pages/crm/CRMClientes'));
 
 const LoadingFallback = () => (
   <div className="flex items-center justify-center min-h-screen">
@@ -57,13 +63,16 @@ const AppRoutes = () => {
   return (
     <Suspense fallback={<LoadingFallback />}>
       <Routes>
-        {/* Ruta raíz con redirección a landing */}
-        <Route path="/" element={<Navigate to="/landing" replace />} />
+        {/* Ruta raíz muestra directamente ClientesVacio */}
+        <Route path="/" element={<ClientesVacio />} />
         
         {/* Rutas públicas */}
         <Route path="/landing" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        
+        {/* Ruta temporal para ver clientes */}
+        <Route path="/clientes" element={<ClientesVacio />} />
 
         {/* Rutas para CLIENTE */}
         <Route path="/usuario" element={<PrivateRoute allowedRoles={['CLIENTE', 'ADMIN']} />}>
@@ -87,9 +96,12 @@ const AppRoutes = () => {
         {/* Rutas para AGENTE */}
         <Route path="/agente" element={<PrivateRoute allowedRoles={['AGENTE', 'ADMIN']} />}>
           <Route path="dashboard" element={<AgentDashboard />} />
-          <Route path="clientes" element={<Placeholder title="Clientes" />} />
-          <Route path="clientes/listado" element={<Placeholder title="Listado de Clientes" />} />
-          <Route path="clientes/crm" element={<Placeholder title="Asistente Comercial/CRM" />} />
+          <Route path="clientes" element={<Navigate to="gestion" replace />} />
+          <Route path="clientes/gestion/*" element={<GestionClientes />} />
+          <Route path="clientes/crm" element={<CRMClientes />} />
+          <Route path="clientes/listado" element={<GestionClientes />} />
+          <Route path="polizas/listado" element={<PolizasListado />} />
+          <Route path="clientes/nuevo" element={<GestionClientes />} />
           <Route path="polizas" element={<Placeholder title="Pólizas" />} />
           <Route path="polizas/listado" element={<Placeholder title="Listado de Pólizas" />} />
           <Route path="polizas/cumplimiento" element={<Placeholder title="Cumplimiento, Judicial, etc" />} />

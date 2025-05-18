@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { User, UserRole, UserLevel } from '../types/auth';
 import { handleLogin, handleLogout, handleUpdateProfile } from './auth/authUtils';
 
+// Configuración de desarrollo
+const isDevelopment = true; // Cambiar a false en producción
+
 // Eliminar la importación de mockUsers ya que no se usa directamente
 // y se maneja a través de las funciones de autenticación
 
@@ -85,14 +88,27 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<User | null>(() => {
-    const savedUser = localStorage.getItem('hubseguros_user');
-    return savedUser ? JSON.parse(savedUser) : null;
-  });
-  
+  const [user, setUser] = useState<User | null>(
+    isDevelopment ? {
+      id: '1',
+      name: 'Desarrollador',
+      email: 'developer@hubseguros.com',
+      role: 'AGENTE' as UserRole, // Cambiado a AGENTE para acceder a /agente/clientes
+      level: 'INTERMEDIO' as UserLevel,
+      phone: '+57 123 456 7890',
+      company: 'HubSeguros',
+      position: 'Desarrollador',
+      address: 'Calle 123 #45-67, Bogotá',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Developer',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    } : null
+  );
+
+  // En modo desarrollo, aseguramos que isAuthenticated es true
+  const [isAuthenticated, setIsAuthenticated] = useState(isDevelopment);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const isAuthenticated = !!user;
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
