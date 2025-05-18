@@ -106,7 +106,7 @@ export const SidebarProvider = React.forwardRef<
       return () => window.removeEventListener("keydown", handleKeyDown)
     }, [toggleSidebar])
 
-    const [transitionState, setTransitionState] = React.useState(open ? "expanded" : "collapsed")
+    const [transitionState, setTransitionState] = React.useState<"expanded" | "collapsed">(open ? "expanded" : "collapsed")
     
     React.useEffect(() => {
       if (open !== openProp) {
@@ -114,9 +114,10 @@ export const SidebarProvider = React.forwardRef<
       }
     }, [open, openProp])
 
-    const state = transitionState
+    // Explicit type for state
+    const state: "expanded" | "collapsed" = transitionState
 
-    const contextValue = {
+    const contextValue: SidebarContext = {
       state,
       open,
       setOpen,
@@ -129,11 +130,13 @@ export const SidebarProvider = React.forwardRef<
     return (
       <SidebarContext.Provider value={contextValue}>
         <div
-          style={{
-            "--sidebar-width": "16rem",
-            "--sidebar-width-icon": "3rem",
-            ...style,
-          }}
+          style={
+            {
+              "--sidebar-width": "16rem",
+              "--sidebar-width-icon": "3rem",
+              ...style,
+            } as any // <-- Cast as any to allow CSS variables
+          }
           className={cn(
             "group/sidebar-wrapper flex min-h-svh w-full has-[[data-variant=inset]]:bg-sidebar",
             className
