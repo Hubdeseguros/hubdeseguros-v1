@@ -88,66 +88,68 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<User | null>(
-    isDevelopment ? {
-      id: '1',
-      name: 'Desarrollador',
-      email: 'developer@hubseguros.com',
-      role: 'AGENTE' as UserRole, // Cambiado a AGENTE para acceder a /agente/clientes
-      level: 'INTERMEDIO' as UserLevel,
-      phone: '+57 123 456 7890',
-      company: 'HubSeguros',
-      position: 'Desarrollador',
-      address: 'Calle 123 #45-67, Bogotá',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Developer',
-      createdAt: new Date(),
-      updatedAt: new Date()
-    } : null
-  );
-
-  // En modo desarrollo, aseguramos que isAuthenticated es true
-  const [isAuthenticated, setIsAuthenticated] = useState(isDevelopment);
-  const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState<User | null>(() => {
+    const savedUser = localStorage.getItem('hubseguros_user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
     try {
-      const result = await handleLogin(email, password, navigate);
-      if (result) {
+      const success = await handleLogin(email, password, navigate);
+      if (success) {
         const savedUser = localStorage.getItem('hubseguros_user');
-        setUser(savedUser ? JSON.parse(savedUser) : null);
+        if (savedUser) {
+          setUser(JSON.parse(savedUser));
+          setIsAuthenticated(true);
+        }
       }
-      return result;
+      return success;
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Error al iniciar sesión');
+      return false;
     } finally {
       setIsLoading(false);
     }
   };
 
   const logout = () => {
-    setIsLoading(true);
-    try {
-      handleLogout(navigate);
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-    }
+    handleLogout(navigate);
+    setUser(null);
+    setIsAuthenticated(false);
+    setError(null);
+    setIsLoading(false);
   };
 
   const updateProfile = async (data: Partial<User>): Promise<boolean> => {
-    setIsLoading(true);
     try {
-      const result = await handleUpdateProfile(data);
-      if (result) {
+      const success = await handleUpdateProfile(data);
+      if (success) {
         const savedUser = localStorage.getItem('hubseguros_user');
-        setUser(savedUser ? JSON.parse(savedUser) : null);
+        if (savedUser) {
+          const updatedUser = JSON.parse(savedUser);
+          setUser(updatedUser);
+        }
       }
-      return result;
-    } finally {
-      setIsLoading(false);
+      return success;
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Error al actualizar perfil');
+      return false;
     }
   };
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem('hubseguros_user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+      setIsAuthenticated(true);
+    }
+    setIsLoading(false);
+  }, []);
 
   return (
     <AuthContext.Provider value={{ 

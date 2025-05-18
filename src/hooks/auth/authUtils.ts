@@ -24,6 +24,56 @@ export const mockUsers: Array<Omit<User, 'password'> & { password: string }> = [
 
 export const handleLogin = async (email: string, password: string, navigate: ReturnType<typeof useNavigate>): Promise<boolean> => {
   try {
+    const foundUser = mockUsers.find(
+      (u) => u.email === email && u.password === password
+    );
+    
+    if (foundUser) {
+      const { password, ...userWithoutPassword } = foundUser;
+      localStorage.setItem('hubseguros_user', JSON.stringify(userWithoutPassword));
+      
+      // Verificar si el usuario ya existe en localStorage
+      const existingUser = localStorage.getItem('hubseguros_user');
+      if (existingUser) {
+        const parsedUser = JSON.parse(existingUser);
+        if (parsedUser.role !== foundUser.role) {
+          // Si el rol cambió, redirigir al nuevo dashboard
+          switch (foundUser.role) {
+            case 'CLIENTE':
+              navigate('/usuario/dashboard');
+              break;
+            case 'AGENTE':
+              navigate('/agente/dashboard');
+              break;
+            case 'AGENCIA':
+              navigate('/agencia/dashboard');
+              break;
+            case 'ADMIN':
+              navigate('/admin/dashboard');
+              break;
+            default:
+              navigate('/dashboard');
+          }
+        }
+      }
+      
+      toast({
+        title: "Inicio de sesión exitoso",
+        description: `Bienvenido, ${foundUser.name}`,
+      });
+      return true;
+    } else {
+      throw new Error("Credenciales incorrectas. Inténtelo de nuevo.");
+    }
+  } catch (err) {
+    toast({
+      variant: "destructive",
+      title: "Error de autenticación",
+      description: err instanceof Error ? err.message : "Ocurrió un error al intentar iniciar sesión.",
+    });
+    return false;
+  }
+  try {
     await new Promise((resolve) => setTimeout(resolve, 800));
     const foundUser = mockUsers.find(
       (u) => u.email === email && u.password === password
