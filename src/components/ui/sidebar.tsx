@@ -135,7 +135,7 @@ const SidebarProvider = React.forwardRef<
     }, [toggleSidebar])
 
     // Usar un estado más estable para las transiciones
-    const [transitionState, setTransitionState] = React.useState(open ? "expanded" : "collapsed")
+    const [transitionState, setTransitionState] = React.useState<"expanded" | "collapsed">(open ? "expanded" : "collapsed")
     
     // Actualizar el estado de transición solo cuando cambie realmente
     React.useEffect(() => {
@@ -144,7 +144,7 @@ const SidebarProvider = React.forwardRef<
       }
     }, [open, memoizedOpen])
 
-    const state = transitionState
+    const state: "expanded" | "collapsed" = transitionState;
 
     const contextValue = React.useMemo<SidebarContext>(
       () => ({

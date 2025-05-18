@@ -1,7 +1,9 @@
-import { ColumnConfig } from './types';
+
+// Corregir: importar el tipo correcto MenuSection
+import { MenuSection } from './types';
 
 export const handleColumnToggle = (columnId: string, isClient: boolean) => {
-  return (prevConfig: ColumnConfig[]) =>
+  return (prevConfig: MenuSection[]) =>
     prevConfig.map((col) =>
       col.id === columnId ? { ...col, visible: !col.visible } : col
     );
@@ -31,5 +33,5 @@ export const handleColumnReset = (isClient: boolean) => {
         { id: 'tipoPoliza', label: 'Tipo de Póliza', visible: true, sortable: true, isClient: false },
       ];
 
-  return defaultConfig as ColumnConfig[];
+  return defaultConfig as MenuSection[];
 };
