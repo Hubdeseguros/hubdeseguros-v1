@@ -74,7 +74,6 @@ const SidebarProvider = React.forwardRef<
     // Usar un estado más estable para evitar parpadeos
     const [openState, setOpenState] = React.useState(defaultOpen)
     const open = openProp ?? openState
-    const openRef = React.useRef(open)
     
     const setOpen = React.useCallback(
       (value: boolean | ((value: boolean) => boolean)) => {
@@ -84,7 +83,6 @@ const SidebarProvider = React.forwardRef<
         } else {
           setOpenState(openState)
         }
-        openRef.current = openState
 
         // This sets the cookie to keep the sidebar state.
         document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
@@ -105,7 +103,6 @@ const SidebarProvider = React.forwardRef<
         if (setOpenProp) {
           setOpenProp(isOpen)
         } else {
-          setOpen(isOpen)
           openRef.current = isOpen
         }
       }
@@ -135,7 +132,7 @@ const SidebarProvider = React.forwardRef<
     }, [toggleSidebar])
 
     // Usar un estado más estable para las transiciones
-    const [transitionState, setTransitionState] = React.useState<"expanded" | "collapsed">(open ? "expanded" : "collapsed")
+    const [transitionState, setTransitionState] = React.useState(open ? "expanded" : "collapsed")
     
     // Actualizar el estado de transición solo cuando cambie realmente
     React.useEffect(() => {
@@ -144,7 +141,7 @@ const SidebarProvider = React.forwardRef<
       }
     }, [open, memoizedOpen])
 
-    const state: "expanded" | "collapsed" = transitionState;
+    const state = transitionState
 
     const contextValue = React.useMemo<SidebarContext>(
       () => ({

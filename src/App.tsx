@@ -7,9 +7,6 @@ import { BrowserRouter } from "react-router-dom";
 import AppRoutes from "./routes/AppRoutes";
 import { AuthProvider } from "./hooks/useAuth";
 import GlobalEffects from "@/components/GlobalEffects";
-import { SidebarProvider } from "@/components/ui/sidebar";
-// Removed SupabaseError import as it doesn't exist
-// import { SupabaseError } from "@/components/SupabaseError";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +18,7 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <AuthProvider>
+            {/* Now inside AuthProvider, so useAuth context exists */}
             <GlobalEffects />
             <AppRoutes />
           </AuthProvider>

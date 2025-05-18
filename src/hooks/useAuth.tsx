@@ -1,13 +1,8 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+
+import { createContext, useContext, useState, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, UserRole, UserLevel } from '../types/auth';
-import { handleLogin, handleLogout, handleUpdateProfile } from './auth/authUtils';
-
-// Configuración de desarrollo
-const isDevelopment = true; // Cambiar a false en producción
-
-// Eliminar la importación de mockUsers ya que no se usa directamente
-// y se maneja a través de las funciones de autenticación
+import { toast } from '@/components/ui/use-toast';
 
 interface AuthContextProps {
   user: User | null;
@@ -91,25 +86,68 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const savedUser = localStorage.getItem('hubseguros_user');
     return savedUser ? JSON.parse(savedUser) : null;
   });
-  const [isLoading, setIsLoading] = useState(true);
+  
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const isAuthenticated = !!user;
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
+
     try {
-      const success = await handleLogin(email, password, navigate);
-      if (success) {
-        const savedUser = localStorage.getItem('hubseguros_user');
-        if (savedUser) {
-          setUser(JSON.parse(savedUser));
-          setIsAuthenticated(true);
+      // Simulamos una petición a API con un delay
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      
+      const foundUser = mockUsers.find(
+        (u) => u.email === email && u.password === password
+      );
+      
+      if (foundUser) {
+        const { password, ...userWithoutPassword } = foundUser;
+        setUser(userWithoutPassword as User);
+        localStorage.setItem('hubseguros_user', JSON.stringify(userWithoutPassword));
+        
+        // Navegar a la ruta correspondiente según el rol
+        switch (foundUser.role) {
+          case 'CLIENTE':
+            navigate('/usuario/dashboard');
+            break;
+          case 'AGENTE':
+            navigate('/agente/dashboard');
+            break;
+          case 'AGENCIA':
+            navigate('/agencia/dashboard');
+            break;
+          case 'ADMIN':
+            navigate('/admin/dashboard');
+            break;
+          default:
+            navigate('/dashboard');
         }
+        
+        toast({
+          title: "Inicio de sesión exitoso",
+          description: `Bienvenido, ${foundUser.name}`,
+        });
+        
+        return true;
+      } else {
+        setError('Credenciales incorrectas. Inténtelo de nuevo.');
+        toast({
+          variant: "destructive",
+          title: "Error de autenticación",
+          description: "Credenciales incorrectas. Inténtelo de nuevo.",
+        });
+        return false;
       }
-      return success;
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'Error al iniciar sesión');
+    } catch (err) {
+      setError('Ocurrió un error al intentar iniciar sesión.');
+      toast({
+        variant: "destructive",
+        title: "Error de conexión",
+        description: "Ocurrió un error al intentar iniciar sesión.",
+      });
       return false;
     } finally {
       setIsLoading(false);
@@ -117,38 +155,46 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = () => {
-    handleLogout(navigate);
     setUser(null);
-    setIsAuthenticated(false);
-    setError(null);
-    setIsLoading(false);
+    localStorage.removeItem('hubseguros_user');
+    navigate('/landing');
+    toast({
+      title: "Sesión finalizada",
+      description: "Has cerrado sesión correctamente",
+    });
   };
 
   const updateProfile = async (data: Partial<User>): Promise<boolean> => {
+    if (!user) return false;
+    
+    setIsLoading(true);
+    
     try {
-      const success = await handleUpdateProfile(data);
-      if (success) {
-        const savedUser = localStorage.getItem('hubseguros_user');
-        if (savedUser) {
-          const updatedUser = JSON.parse(savedUser);
-          setUser(updatedUser);
-        }
-      }
-      return success;
+      // Simulamos una petición a la API con un delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Actualizamos el usuario con los nuevos datos
+      const updatedUser = { ...user, ...data };
+      setUser(updatedUser);
+      localStorage.setItem('hubseguros_user', JSON.stringify(updatedUser));
+      
+      toast({
+        title: "Perfil actualizado",
+        description: "Tus datos se han actualizado correctamente.",
+      });
+      
+      return true;
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Error al actualizar perfil');
+      toast({
+        variant: "destructive",
+        title: "Error al actualizar",
+        description: "No se pudo actualizar el perfil. Por favor, inténtalo de nuevo.",
+      });
       return false;
+    } finally {
+      setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    const savedUser = localStorage.getItem('hubseguros_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-      setIsAuthenticated(true);
-    }
-    setIsLoading(false);
-  }, []);
 
   return (
     <AuthContext.Provider value={{ 

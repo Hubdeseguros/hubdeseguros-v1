@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { isDevelopment } from '@/config/config';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -20,8 +19,8 @@ const Login = () => {
     await login(email, password);
   };
 
-  // Si está autenticado o en modo desarrollo, redirigimos al dashboard correspondiente según el rol
-  if (isAuthenticated || isDevelopment) {
+  // Si está autenticado, redirigimos al dashboard correspondiente según el rol
+  if (isAuthenticated && user) {
     switch (user.role) {
       case 'CLIENTE':
         return <Navigate to="/usuario/dashboard" replace />;

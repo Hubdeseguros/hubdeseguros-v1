@@ -2,8 +2,7 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { UserRole } from '../types/auth';
-// Cambiar import nombrado a import por defecto:
-import MainLayout from '../layouts/MainLayout';
+import { MainLayout } from '../layouts/MainLayout';
 import { toast } from '@/components/ui/use-toast';
 import { useEffect } from 'react';
 
@@ -35,9 +34,9 @@ const PrivateRoute = ({
     }
   }, [isAuthenticated, user]);
 
-  // Si se requiere autenticación y el usuario no está autenticado, redirige al login
+  // Si se requiere autenticación y el usuario no está autenticado, redirige al landing
   if (requiresAuthentication && !isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/landing" replace />;
   }
 
   // Si se especifican roles permitidos y el usuario no tiene el rol adecuado
@@ -72,4 +71,3 @@ const PrivateRoute = ({
 };
 
 export default PrivateRoute;
-
