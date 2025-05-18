@@ -35,8 +35,14 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Manejar el estado inicial del sidebar basado en el tamaño de la ventana
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  useEffect(() => {
+    setIsSidebarOpen(window.innerWidth >= 1024);
+  }, []);
+
   return (
-    <SidebarProvider defaultOpen={!mobileMenuOpen}>
+    <SidebarProvider defaultOpen={isSidebarOpen}>
       <div className="min-h-screen flex flex-col w-full overflow-hidden">
         {/* Contenido principal */}
         <div className="flex-1 flex flex-col overflow-hidden">

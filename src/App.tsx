@@ -8,6 +8,7 @@ import AppRoutes from "./routes/AppRoutes";
 import { AuthProvider } from "./hooks/useAuth";
 import GlobalEffects from "@/components/GlobalEffects";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { SupabaseError } from "@/components/SupabaseError";
 
 const queryClient = new QueryClient();
 
@@ -19,11 +20,8 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <AuthProvider>
-            <SidebarProvider>
-              {/* Now inside SidebarProvider, so useSidebar context exists */}
-              <GlobalEffects />
-              <AppRoutes />
-            </SidebarProvider>
+            <GlobalEffects />
+            <AppRoutes />
           </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>
