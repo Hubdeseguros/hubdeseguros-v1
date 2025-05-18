@@ -7,7 +7,7 @@ interface MainLayoutProps {
   children: ReactNode;
 }
 
-export const MainLayout = ({ children }: MainLayoutProps) => {
+const MainLayout = ({ children }: MainLayoutProps) => {
   // Usar un ref para el estado del overlay para evitar re-renders innecesarios
   const mobileMenuOpenRef = useRef(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -69,3 +69,5 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
     </SidebarProvider>
   );
 };
+
+export default MainLayout;

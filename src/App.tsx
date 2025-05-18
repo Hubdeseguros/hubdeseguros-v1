@@ -7,6 +7,7 @@ import { BrowserRouter } from "react-router-dom";
 import AppRoutes from "./routes/AppRoutes";
 import { AuthProvider } from "./hooks/useAuth";
 import GlobalEffects from "@/components/GlobalEffects";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 const queryClient = new QueryClient();
 
@@ -18,9 +19,11 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <AuthProvider>
-            {/* Now inside AuthProvider, so useAuth context exists */}
-            <GlobalEffects />
-            <AppRoutes />
+            <SidebarProvider>
+              {/* Now inside SidebarProvider, so useSidebar context exists */}
+              <GlobalEffects />
+              <AppRoutes />
+            </SidebarProvider>
           </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>
