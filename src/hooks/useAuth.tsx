@@ -1,5 +1,4 @@
-
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, UserRole, UserLevel } from '../types/auth';
 import { handleLogin, handleLogout, handleUpdateProfile } from './auth/authUtils';
