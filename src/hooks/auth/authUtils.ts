@@ -75,7 +75,7 @@ export const handleLogin = async (email: string, password: string, navigate: Ret
 
 export const handleLogout = (navigate: ReturnType<typeof useNavigate>) => {
   localStorage.removeItem('hubseguros_user');
-  navigate('/landing');
+  navigate('/login');
   toast({
     title: "Sesión finalizada",
     description: "Has cerrado sesión correctamente",
