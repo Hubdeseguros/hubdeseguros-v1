@@ -2,7 +2,8 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { UserRole } from '../types/auth';
-import { MainLayout } from '../layouts/MainLayout';
+// Cambiar import nombrado a import por defecto:
+import MainLayout from '../layouts/MainLayout';
 import { toast } from '@/components/ui/use-toast';
 import { useEffect } from 'react';
 
@@ -71,3 +72,4 @@ const PrivateRoute = ({
 };
 
 export default PrivateRoute;
+
