@@ -46,7 +46,16 @@ const PrivateRoute = ({
     }
 
     // Para otros roles, verificar si tiene acceso
-    if (allowedRoles.length === 0 || allowedRoles.includes(user?.role as UserRole)) {
+    if (allowedRoles.length === 0) {
+      // Si no se especifican roles permitidos, permitir acceso
+      return (
+        <MainLayout>
+          <Outlet />
+        </MainLayout>
+      );
+    }
+
+    if (allowedRoles.includes(user?.role as UserRole)) {
       return (
         <MainLayout>
           <Outlet />
