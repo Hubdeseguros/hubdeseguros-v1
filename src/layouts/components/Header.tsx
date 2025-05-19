@@ -59,7 +59,7 @@ const defaultNotifications: Notification[] = [
 
 // Componente UserMenu
 const UserMenu: React.FC = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   return (
@@ -76,14 +76,14 @@ const UserMenu: React.FC = () => {
         <DropdownMenuItem onClick={() => navigate('/perfil')}>Mi Perfil</DropdownMenuItem>
         <DropdownMenuItem onClick={() => navigate('/configuracion')}>Configuración</DropdownMenuItem>
         <DropdownMenuItem onClick={() => navigate('/ayuda')}>Ayuda</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigate('/logout')}>Cerrar Sesión</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => logout()}>Cerrar Sesión</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 };
 
 const Header: React.FC<HeaderProps> = ({ className = '' }) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const notificationsRef = useRef<HTMLDivElement>(null);
