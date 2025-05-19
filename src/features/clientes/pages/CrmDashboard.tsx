@@ -102,56 +102,6 @@ const DashboardCRM = () => {
                     </Card>
                 </Button>
             </div>
-
-            <div className="mb-8">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-4">Seguimientos para hoy</h2>
-                <Card className="shadow-md">
-                    <CardContent className="p-0">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Cliente</TableHead>
-                                    <TableHead>Tipo</TableHead>
-                                    <TableHead>Producto</TableHead>
-                                    <TableHead>Fecha</TableHead>
-                                    <TableHead>Estado</TableHead>
-                                    <TableHead>Acciones</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell>Carlos Rodríguez</TableCell>
-                                    <TableCell>Llamada</TableCell>
-                                    <TableCell>Seguro Auto</TableCell>
-                                    <TableCell>Hoy 10:30</TableCell>
-                                    <TableCell>
-                                        <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-300">
-                                            Pendiente
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Button variant="link" className="text-blue-500 p-0">Completar</Button>
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>María González</TableCell>
-                                    <TableCell>Cotización</TableCell>
-                                    <TableCell>Seguro Hogar</TableCell>
-                                    <TableCell>Hoy 14:00</TableCell>
-                                    <TableCell>
-                                        <Badge variant="secondary" className="bg-blue-100 text-blue-800 border-blue-300">
-                                            En proceso
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Button variant="link" className="text-blue-500 p-0">Ver</Button>
-                                    </TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                </Card>
-            </div>
         </div>
     );
 };
