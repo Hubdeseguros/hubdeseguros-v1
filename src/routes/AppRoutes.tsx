@@ -7,6 +7,7 @@ import NotificationsPage from "@/pages/Notifications";
 import GestionClientes from "@/features/clientes/pages/GestionClientes";
 import PolizasListado from "@/features/polizas/pages/PolizasListado";
 import CrmDashboard from "@/features/clientes/pages/CrmDashboard";
+import AdminCrmDashboard from "@/features/admin/pages/AdminCrmDashboard";
 
 // Import types for better type checking
 import type { Notification } from '@/types/notifications';
@@ -334,6 +335,9 @@ const AppRoutes = () => {
         {/* Rutas para ADMIN */}
         <Route path="/admin" element={<PrivateRoute allowedRoles={['ADMIN']} />}>
           <Route path="dashboard" element={<AdminDashboardWithErrorBoundary />} />
+          <Route path="clientes">
+            <Route path="crm" element={<AdminCrmDashboard />} />
+          </Route>
           <Route path="usuarios" element={<Placeholder title="Gestión de Usuarios" />} />
           <Route path="configuracion" element={<SettingsPageWithErrorBoundary />}>
             <Route index element={<Navigate to="general" replace />} />
