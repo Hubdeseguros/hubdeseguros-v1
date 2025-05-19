@@ -28,7 +28,7 @@ const DashboardCRM = () => {
                 <h1 className="text-3xl font-bold text-gray-900">Asistente Comercial / CRM</h1>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
                 <Button
                     variant="ghost"
                     className={cn(
@@ -149,56 +149,6 @@ const DashboardCRM = () => {
                                 </TableRow>
                             </TableBody>
                         </Table>
-                    </CardContent>
-                </Card>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card className="shadow-md">
-                    <CardHeader>
-                        <CardTitle className="text-gray-900">Próximos Vencimientos</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
-                            <div>
-                                <p className="text-gray-700 font-medium">Global Tech Solutions</p>
-                                <p className="text-gray-500">Seguro de Responsabilidad Civil</p>
-                                <p className="text-red-500">Vence en 7 días</p>
-                            </div>
-                            <Button variant="link" className="text-blue-500 p-0 mt-2 md:mt-0">Contactar</Button>
-                        </div>
-                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
-                            <div>
-                                <p className="text-gray-700 font-medium">Inversiones ABC</p>
-                                <p className="text-gray-500">Seguro Multi-riesgo</p>
-                                <p className="text-orange-500">Vence en 15 días</p>
-                            </div>
-                            <Button variant="link" className="text-blue-500 p-0 mt-2 md:mt-0">Contactar</Button>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card className="shadow-md">
-                    <CardHeader>
-                        <CardTitle className="text-gray-900">Oportunidades de Venta</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="flex justify-between items-start">
-                            <div>
-                                <p className="text-gray-700 font-medium">Paula Martínez</p>
-                                <p className="text-gray-500">Interesada en Seguro de Vida</p>
-                                <p className="text-green-500">Alta prioridad</p>
-                            </div>
-                            <Button variant="link" className="text-blue-500 p-0 mt-2 md:mt-0">Crear cotización</Button>
-                        </div>
-                        <div className="flex justify-between items-start">
-                            <div>
-                                <p className="text-gray-700 font-medium">Distribuidora Norte</p>
-                                <p className="text-gray-500">Ampliación de cobertura flota</p>
-                                <p className="text-blue-500">Media prioridad</p>
-                            </div>
-                            <Button variant="link" className="text-blue-500 p-0 mt-2 md:mt-0">Crear cotización</Button>
-                        </div>
                     </CardContent>
                 </Card>
             </div>
