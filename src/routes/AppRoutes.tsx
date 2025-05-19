@@ -6,6 +6,7 @@ import { UserRole } from '@/types/auth';
 import NotificationsPage from "@/pages/Notifications";
 import GestionClientes from "@/features/clientes/pages/GestionClientes";
 import PolizasListado from "@/features/polizas/pages/PolizasListado";
+import CrmDashboard from "@/features/clientes/pages/CrmDashboard";
 
 // Import types for better type checking
 import type { Notification } from '@/types/notifications';
@@ -257,7 +258,9 @@ const AppRoutes = () => {
           <Route path="clientes">
             <Route index element={<Navigate to="listado" replace />} />
             <Route path="listado" element={<GestionClientes clientes={[]} />} />
-            <Route path="crm" element={<GestionClientes clientes={[]} />} />
+            <Route path="crm" element={<CrmDashboard />} />
+            <Route path="crm/*" element={<CrmDashboard />} />
+            <Route path="crm" element={<CrmDashboard />} />
           </Route>
           
           {/* Rutas de Pólizas */}
