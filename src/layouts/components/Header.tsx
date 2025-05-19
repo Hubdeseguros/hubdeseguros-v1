@@ -1,4 +1,5 @@
 
+import React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
@@ -181,19 +182,19 @@ const Header = () => {
         {/* Breadcrumbs */}
         <div>
           <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/">Inicio</BreadcrumbLink>
-              </BreadcrumbItem>
-              {breadcrumbs.map((breadcrumb, index) => (
-                <BreadcrumbItem key={index}>
-                  <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Inicio</BreadcrumbLink>
+            </BreadcrumbItem>
+            {breadcrumbs.map((breadcrumb, index) => (
+              <>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
                   <BreadcrumbLink href={breadcrumb.path}>
                     {breadcrumb.label}
                   </BreadcrumbLink>
                 </BreadcrumbItem>
-              ))}
-            </BreadcrumbList>
+              </>
+            ))}
           </Breadcrumb>
           <h1 className="text-xl font-bold text-hubseguros-dark mt-1">{pageTitle}</h1>
         </div>

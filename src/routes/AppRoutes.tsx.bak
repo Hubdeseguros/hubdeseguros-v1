@@ -7,9 +7,6 @@ import NotificationsPage from "@/pages/Notifications";
 import GestionClientes from "@/features/clientes/pages/GestionClientes";
 import PolizasListado from "@/features/polizas/pages/PolizasListado";
 
-// Datos de ejemplo para pólizas
-const polizasEjemplo = [];
-
 // Import types for better type checking
 import type { Notification } from '@/types/notifications';
 
@@ -32,11 +29,9 @@ const Placeholder = lazy(() => import('../components/common/Placeholder'));
 
 const AgentSalesDashboard = lazy(() => import('../features/dashboard/agent/AgentSalesDashboard'));
 
-const LoadingFallback = ({ children }: { children?: React.ReactNode }) => (
+const LoadingFallback = () => (
   <div className="flex items-center justify-center min-h-screen">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700">
-      {children}
-    </div>
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
   </div>
 );
 
@@ -105,7 +100,7 @@ const AppRoutes = () => {
           {/* Rutas de Pólizas */}
           <Route path="polizas">
             <Route index element={<Navigate to="listado" replace />} />
-            <Route path="listado" element={<PolizasListado polizas={polizasEjemplo} />} />
+            <Route path="listado" element={<PolizasListado />} />
             <Route path="cumplimiento" element={<Placeholder title="Cumplimiento, Judicial, etc" />} />
           </Route>
           
@@ -188,7 +183,7 @@ const AppRoutes = () => {
           {/* Rutas de Pólizas */}
           <Route path="polizas">
             <Route index element={<Navigate to="listado" replace />} />
-            <Route path="listado" element={<PolizasListado polizas={polizasEjemplo} />} />
+            <Route path="listado" element={<PolizasListado />} />
             <Route path="cumplimiento" element={<Placeholder title="Cumplimiento, Judicial, etc" />} />
           </Route>
           
