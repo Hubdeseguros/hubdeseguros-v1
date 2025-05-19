@@ -12,6 +12,25 @@ import AdminCrmDashboard from "@/features/admin/pages/AdminCrmDashboard";
 // Import types for better type checking
 import type { Notification } from '@/types/notifications';
 
+// Agrupar importaciones relacionadas para mejor manejo de chunks
+const AuthPages = {
+  Login: lazy(() => import('../pages/Login')),
+  Register: lazy(() => import('../pages/Register')),
+  NotFound: lazy(() => import('../pages/NotFound')),
+  Landing: lazy(() => import('../pages/Landing')),
+  ProfilePage: lazy(() => import('../pages/ProfilePage')),
+  SettingsPage: lazy(() => import('../pages/SettingsPage')),
+};
+
+// Dashboards agrupados por rol
+const Dashboards = {
+  User: lazy(() => import('../features/dashboard/user/UserDashboard')),
+  Agent: lazy(() => import('../features/dashboard/agent/AgentDashboard')),
+  Agency: lazy(() => import('../features/dashboard/agency/AgencyDashboard')),
+  Admin: lazy(() => import('../features/dashboard/admin/AdminDashboard')),
+  AgentSales: lazy(() => import('../features/dashboard/agent/AgentSalesDashboard'))
+};
+
 // Función para envolver los componentes con manejo de errores
 const withErrorBoundary = (Component: React.ComponentType) => {
   return (props: any) => (
@@ -20,6 +39,84 @@ const withErrorBoundary = (Component: React.ComponentType) => {
     </ErrorBoundaryRoute>
   );
 };
+
+// Componentes comunes
+const Placeholder = lazy(() => import('../components/common/Placeholder'));
+
+// Componente para mostrar mientras se carga un componente
+const LoadingFallback = ({ children }: { children?: React.ReactNode }) => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700">
+      {children}
+    </div>
+  </div>
+);
+
+// Componente para manejar errores en la carga de rutas
+const RouteErrorBoundary = ({ children }: { children: React.ReactNode }) => {
+  const [hasError, setHasError] = React.useState(false);
+
+  // Resetear el estado de error cuando cambia la ruta
+  React.useEffect(() => {
+    setHasError(false);
+  }, [window.location.pathname]);
+
+  if (hasError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="bg-red-50 border-l-4 border-red-500 p-4 w-full max-w-2xl">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-red-800">
+                Error al cargar la página
+              </h3>
+              <div className="mt-2 text-sm text-red-700">
+                <p>Lo sentimos, ha ocurrido un error al cargar esta página. Por favor, intente recargar la página o intente más tarde.</p>
+              </div>
+              <div className="mt-4">
+                <button
+                  type="button"
+                  onClick={() => window.location.reload()}
+                  className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                >
+                  Recargar página
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+};
+
+// Componente de envoltura para manejar errores en rutas
+const ErrorBoundaryRoute = ({ children }: { children: React.ReactNode }) => {
+  return <RouteErrorBoundary>{children}</RouteErrorBoundary>;
+};
+
+// Componentes con manejo de errores
+const LoginWithErrorBoundary = withErrorBoundary(AuthPages.Login);
+const RegisterWithErrorBoundary = withErrorBoundary(AuthPages.Register);
+const LandingWithErrorBoundary = withErrorBoundary(AuthPages.Landing);
+const ProfilePageWithErrorBoundary = withErrorBoundary(AuthPages.ProfilePage);
+const SettingsPageWithErrorBoundary = withErrorBoundary(AuthPages.SettingsPage);
+const NotFoundWithErrorBoundary = withErrorBoundary(AuthPages.NotFound);
+
+// Dashboards con manejo de errores
+const UserDashboardWithErrorBoundary = withErrorBoundary(Dashboards.User);
+const AgentDashboardWithErrorBoundary = withErrorBoundary(Dashboards.Agent);
+const AgencyDashboardWithErrorBoundary = withErrorBoundary(Dashboards.Agency);
+const AdminDashboardWithErrorBoundary = withErrorBoundary(Dashboards.Admin);
+const AgentSalesDashboardWithErrorBoundary = withErrorBoundary(Dashboards.AgentSales);
+const AdminCrmDashboardWithErrorBoundary = withErrorBoundary(AdminCrmDashboard);
 
 // Agrupar importaciones relacionadas para mejor manejo de chunks
 const AuthPages = {
@@ -102,21 +199,7 @@ const ErrorBoundaryRoute = ({ children }: { children: React.ReactNode }) => {
   return <RouteErrorBoundary>{children}</RouteErrorBoundary>;
 };
 
-// Componentes con manejo de errores
-const LoginWithErrorBoundary = withErrorBoundary(AuthPages.Login);
-const RegisterWithErrorBoundary = withErrorBoundary(AuthPages.Register);
-const LandingWithErrorBoundary = withErrorBoundary(AuthPages.Landing);
-const ProfilePageWithErrorBoundary = withErrorBoundary(AuthPages.ProfilePage);
-const SettingsPageWithErrorBoundary = withErrorBoundary(AuthPages.SettingsPage);
-const NotFoundWithErrorBoundary = withErrorBoundary(AuthPages.NotFound);
 
-// Dashboards con manejo de errores
-const UserDashboardWithErrorBoundary = withErrorBoundary(Dashboards.User);
-const AgentDashboardWithErrorBoundary = withErrorBoundary(Dashboards.Agent);
-const AgencyDashboardWithErrorBoundary = withErrorBoundary(Dashboards.Agency);
-const AdminDashboardWithErrorBoundary = withErrorBoundary(Dashboards.Admin);
-const AgentSalesDashboardWithErrorBoundary = withErrorBoundary(Dashboards.AgentSales);
-const AdminCrmDashboardWithErrorBoundary = withErrorBoundary(AdminCrmDashboard);
 
 const AppRoutes = () => {
   const { isAuthenticated, user } = useAuth();
