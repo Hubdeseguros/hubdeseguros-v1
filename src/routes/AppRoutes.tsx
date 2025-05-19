@@ -258,9 +258,10 @@ const AppRoutes = () => {
           <Route path="clientes">
             <Route index element={<Navigate to="listado" replace />} />
             <Route path="listado" element={<GestionClientes clientes={[]} />} />
-            <Route path="crm" element={<CrmDashboard />} />
-            <Route path="crm/*" element={<CrmDashboard />} />
-            <Route path="crm" element={<CrmDashboard />} />
+            <Route path="crm" element={<PrivateRoute allowedRoles={['AGENCIA', 'ADMIN', 'AGENTE']} />}>
+              <Route index element={<CrmDashboard />} />
+              <Route path="*" element={<CrmDashboard />} />
+            </Route>
           </Route>
           
           {/* Rutas de Pólizas */}
