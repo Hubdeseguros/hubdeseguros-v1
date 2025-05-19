@@ -101,6 +101,16 @@ const generarDatosEjemploContactos = (): Contacto[] => {
 };
 
 // ----- COMPONENT -----
+const formatCellValue = (value: any): React.ReactNode => {
+  if (value instanceof Date && !isNaN(value.getTime())) {
+    return value.toLocaleDateString();
+  }
+  if (Array.isArray(value)) {
+    return value.join(', ');
+  }
+  return value ?? '';
+};
+
 const VistaClientes: React.FC = () => {
   // State initializations and utility functions (almost exactly as in your code)
   const [clientes, setClientes] = useState<Cliente[]>(generarDatosEjemploClientes());
@@ -730,13 +740,7 @@ const VistaClientes: React.FC = () => {
                         .filter((col) => col.visible)
                         .map((column) => (
                           <TableCell key={`${cliente.id}-${column.id}`} className="whitespace-nowrap">
-                            {column.id === 'fechaNacimiento' && cliente.fechaNacimiento
-                              ? format(cliente.fechaNacimiento, 'dd/MM/yyyy', { locale: es })
-                              : column.id === 'fechaConstitucion' && cliente.fechaConstitucion
-                              ? format(cliente.fechaConstitucion, 'dd/MM/yyyy', { locale: es })
-                              : column.id === 'categorias'
-                              ? cliente.categorias.join(', ')
-                              : cliente[column.id as keyof Cliente]}
+                            {formatCellValue(cliente[column.id as keyof Cliente])}
                           </TableCell>
                         ))}
                       <TableCell className="text-right">
