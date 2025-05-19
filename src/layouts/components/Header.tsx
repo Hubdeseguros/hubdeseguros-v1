@@ -67,7 +67,7 @@ const UserMenu: React.FC = () => {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon">
           <Avatar>
-            <AvatarImage src={user?.avatar || '/logo.png'} />
+            <AvatarImage src={user?.avatar || '/placeholder.svg'} />
             <AvatarFallback>{user?.name?.[0] || 'U'}</AvatarFallback>
           </Avatar>
         </Button>

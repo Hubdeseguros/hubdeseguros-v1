@@ -683,7 +683,7 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
       {/* Header del sidebar */}
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-2">
-          <img src="/logo.png" alt="Logo" className="h-8 w-8" />
+          <img src="/placeholder.svg" alt="Logo" className="h-8 w-8" />
           <h1 className="text-xl font-bold">Hub de Seguros</h1>
         </div>
         <Button
