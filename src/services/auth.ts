@@ -5,7 +5,7 @@ export const authService = {
   async register(name: string, email: string, password: string) {
     try {
       // 1. Crear usuario en Supabase
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      const { data: { user }, error: authError } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -15,9 +15,12 @@ export const authService = {
         },
       });
 
-      if (authError) throw authError;
+      if (authError) {
+        console.error('Error de Supabase:', authError);
+        throw new Error(`Error de autenticación: ${authError.message}`);
+      }
 
-      const userId = authData.user?.id;
+      const userId = user.id;
 
       if (!userId) {
         throw new Error('No se pudo obtener el ID del usuario');

@@ -38,16 +38,23 @@ const Register = () => {
       
       toast({
         title: "Registro exitoso",
-        description: "Tu cuenta ha sido creada correctamente",
+        description: "Tu cuenta ha sido creada correctamente. Por favor, inicia sesión.",
       });
       
       // Redireccionar al login
       navigate('/login');
     } catch (error) {
+      console.error('Error en registro:', error);
+      let errorMessage = 'Error desconocido';
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
       toast({
         variant: "destructive",
         title: "Error de registro",
-        description: "No se pudo crear la cuenta. Inténtalo de nuevo.",
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);
