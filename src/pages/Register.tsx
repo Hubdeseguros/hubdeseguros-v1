@@ -37,12 +37,19 @@ const Register = () => {
       console.log('Iniciando registro con:', { name, email });
       
       // Usar el servicio de autenticación para el registro
-      await authService.register(name, email, password);
+      const result = await authService.register(name, email, password);
       
-      toast({
-        title: "Registro exitoso",
-        description: "Tu cuenta ha sido creada correctamente. Por favor, inicia sesión.",
-      });
+      if (result.message && result.message.includes('ya registrado')) {
+        toast({
+          title: "Usuario ya registrado",
+          description: "Ya existe una cuenta con este email. Serás redirigido al login.",
+        });
+      } else {
+        toast({
+          title: "Registro exitoso",
+          description: "Tu cuenta ha sido creada correctamente. Por favor, inicia sesión.",
+        });
+      }
       
       // Redireccionar al login
       navigate('/login');

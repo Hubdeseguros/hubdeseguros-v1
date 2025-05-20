@@ -13,33 +13,93 @@ export const authService = {
       }
       
       // 1. Crear usuario en Supabase - Usando un enfoque más directo
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/auth/v1/signup`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
-          'X-Client-Info': 'supabase-js/2.x'
-        },
-        body: JSON.stringify({
-          email,
-          password,
-          data: { name }
-        })
-      });
+      let userId;
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Error de registro:', errorData);
-        throw new Error(`Error de autenticación: ${errorData.message || response.statusText}`);
-      }
-      
-      const data = await response.json();
-      console.log('Respuesta de registro:', data);
-      
-      const userId = data.user.id;
-      
-      if (!userId) {
-        throw new Error('No se pudo obtener el ID del usuario');
+      try {
+        const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/auth/v1/signup`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+            'X-Client-Info': 'supabase-js/2.x'
+          },
+          body: JSON.stringify({
+            email,
+            password,
+            data: { name }
+          })
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error('Error de registro:', errorData);
+          
+          // Si el usuario ya existe, intentamos iniciar sesión
+          if (errorData.error_code === 'user_already_exists') {
+            console.log('Usuario ya registrado, intentando iniciar sesión...');
+            
+            // Intentar iniciar sesión
+            const loginResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+                'X-Client-Info': 'supabase-js/2.x'
+              },
+              body: JSON.stringify({
+                email,
+                password
+              })
+            });
+            
+            if (!loginResponse.ok) {
+              const loginErrorData = await loginResponse.json();
+              console.error('Error al iniciar sesión:', loginErrorData);
+              throw new Error(`Error al iniciar sesión: ${loginErrorData.error_description || loginErrorData.msg || loginResponse.statusText}`);
+            }
+            
+            const loginData = await loginResponse.json();
+            console.log('Inicio de sesión exitoso:', loginData);
+            
+            // Obtener el ID del usuario
+            const userResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/auth/v1/user`, {
+              headers: {
+                'Authorization': `Bearer ${loginData.access_token}`,
+                'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
+              }
+            });
+            
+            if (!userResponse.ok) {
+              const userErrorData = await userResponse.json();
+              console.error('Error al obtener usuario:', userErrorData);
+              throw new Error(`Error al obtener usuario: ${userErrorData.message || userResponse.statusText}`);
+            }
+            
+            const userData = await userResponse.json();
+            userId = userData.id;
+            
+            if (!userId) {
+              throw new Error('No se pudo obtener el ID del usuario');
+            }
+            
+            console.log('ID de usuario obtenido:', userId);
+            return { success: true, userId, message: 'Usuario ya registrado, inicio de sesión exitoso' };
+          } else {
+            throw new Error(`Error de autenticación: ${errorData.msg || errorData.message || response.statusText}`);
+          }
+        }
+        
+        const data = await response.json();
+        console.log('Respuesta de registro:', data);
+        
+        userId = data.user.id;
+        
+        if (!userId) {
+          throw new Error('No se pudo obtener el ID del usuario');
+        }
+      } catch (error) {
+        console.error('Error en autenticación:', error);
+        throw error;
       }
 
       // 2. Crear registro en la tabla users
