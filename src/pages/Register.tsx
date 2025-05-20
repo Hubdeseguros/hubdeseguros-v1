@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import { UserRole } from '@/types/auth';
 import { authService } from '@/services/auth';
+import { supabase } from '@/lib/supabase';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -33,7 +34,24 @@ const Register = () => {
     setIsLoading(true);
     
     try {
-      // Realizar registro con el servicio de autenticación
+      console.log('Iniciando registro con:', { name, email });
+      
+      // Registro directo con Supabase para depuración
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { name }
+        }
+      });
+      
+      if (error) {
+        throw new Error(`Error de autenticación: ${error.message}`);
+      }
+      
+      console.log('Registro exitoso:', data);
+      
+      // Continuar con el resto del proceso
       await authService.register(name, email, password);
       
       toast({
