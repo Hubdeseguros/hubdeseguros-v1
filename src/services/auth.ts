@@ -40,7 +40,7 @@ export const authService = {
 
       // 3. Asignar rol de admin
       const { error: roleError } = await supabase
-        .from('users_agency')
+        .from('user_roles')
         .insert([
           {
             user_id: userId,
@@ -90,7 +90,7 @@ export const authService = {
     try {
       // Verificar si el usuario es admin
       const { data: adminData, error: adminError } = await supabase
-        .from('users_agency')
+        .from('user_roles')
         .select('role_id')
         .eq('user_id', adminId)
         .eq('role_id', (await supabase
@@ -137,7 +137,7 @@ export const authService = {
     try {
       // Verificar si el usuario actual es admin
       const { data: adminData, error: adminError } = await supabase
-        .from('users_agency')
+        .from('user_roles')
         .select('role_id')
         .eq('user_id', currentAdminId)
         .eq('role_id', (await supabase
