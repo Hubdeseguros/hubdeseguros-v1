@@ -1,6 +1,7 @@
 'use client';
 
-import { RegisterClientForm } from '@/components/clients/RegisterClientForm';
+import React from 'react';
+import { RegisterClientForm } from '@/components/promoters/clients/RegisterClientForm';
 
 export default function RegisterClientPage() {
   return (
