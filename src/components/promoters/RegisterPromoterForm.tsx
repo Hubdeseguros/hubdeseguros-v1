@@ -21,7 +21,7 @@ import {
 import { toast } from '@/components/ui/use-toast';
 import { createPromoter } from '@/services/user.service';
 import type { UserRole } from '@/types/auth';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/hooks/useAuth';
 
 type FormData = {
   name: string;
@@ -31,7 +31,7 @@ type FormData = {
   documentNumber: string;
 };
 
-export function RegisterPromoterForm() {
+export const RegisterPromoterForm = () => {
   const form = useForm<FormData>();
   const { user } = useAuth();
 
@@ -174,4 +174,6 @@ export function RegisterPromoterForm() {
       </form>
     </Form>
   );
-}
+};
+
+export { RegisterPromoterForm };
