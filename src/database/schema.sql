@@ -193,6 +193,22 @@ INSERT INTO roles (name, description) VALUES
 ('PROMOTOR', 'Promotor de seguros'),
 ('CLIENTE', 'Cliente de seguros');
 
+-- Función para resetear intentos fallidos después de login exitoso
+CREATE OR REPLACE FUNCTION reset_failed_attempts()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.failed_login_attempts = 0;
+    NEW.last_failed_login = NULL;
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+CREATE TRIGGER reset_failed_attempts_trigger
+    AFTER UPDATE ON users
+    FOR EACH ROW
+    WHEN (OLD.failed_login_attempts > 0 AND NEW.failed_login_attempts = 0)
+    EXECUTE FUNCTION reset_failed_attempts();
+
 -- Función para bloquear usuario después de N intentos fallidos
 CREATE OR REPLACE FUNCTION block_user_after_failed_attempts()
 RETURNS TRIGGER AS $$
