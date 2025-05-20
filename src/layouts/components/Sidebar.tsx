@@ -17,7 +17,9 @@ import {
   DollarSign, 
   FilePieChart, 
   Home,
-  BellRing
+  BellRing,
+  Settings,
+  User
 } from 'lucide-react';
 
 type MenuIcon = React.ComponentType<{ size?: string | number; className?: string }>;
@@ -100,6 +102,18 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
             label: 'Reportes de Cobranza',
             icon: FilePieChart,
             path: `/reportes/cobranza`,
+          },
+          {
+            key: 'reportes-clientes',
+            label: 'Reportes de Clientes',
+            icon: Users,
+            path: `/reportes/clientes`,
+          },
+          {
+            key: 'reportes-polizas',
+            label: 'Reportes de Pólizas',
+            icon: FileText,
+            path: `/reportes/polizas`,
           }
         ]
       },
@@ -108,19 +122,46 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
         items: []
       },
       {
-        title: "CONFIGURACIÓN",
+        title: "AGENCIA",
         items: [
           {
-            key: 'usuarios',
-            label: 'Usuarios',
-            icon: FileUser,
-            path: `/usuarios`,
+            key: 'agencia-perfil',
+            label: 'Mi Perfil',
+            icon: User,
+            path: `/agencia/perfil`,
+          },
+          {
+            key: 'agencia-configuracion',
+            label: 'Configuración',
+            icon: Settings,
+            path: `/agencia/configuracion`,
+          },
+          {
+            key: 'agencia-documentos',
+            label: 'Documentos',
+            icon: FileText,
+            path: `/agencia/documentos`,
+          },
+          {
+            key: 'agencia-notificaciones',
+            label: 'Notificaciones',
+            icon: BellRing,
+            path: `/agencia/notificaciones`,
           }
         ]
       }
     ];
 
-    return baseMenu;
+    // Agregar ítems específicos según el rol
+    if (role === 'agencia') {
+      return baseMenu;
+    }
+
+    // Para otros roles, filtrar el menú
+    return baseMenu.map(section => ({
+      ...section,
+      items: section.items.filter(item => validateRolePermission(role, item.permission))
+    }));
   };
 
   // Cargar el menú basado en el rol del usuario
@@ -135,6 +176,56 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
       setOpenMenuItems({});
     }
   }, [user?.role]);
+
+  // Detectar la ruta activa
+  useEffect(() => {
+    const path = location.pathname;
+    let foundActiveKey = '';
+
+    menuSections.forEach(section => {
+      if (!section.isDivider) {
+        section.items.forEach(item => {
+          if (path === item.path || path.startsWith(item.path + '/')) {
+            foundActiveKey = item.key;
+          }
+          
+          if (item.subMenu) {
+            item.subMenu.forEach(subItem => {
+              if (path === subItem.path || path.startsWith(subItem.path + '/')) {
+                foundActiveKey = subItem.key;
+                setOpenMenuItems(prev => ({ ...prev, [item.key]: true }));
+              }
+            });
+          }
+        });
+      }
+    });
+
+    if (foundActiveKey) {
+      setActiveKey(foundActiveKey);
+    }
+  }, [location.pathname, menuSections]);
+
+  // Función para manejar el clic en un ítem del menú
+  const handleItemClick = (path: string, key: string, target?: string) => {
+    setActiveKey(key);
+    
+    if (target === '_blank') {
+      window.open(path, '_blank');
+    } else {
+      navigate(path);
+    }
+    
+    if (onToggleMobileMenu) {
+      onToggleMobileMenu();
+    }
+  };
+
+  // Alternar la apertura/cierre de un submenú
+  const toggleSubMenu = (key: string, event: React.MouseEvent) => {
+    event.stopPropagation();
+    setOpenMenuItems(prev => ({ ...prev, [key]: !prev[key] }));
+  };
 
   // Detectar la ruta activa
   useEffect(() => {
