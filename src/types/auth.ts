@@ -1,5 +1,5 @@
 
-export type UserRole = 'CLIENTE' | 'AGENTE' | 'AGENCIA' | 'ADMIN';
+export type UserRole = 'ADMIN';
 
 export type UserLevel = 'BASICO' | 'INTERMEDIO' | 'AVANZADO';
 

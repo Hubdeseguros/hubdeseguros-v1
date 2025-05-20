@@ -19,20 +19,9 @@ const Login = () => {
     await login(email, password);
   };
 
-  // Si está autenticado, redirigimos al dashboard correspondiente según el rol
+  // Si está autenticado, redirigimos al dashboard de admin
   if (isAuthenticated && user) {
-    switch (user.role) {
-      case 'CLIENTE':
-        return <Navigate to="/usuario/dashboard" replace />;
-      case 'AGENTE':
-        return <Navigate to="/agente/dashboard" replace />;
-      case 'AGENCIA':
-        return <Navigate to="/agencia/dashboard" replace />;
-      case 'ADMIN':
-        return <Navigate to="/admin/dashboard" replace />;
-      default:
-        return <Navigate to="/dashboard" replace />;
-    }
+    return <Navigate to="/admin/dashboard" replace />;
   }
 
   return (
