@@ -24,7 +24,7 @@ const AuthPages = {
 // Dashboards agrupados por rol
 const Dashboards = {
   User: lazy(() => import('../features/dashboard/user/UserDashboard')),
-  Agent: lazy(() => import('../features/dashboard/agent/AgentDashboard')),
+  Promotor: lazy(() => import('../features/dashboard/agent/PromotorDashboard')),
   Agency: lazy(() => import('../features/dashboard/agency/AgencyDashboard')),
   Admin: lazy(() => import('../features/dashboard/admin/AdminDashboard')),
   AgentSales: lazy(() => import('../features/dashboard/agent/AgentSalesDashboard'))
@@ -111,7 +111,7 @@ const NotFoundWithErrorBoundary = withErrorBoundary(AuthPages.NotFound);
 
 // Dashboards con manejo de errores
 const UserDashboardWithErrorBoundary = withErrorBoundary(Dashboards.User);
-const AgentDashboardWithErrorBoundary = withErrorBoundary(Dashboards.Agent);
+const PromotorDashboardWithErrorBoundary = withErrorBoundary(Dashboards.Promotor);
 const AgencyDashboardWithErrorBoundary = withErrorBoundary(Dashboards.Agency);
 const AdminDashboardWithErrorBoundary = withErrorBoundary(Dashboards.Admin);
 const AgentSalesDashboardWithErrorBoundary = withErrorBoundary(Dashboards.AgentSales);
@@ -126,8 +126,8 @@ const AppRoutes = () => {
     switch (user?.role) {
       case 'CLIENTE':
         return '/usuario/dashboard';
-      case 'AGENTE':
-        return '/agente/dashboard';
+      case 'PROMOTOR':
+        return '/promotor/dashboard';
       case 'AGENCIA':
         return '/agencia/dashboard';
       case 'ADMIN':
@@ -168,8 +168,8 @@ const AppRoutes = () => {
         </Route>
 
         {/* Rutas para AGENTE */}
-        <Route path="/agente" element={<PrivateRoute allowedRoles={['AGENTE', 'ADMIN']} />}>
-          <Route path="dashboard" element={<AgentDashboardWithErrorBoundary />} />
+        <Route path="/promotor" element={<PrivateRoute allowedRoles={['PROMOTOR', 'ADMIN']} />}>
+          <Route path="dashboard" element={<PromotorDashboardWithErrorBoundary />} />
           
           {/* Rutas de Clientes */}
           <Route path="clientes">
@@ -296,6 +296,10 @@ const AppRoutes = () => {
             <Route path="informacion" element={<Placeholder title="Información de agencia" />} />
             <Route path="sedes" element={<Placeholder title="Sedes" />} />
             <Route path="aseguradoras" element={<Placeholder title="Aseguradoras" />} />
+          </Route>
+        </Route>
+
+        {/* Rutas para ADMIN */}
         <Route path="/admin" element={<PrivateRoute allowedRoles={['ADMIN']} />}>
           <Route path="dashboard" element={<AdminDashboardWithErrorBoundary />} />
           <Route path="usuarios" element={<Placeholder title="Gestión de Usuarios" />} />
