@@ -282,6 +282,8 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
 
   // Opciones del menú de usuario
   const userMenuItems = useMemo((): UserMenuItem[] => {
+    if (!user) return [];
+
     const items: UserMenuItem[] = [
       {
         icon: <UserIcon size={16} />,
@@ -428,42 +430,44 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
             </DropdownMenu>
             
             {/* Menú de usuario */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  <Avatar className="h-8 w-8">
-                    {user?.avatar ? (
-                      <AvatarImage src={user.avatar} alt={user.name || 'Usuario'} />
-                    ) : (
-                      <AvatarFallback>
-                        {user?.name?.charAt(0) || 'U'}
-                      </AvatarFallback>
-                    )}
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[200px]">
-                <DropdownMenuLabel>
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium">{user?.name || 'Usuario'}</p>
-                    <p className="text-xs text-muted-foreground">{user?.email || ''}</p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {userMenuItems.map((item, index) => (
-                  <React.Fragment key={index}>
-                    <DropdownMenuItem
-                      onClick={item.onClick}
-                      className="cursor-pointer"
-                    >
-                      <span className="mr-2">{item.icon}</span>
-                      <span>{item.label}</span>
-                    </DropdownMenuItem>
-                    {item.dividerAfter && <DropdownMenuSeparator />}
-                  </React.Fragment>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {user && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="rounded-full">
+                    <Avatar className="h-8 w-8">
+                      {user?.avatar ? (
+                        <AvatarImage src={user.avatar} alt={user.name || 'Usuario'} />
+                      ) : (
+                        <AvatarFallback>
+                          {user?.name?.charAt(0) || 'U'}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-[200px]">
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium">{user?.name || 'Usuario'}</p>
+                      <p className="text-xs text-muted-foreground">{user?.email || ''}</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {userMenuItems.map((item, index) => (
+                    <React.Fragment key={index}>
+                      <DropdownMenuItem
+                        onClick={item.onClick}
+                        className="cursor-pointer"
+                      >
+                        <span className="mr-2">{item.icon}</span>
+                        <span>{item.label}</span>
+                      </DropdownMenuItem>
+                      {item.dividerAfter && <DropdownMenuSeparator />}
+                    </React.Fragment>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         </div>
       </header>

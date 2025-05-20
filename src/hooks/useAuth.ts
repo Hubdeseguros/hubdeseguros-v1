@@ -5,6 +5,11 @@ import { User as UserType, UserRole } from '@/types/auth';
 interface User extends UserType {
   role: UserRole;
   lastLogin: Date;
+  name: string;
+  email: string;
+  avatar?: string;
+  permissions: Permission[];
+  rolePermissions: RolePermissions;
 }
 
 interface AuthContext {
@@ -93,7 +98,14 @@ export const useAuth = (): AuthContext => {
       const savedUser = localStorage.getItem('user');
       if (savedUser) {
         const parsedUser = JSON.parse(savedUser);
-        setUser(parsedUser);
+        const userWithDefaults: User = {
+          ...parsedUser,
+          name: parsedUser.name || 'Usuario',
+          email: parsedUser.email || '',
+          permissions: parsedUser.permissions || [],
+          rolePermissions: parsedUser.rolePermissions || {}
+        };
+        setUser(userWithDefaults);
       }
     } catch (err) {
       setError(err as Error);
