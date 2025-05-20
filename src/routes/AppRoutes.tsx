@@ -7,7 +7,6 @@ import NotificationsPage from "@/pages/Notifications";
 import GestionClientes from "@/features/clientes/pages/GestionClientes";
 import PolizasListado from "@/features/polizas/pages/PolizasListado";
 import CrmDashboard from "@/features/clientes/pages/CrmDashboard";
-import AdminCrmDashboard from "@/features/admin/pages/AdminCrmDashboard";
 
 // Import types for better type checking
 import type { Notification } from '@/types/notifications';
@@ -29,15 +28,6 @@ const Dashboards = {
   Agency: lazy(() => import('../features/dashboard/agency/AgencyDashboard')),
   Admin: lazy(() => import('../features/dashboard/admin/AdminDashboard')),
   AgentSales: lazy(() => import('../features/dashboard/agent/AgentSalesDashboard'))
-};
-
-// Función para envolver los componentes con manejo de errores
-const withErrorBoundary = (Component: React.ComponentType) => {
-  return (props: any) => (
-    <ErrorBoundaryRoute>
-      <Component {...props} />
-    </ErrorBoundaryRoute>
-  );
 };
 
 // Componentes comunes
@@ -102,6 +92,15 @@ const ErrorBoundaryRoute = ({ children }: { children: React.ReactNode }) => {
   return <RouteErrorBoundary>{children}</RouteErrorBoundary>;
 };
 
+// Función para envolver los componentes con manejo de errores
+const withErrorBoundary = (Component: React.ComponentType) => {
+  return (props: any) => (
+    <ErrorBoundaryRoute>
+      <Component {...props} />
+    </ErrorBoundaryRoute>
+  );
+};
+
 // Componentes con manejo de errores
 const LoginWithErrorBoundary = withErrorBoundary(AuthPages.Login);
 const RegisterWithErrorBoundary = withErrorBoundary(AuthPages.Register);
@@ -116,9 +115,6 @@ const AgentDashboardWithErrorBoundary = withErrorBoundary(Dashboards.Agent);
 const AgencyDashboardWithErrorBoundary = withErrorBoundary(Dashboards.Agency);
 const AdminDashboardWithErrorBoundary = withErrorBoundary(Dashboards.Admin);
 const AgentSalesDashboardWithErrorBoundary = withErrorBoundary(Dashboards.AgentSales);
-const AdminCrmDashboardWithErrorBoundary = withErrorBoundary(AdminCrmDashboard);
-
-
 
 const AppRoutes = () => {
   const { isAuthenticated, user } = useAuth();
@@ -338,9 +334,6 @@ const AppRoutes = () => {
         {/* Rutas para ADMIN */}
         <Route path="/admin" element={<PrivateRoute allowedRoles={['ADMIN']} />}>
           <Route path="dashboard" element={<AdminDashboardWithErrorBoundary />} />
-          <Route path="clientes">
-            <Route path="crm" element={<AdminCrmDashboardWithErrorBoundary />} />
-          </Route>
           <Route path="usuarios" element={<Placeholder title="Gestión de Usuarios" />} />
           <Route path="configuracion" element={<SettingsPageWithErrorBoundary />}>
             <Route index element={<Navigate to="general" replace />} />

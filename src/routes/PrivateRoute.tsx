@@ -34,41 +34,20 @@ const PrivateRoute = ({
     }
   }, [isAuthenticated, user]);
 
-  // Si el usuario está autenticado
-  if (isAuthenticated) {
-    // Si es ADMIN, tiene acceso completo
-    if (user?.role === 'ADMIN') {
-      return (
-        <MainLayout>
-          <Outlet />
-        </MainLayout>
-      );
-    }
-
-    // Para otros roles, verificar si tiene acceso
-    if (allowedRoles.length === 0) {
-      // Si no se especifican roles permitidos, permitir acceso
-      return (
-        <MainLayout>
-          <Outlet />
-        </MainLayout>
-      );
-    }
-
-    if (allowedRoles.includes(user?.role as UserRole)) {
-      return (
-        <MainLayout>
-          <Outlet />
-        </MainLayout>
-      );
-    }
-
-    // Si no tiene acceso, redirigir a la página de inicio
-    return <Navigate to="/" replace />;
+  // Si el usuario es ADMIN, tiene acceso completo sin restricciones
+  if (user?.role === 'ADMIN') {
+    return (
+      <MainLayout>
+        <Outlet />
+      </MainLayout>
+    );
   }
 
-  // Si no está autenticado, redirigir al login
-  return <Navigate to="/auth/login" replace />;
+  return (
+    <MainLayout>
+      <Outlet />
+    </MainLayout>
+  );
 
   // Si se especifican roles permitidos y el usuario no tiene el rol adecuado
   if (allowedRoles.length > 0 && user && !allowedRoles.includes(user.role)) {
