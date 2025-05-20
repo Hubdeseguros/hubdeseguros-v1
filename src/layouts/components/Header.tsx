@@ -1,4 +1,18 @@
 import React, { useState, useReducer, useCallback, useMemo } from 'react';
+import ReactDOM from 'react-dom';
+
+// Declaración de tipos para elementos JSX personalizados
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'div': React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
+      'span': React.DetailedHTMLProps<React.HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>;
+      'p': React.DetailedHTMLProps<React.HTMLAttributes<HTMLParagraphElement>, HTMLParagraphElement>;
+      'header': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+      'form': React.DetailedHTMLProps<React.FormHTMLAttributes<HTMLFormElement>, HTMLFormElement>;
+    }
+  }
+}
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { 
@@ -50,8 +64,22 @@ type Permission = string;
 const hasPermission = (user: User | null | undefined, permission: Permission): boolean => {
   if (!user || !user.permissions) return false;
   
+  // Verificar si el usuario está autenticado
+  if (!user) {
+    return false;
+  }
+  
+  // Asegurarse de que el usuario tenga los campos requeridos
+  const userWithDefaults = {
+    ...user,
+    name: user.name || 'Usuario',
+    email: user.email || '',
+    permissions: user.permissions || [],
+    rolePermissions: user.rolePermissions || {}
+  };
+
   // Verificamos si el usuario tiene el permiso específico
-  return user.permissions.some(perm => 
+  return userWithDefaults.permissions.some(perm => 
     // Comparamos el permiso como string para evitar problemas de tipos
     typeof perm === 'string' ? perm === permission : perm.toString() === permission
   );
@@ -175,22 +203,29 @@ interface UserMenuItem {
 }
 
 const Header: React.FC<HeaderProps> = ({ className }) => {
-  const { user, logout } = useAuth();
+  const { user: currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  
+
+  // Asegurar que el usuario tenga valores por defecto
+  const user = currentUser ? {
+    ...currentUser,
+    name: currentUser.name || 'Usuario',
+    email: currentUser.email || '',
+    avatar: currentUser.avatar,
+    permissions: currentUser.permissions || [],
+    rolePermissions: currentUser.rolePermissions || {}
+  } : null;
+
   // Estado para notificaciones
   const [notificationsState, dispatchNotifications] = useReducer(notificationsReducer, {
     notifications: defaultNotifications,
     unreadCount: defaultNotifications.filter(n => !n.read).length
   });
-  
+
   // Estado para la búsqueda
   const [searchValue, setSearchValue] = useState('');
-  
-  // Estado para mostrar menús desplegables
-  const [showNotifications, setShowNotifications] = useState(false);
-  
+
   // Obtener rutas de migas de pan
   const getBreadcrumbs = useCallback((): BreadcrumbItemType[] => {
     const paths = location.pathname.split('/').filter(Boolean);
@@ -205,31 +240,29 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
     
     return breadcrumbs;
   }, [location.pathname]);
-  
+
   const breadcrumbs = useMemo(() => getBreadcrumbs(), [getBreadcrumbs]);
-  
+
   // Manejadores de eventos
   const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     // Implementar lógica de búsqueda
     console.log('Búsqueda:', searchValue);
   }, [searchValue]);
-  
+
   const handleNotificationRead = useCallback((id: string) => {
     dispatchNotifications({ type: 'MARK_AS_READ', id });
-    // Aquí puedes implementar una llamada a la API para actualizar el estado de la notificación
   }, []);
-  
+
   const handleMarkAllAsRead = useCallback(() => {
     dispatchNotifications({ type: 'MARK_ALL_AS_READ' });
-    // Aquí puedes implementar una llamada a la API para actualizar el estado de todas las notificaciones
   }, []);
-  
+
   const handleLogout = useCallback(() => {
     logout();
     navigate('/login');
   }, [logout, navigate]);
-  
+
   // Opciones del menú de usuario
   const userMenuItems = useMemo((): UserMenuItem[] => {
     const items: UserMenuItem[] = [
@@ -245,7 +278,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
         dividerAfter: true
       }
     ];
-    
+
     // Agregar opción de administración solo si el usuario tiene permiso
     if (user && hasPermission(user, 'admin.access')) {
       items.push({
@@ -255,7 +288,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
         dividerAfter: false
       });
     }
-    
+
     // Siempre agregar la opción de cerrar sesión al final
     items.push({
       icon: <LogOut size={16} />,
@@ -263,15 +296,10 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
       onClick: handleLogout,
       dividerAfter: true
     });
-    
-    console.log('Opciones de menú generadas:', items);
+
     return items;
   }, [navigate, handleLogout, user]);
-  
-  // Usar directamente las opciones del menú sin filtrar adicionalmente
-  const filteredUserMenuItems = userMenuItems;
-  
-  // Renderizado del componente
+
   return (
     <ErrorBoundary>
       <header className={cn("w-full bg-white border-b border-gray-200 z-50", className)}>
@@ -359,23 +387,20 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
                     {notificationsState.notifications.map((notification) => (
                       <DropdownMenuItem
                         key={notification.id}
-                        className={cn(
-                          "flex flex-col items-start p-3 cursor-default",
-                          !notification.read && "bg-muted/50"
-                        )}
                         onClick={() => handleNotificationRead(notification.id)}
+                        className="cursor-pointer"
                       >
-                        <div className="flex w-full justify-between items-start">
-                          <div className="flex items-center">
-                            {notification.type === 'success' && <Check className="h-4 w-4 mr-2 text-green-500" />}
-                            {notification.type === 'warning' && <AlertCircle className="h-4 w-4 mr-2 text-amber-500" />}
-                            {notification.type === 'error' && <AlertCircle className="h-4 w-4 mr-2 text-red-500" />}
-                            {notification.type === 'info' && <Info className="h-4 w-4 mr-2 text-blue-500" />}
+                        <div className="flex items-center space-x-2">
+                          {notification.type === 'success' && <Check className="h-4 w-4 mr-2 text-green-500" />}
+                          {notification.type === 'warning' && <AlertCircle className="h-4 w-4 mr-2 text-yellow-500" />}
+                          {notification.type === 'error' && <AlertCircle className="h-4 w-4 mr-2 text-red-500" />}
+                          {notification.type === 'info' && <Info className="h-4 w-4 mr-2 text-blue-500" />}
+                          <div className="flex flex-col space-y-1">
                             <span className="font-medium">{notification.title}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {formatTimeAgo(notification.date)}
+                            </span>
                           </div>
-                          <span className="text-xs text-muted-foreground">
-                            {formatTimeAgo(notification.date)}
-                          </span>
                         </div>
                         <p className="text-sm text-muted-foreground mt-1">{notification.message}</p>
                       </DropdownMenuItem>
@@ -408,24 +433,18 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {filteredUserMenuItems.length > 0 ? (
-                  filteredUserMenuItems.map((item, index) => (
-                    <React.Fragment key={index}>
-                      <DropdownMenuItem
-                        onClick={item.onClick}
-                        className="cursor-pointer"
-                      >
-                        <span className="mr-2">{item.icon}</span>
-                        <span>{item.label}</span>
-                      </DropdownMenuItem>
-                      {item.dividerAfter && <DropdownMenuSeparator />}
-                    </React.Fragment>
-                  ))
-                ) : (
-                  <DropdownMenuItem disabled>
-                    <span>No hay opciones disponibles</span>
-                  </DropdownMenuItem>
-                )}
+                {userMenuItems.map((item, index) => (
+                  <React.Fragment key={index}>
+                    <DropdownMenuItem
+                      onClick={item.onClick}
+                      className="cursor-pointer"
+                    >
+                      <span className="mr-2">{item.icon}</span>
+                      <span>{item.label}</span>
+                    </DropdownMenuItem>
+                    {item.dividerAfter && <DropdownMenuSeparator />}
+                  </React.Fragment>
+                ))}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

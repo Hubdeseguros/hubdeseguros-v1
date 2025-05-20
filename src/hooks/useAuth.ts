@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Permission, RolePermissions, validatePermission } from '@/types/permissions';
+import { User as UserType } from '@/types/auth';
 
-interface User {
-  id: string;
-  role: string;
-  permissions: Permission[];
-  rolePermissions: RolePermissions;
+interface User extends UserType {
+  // El tipo User ya incluye todas las propiedades necesarias
 }
 
 interface AuthContext {
