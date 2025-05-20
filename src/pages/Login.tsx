@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth'; // must come from useAuth.tsx!
@@ -16,7 +15,7 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await login(email, password); // only email, password
+    await login(email, password); // Make sure the login takes two arguments: email and password
   };
 
   // Si está autenticado, redirigimos al dashboard de admin
