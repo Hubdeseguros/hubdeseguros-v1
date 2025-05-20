@@ -47,8 +47,8 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const { state: sidebarState, toggleSidebar, open } = useSidebar();
-  const collapsed = !open;
+  const { open: isOpen } = useSidebar();
+  const collapsed = false; // Siempre expandido
   const [activeKey, setActiveKey] = useState('');
   const [openMenuItems, setOpenMenuItems] = useState<Record<string, boolean>>({});
   const [unreadCount, setUnreadCount] = useState(3); // Simulación de notificaciones no leídas
@@ -180,52 +180,26 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
     }
   };
 
-  // Función para alternar el colapso de la barra lateral
-  const handleToggleCollapse = () => {
-    toggleSidebar();
-    
-    if (onToggleMobileMenu) {
-      onToggleMobileMenu();
-    }
-  };
-
   // Alternar la apertura/cierre de un submenú
   const toggleSubMenu = (key: string, event: React.MouseEvent) => {
     event.stopPropagation();
     setOpenMenuItems(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
-  // Efecto para manejar el estado de los submenús cuando se colapsa la barra lateral
-  useEffect(() => {
-    if (collapsed) {
-      // Cerrar todos los submenús al colapsar
-      setOpenMenuItems({});
-    }
-  }, [collapsed]);
-
   if (!user) return null;
 
   return (
-    <div className={`relative flex h-full flex-col bg-sidebar text-sidebar-foreground ${collapsed ? 'w-16' : 'w-64'} transition-all duration-300`}>
+    <div className={`relative flex h-full flex-col bg-sidebar text-sidebar-foreground w-64 transition-all duration-300`}>
       {/* Header del sidebar */}
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-2">
           <img src="/assets/logo.svg" alt="Hub de Seguros" className="h-8 w-8" />
-          {!collapsed && <h1 className="text-xl font-bold">Hub de Seguros</h1>}
+          <h1 className="text-xl font-bold">Hub de Seguros</h1>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleToggleCollapse}
-          className="md:block" // Siempre visible en pantallas md+
-          aria-label={collapsed ? "Expandir menú" : "Colapsar menú"}
-        >
-          {collapsed ? <ChevronRight /> : <ChevronLeft />}
-        </Button>
       </div>
 
       {/* Información del usuario */}
-      <div className={`${collapsed ? 'py-4 px-2' : 'p-4'} border-b border-[#2a3c5a]`}>
+      <div className="p-4 border-b border-[#2a3c5a]">
         <div className="flex items-center">
           <div className="flex-shrink-0">
             <div className="w-8 h-8 rounded-full bg-blue-700 flex items-center justify-center text-white font-medium">
@@ -320,20 +294,8 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
         ))}
       </nav>
 
-      {/* Footer del sidebar con botón alternativo para expandir cuando está colapsado */}
+      {/* Footer del sidebar */}
       <div className="border-t border-[#2a3c5a] p-4 space-y-2">
-        {/* Botón alternativo para expandir/colapsar cuando el sidebar está colapsado */}
-        {collapsed && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleToggleCollapse}
-            className="w-full flex items-center justify-center text-gray-300 hover:bg-[#2a3c5a] hover:text-white mb-2"
-            aria-label="Expandir menú"
-          >
-            <ChevronRight size={18} />
-          </Button>
-        )}
         
         {/* Notification Link */}
         <Button 
