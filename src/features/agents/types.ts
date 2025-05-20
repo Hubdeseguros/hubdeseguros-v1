@@ -1,4 +1,3 @@
-export type AgentStatus = 'ACTIVE' | 'INACTIVE' | 'PENDING';
 
 export interface Agent {
   id: string;
@@ -6,10 +5,17 @@ export interface Agent {
   last_name: string;
   email: string;
   phone?: string | null;
-  license_number: string;
-  created_at: string;    // ISO8601
-  updated_at: string;    // ISO8601
-  status: AgentStatus;
+  license_number?: string | null;
+  created_at: string;
+  updated_at?: string;
+  status?: string | null;
 }
 
-export type AgentFormData = Omit<Agent, 'id' | 'created_at' | 'updated_at'>; 
+export type AgentFormData = {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone?: string | null;
+  license_number?: string | null;
+  status?: string | null;
+};

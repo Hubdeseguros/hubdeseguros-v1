@@ -7,13 +7,20 @@ export interface Client {
   last_name: string;
   email: string;
   phone?: string | null;
-  document_id: string;
-  document_type: string;
-  address?: string | null;
-  created_at: string;    // ISO8601
-  updated_at: string;    // ISO8601
+  document_id?: string;
+  document_type?: string;
+  address?: string;
+  created_at: string;
+  updated_at?: string;
   status: ClientStatus;
+  promotor_id?: string;
+  creado_por?: string;
 }
 
-// Data para formularios (omitiendo campos autogenerados por el sistema)
-export type ClientFormData = Omit<Client, 'id' | 'created_at' | 'updated_at'>;
+// Only nombre, email, promotor_id for the DB schema
+export type ClientFormData = {
+  first_name: string;
+  email: string;
+  promotor_id?: string;
+  creado_por?: string;
+};
