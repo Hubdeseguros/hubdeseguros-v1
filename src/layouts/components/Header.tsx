@@ -1,7 +1,7 @@
 import React, { useState, useReducer, useCallback, useMemo } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import {
+import { 
   Search,
   Check,
   AlertCircle,
@@ -231,41 +231,45 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
   }, [logout, navigate]);
   
   // Opciones del menú de usuario
-  const userMenuItems = useMemo((): UserMenuItem[] => [
-    {
-      icon: <UserIcon size={16} />,
-      label: 'Mi Perfil',
-      onClick: () => navigate('/profile'),
-    },
-    {
-      icon: <Settings size={16} />,
-      label: 'Configuración',
-      onClick: () => navigate('/settings'),
-      dividerAfter: true
-    },
-    {
-      icon: <Shield size={16} />,
-      label: 'Administración',
-      onClick: () => navigate('/admin'),
-      permission: 'admin.access'
-    },
-    {
+  const userMenuItems = useMemo((): UserMenuItem[] => {
+    const items: UserMenuItem[] = [
+      {
+        icon: <UserIcon size={16} />,
+        label: 'Mi Perfil',
+        onClick: () => navigate('/profile'),
+      },
+      {
+        icon: <Settings size={16} />,
+        label: 'Configuración',
+        onClick: () => navigate('/settings'),
+        dividerAfter: true
+      }
+    ];
+    
+    // Agregar opción de administración solo si el usuario tiene permiso
+    if (user && hasPermission(user, 'admin.access')) {
+      items.push({
+        icon: <Shield size={16} />,
+        label: 'Administración',
+        onClick: () => navigate('/admin'),
+        dividerAfter: false
+      });
+    }
+    
+    // Siempre agregar la opción de cerrar sesión al final
+    items.push({
       icon: <LogOut size={16} />,
       label: 'Cerrar Sesión',
       onClick: handleLogout,
       dividerAfter: true
-    }
-  ], [navigate, handleLogout]);
+    });
+    
+    console.log('Opciones de menú generadas:', items);
+    return items;
+  }, [navigate, handleLogout, user]);
   
-  // Filtrar opciones del menú según permisos del usuario
-  const filteredUserMenuItems = useMemo(() => 
-    userMenuItems.filter(item => {
-      // El ítem de Configuración siempre está disponible
-      if (item.label === 'Configuración') return true;
-      // Para otros ítems, verificar permisos si los tienen
-      return !item.permission || (user && hasPermission(user, item.permission));
-    }),
-  [userMenuItems, user]);
+  // Usar directamente las opciones del menú sin filtrar adicionalmente
+  const filteredUserMenuItems = userMenuItems;
   
   // Renderizado del componente
   return (
@@ -404,18 +408,24 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {filteredUserMenuItems.map((item, index) => (
-                  <React.Fragment key={index}>
-                    <DropdownMenuItem
-                      onClick={item.onClick}
-                      className="cursor-pointer"
-                    >
-                      <span className="mr-2">{item.icon}</span>
-                      <span>{item.label}</span>
-                    </DropdownMenuItem>
-                    {item.dividerAfter && <DropdownMenuSeparator />}
-                  </React.Fragment>
-                ))}
+                {filteredUserMenuItems.length > 0 ? (
+                  filteredUserMenuItems.map((item, index) => (
+                    <React.Fragment key={index}>
+                      <DropdownMenuItem
+                        onClick={item.onClick}
+                        className="cursor-pointer"
+                      >
+                        <span className="mr-2">{item.icon}</span>
+                        <span>{item.label}</span>
+                      </DropdownMenuItem>
+                      {item.dividerAfter && <DropdownMenuSeparator />}
+                    </React.Fragment>
+                  ))
+                ) : (
+                  <DropdownMenuItem disabled>
+                    <span>No hay opciones disponibles</span>
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
