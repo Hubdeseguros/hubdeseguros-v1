@@ -1,5 +1,6 @@
+
 import { useState } from 'react';
-import { useAuth } from '@/hooks/useAuth'; // <-- make sure this is from useAuth.tsx
+import { useAuth } from '@/hooks/useAuth'; // FIXED: must come from useAuth.tsx!
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

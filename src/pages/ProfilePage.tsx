@@ -1,5 +1,6 @@
+
 import { useState } from 'react';
-import { useAuth } from '@/hooks/useAuth'; // <-- make sure this is from useAuth.tsx
+import { useAuth } from '@/hooks/useAuth'; // FIXED: must come from useAuth.tsx!
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
