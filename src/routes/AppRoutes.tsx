@@ -7,6 +7,7 @@ import NotificationsPage from "@/pages/Notifications";
 import GestionClientes from "@/features/clientes/pages/GestionClientes";
 import PolizasListado from "@/features/polizas/pages/PolizasListado";
 import CrmDashboard from "@/features/clientes/pages/CrmDashboard";
+import { RegisterPromoterForm } from '@/components/promoters/RegisterPromoterForm';
 
 // Import types for better type checking
 import type { Notification } from '@/types/notifications';
@@ -303,6 +304,14 @@ const AppRoutes = () => {
         <Route path="/admin" element={<PrivateRoute allowedRoles={['ADMIN']} />}>
           <Route path="dashboard" element={<AdminDashboardWithErrorBoundary />} />
           <Route path="usuarios" element={<Placeholder title="Gestión de Usuarios" />} />
+          <Route path="promotores">
+            <Route path="registrar" element={
+              <div className="container mx-auto p-6">
+                <h1 className="text-2xl font-bold mb-6">Registrar Nuevo Promotor</h1>
+                <RegisterPromoterForm />
+              </div>
+            } />
+          </Route>
           <Route path="configuracion" element={<SettingsPageWithErrorBoundary />}>
             <Route index element={<Navigate to="general" replace />} />
             <Route path="general" element={<Placeholder title="Configuración General" />} />
