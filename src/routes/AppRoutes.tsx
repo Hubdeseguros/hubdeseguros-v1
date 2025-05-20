@@ -300,6 +300,14 @@ const AppRoutes = () => {
           </Route>
         </Route>
 
+        {/* Ruta de Configuración - Accesible para todos los usuarios autenticados */}
+        <Route path="/settings" element={<PrivateRoute />}>
+          <Route index element={<Navigate to="general" replace />} />
+          <Route path="general" element={<Placeholder title="Configuración General" />} />
+          <Route path="seguridad" element={<Placeholder title="Configuración de Seguridad" />} />
+          <Route path="integraciones" element={<Placeholder title="Integraciones" />} />
+        </Route>
+
         {/* Rutas para ADMIN */}
         <Route path="/admin" element={<PrivateRoute allowedRoles={['ADMIN']} />}>
           <Route path="dashboard" element={<AdminDashboardWithErrorBoundary />} />
@@ -311,12 +319,6 @@ const AppRoutes = () => {
                 <RegisterPromoterForm />
               </div>
             } />
-          </Route>
-          <Route path="configuracion" element={<SettingsPageWithErrorBoundary />}>
-            <Route index element={<Navigate to="general" replace />} />
-            <Route path="general" element={<Placeholder title="Configuración General" />} />
-            <Route path="seguridad" element={<Placeholder title="Configuración de Seguridad" />} />
-            <Route path="integraciones" element={<Placeholder title="Integraciones" />} />
           </Route>
         </Route>
       </Routes>

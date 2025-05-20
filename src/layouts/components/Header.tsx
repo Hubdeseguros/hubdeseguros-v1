@@ -259,9 +259,12 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
   
   // Filtrar opciones del menú según permisos del usuario
   const filteredUserMenuItems = useMemo(() => 
-    userMenuItems.filter(item => 
-      !item.permission || (user && hasPermission(user, item.permission))
-    ),
+    userMenuItems.filter(item => {
+      // El ítem de Configuración siempre está disponible
+      if (item.label === 'Configuración') return true;
+      // Para otros ítems, verificar permisos si los tienen
+      return !item.permission || (user && hasPermission(user, item.permission));
+    }),
   [userMenuItems, user]);
   
   // Renderizado del componente
