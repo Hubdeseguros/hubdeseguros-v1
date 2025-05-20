@@ -1,7 +1,14 @@
-import { createClient } from '@/utils/supabase/client';
-import { v4 as uuidv4 } from 'uuid';
+import { supabase } from '@/integrations/supabase/client';
 
-const supabase = createClient();
+// Helper to generate a simple temporary password
+function generateTempPassword(length = 12) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
 
 export interface CreateUserData {
   name: string;
@@ -15,8 +22,8 @@ export interface CreateUserData {
 }
 
 export async function createPromoter(userData: Omit<CreateUserData, 'role'>) {
-  const tempPassword = uuidv4().substring(0, 12);
-  
+  const tempPassword = generateTempPassword();
+
   // 1. Crear usuario en Auth
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email: userData.email,
@@ -63,13 +70,13 @@ export async function createPromoter(userData: Omit<CreateUserData, 'role'>) {
 
   // 3. Enviar correo con la contraseña temporal
   // Aquí iría la lógica para enviar el correo con la contraseña temporal
-  
+
   return { userId: authData.user.id };
 }
 
 export async function createClient(userData: Omit<CreateUserData, 'role'>) {
-  const tempPassword = uuidv4().substring(0, 12);
-  
+  const tempPassword = generateTempPassword();
+
   // 1. Crear usuario en Auth
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email: userData.email,
@@ -116,7 +123,7 @@ export async function createClient(userData: Omit<CreateUserData, 'role'>) {
 
   // 3. Enviar correo con la contraseña temporal
   // Aquí iría la lógica para enviar el correo con la contraseña temporal
-  
+
   return { userId: authData.user.id };
 }
 
