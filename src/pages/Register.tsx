@@ -6,15 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import { UserRole } from '@/types/auth';
-import { 
-  Select, 
-  SelectContent, 
-  SelectGroup, 
-  SelectItem, 
-  SelectLabel, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -22,7 +13,7 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [selectedRole, setSelectedRole] = useState<UserRole>('CLIENTE');
+
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -160,23 +151,7 @@ const Register = () => {
               />
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="role">Selecciona tu rol</Label>
-              <Select defaultValue={selectedRole} onValueChange={(value) => setSelectedRole(value as UserRole)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecciona un rol" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Roles disponibles</SelectLabel>
-                    <SelectItem value="CLIENTE">Cliente</SelectItem>
-                    <SelectItem value="AGENTE">Agente</SelectItem>
-                    <SelectItem value="AGENCIA">Agencia</SelectItem>
-                    <SelectItem value="ADMIN">Administrador</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
+
             
             <Button
               type="submit"
