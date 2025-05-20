@@ -7,9 +7,9 @@ import { toast } from '@/components/ui/use-toast';
 import { useEffect } from 'react';
 
 interface PrivateRouteProps {
-  allowedRoles?: UserRole[];
+  allowedRoles?: string[];
   requiresAuthentication?: boolean;
-  role?: UserRole;
+  role?: string;
 }
 
 const PrivateRoute = ({ 

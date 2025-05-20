@@ -114,7 +114,7 @@ const NotFoundWithErrorBoundary = withErrorBoundary(AuthPages.NotFound);
 // Dashboards con manejo de errores
 const UserDashboardWithErrorBoundary = withErrorBoundary(Dashboards.User);
 const PromotorDashboardWithErrorBoundary = withErrorBoundary(Dashboards.Promotor);
-const AgencyDashboardWithErrorBoundary = withErrorBoundary(Dashboards.Agency);
+const AgencyDashboardWithErrorBoundary = withErrorBoundary(Dashboards.Agencia);
 const AdminDashboardWithErrorBoundary = withErrorBoundary(Dashboards.Admin);
 const AgentSalesDashboardWithErrorBoundary = withErrorBoundary(Dashboards.AgentSales);
 
