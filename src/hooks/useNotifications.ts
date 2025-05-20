@@ -23,20 +23,14 @@ export function useNotifications() {
     try {
       const rawData = await notifService.getNotifications(user.id);
 
-      // Map BE notifications to UI notifications, mark as read if SENT/FAILED
+      // Map Supabase notificaciones to UI notifications
       setNotifications(
         (rawData ?? []).map((n) => ({
           id: n.id,
-          title: n.type === "SMS"
-            ? "Notificación SMS"
-            : n.type === "EMAIL"
-            ? "Notificación Email"
-            : n.type === "PUSH"
-            ? "Push"
-            : "Webhook",
-          description: n.content || "",
-          date: n.created_at || "",
-          read: n.status !== "PENDING",
+          title: n.titulo,
+          description: n.mensaje || "",
+          date: n.fecha_envio || "",
+          read: !!n.leida,
         }))
       );
     } finally {

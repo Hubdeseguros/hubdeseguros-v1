@@ -1,4 +1,3 @@
-
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { UserRole } from '../types/auth';
@@ -22,8 +21,8 @@ const PrivateRoute = ({
     if (isAuthenticated && user) {
       const roleText = {
         'CLIENTE': 'cliente',
-        'AGENTE': 'agente de seguros',
         'AGENCIA': 'agencia',
+        'PROMOTOR': 'promotor',
         'ADMIN': 'administrador'
       }[user.role];
 
@@ -61,8 +60,8 @@ const PrivateRoute = ({
     switch (user.role) {
       case 'CLIENTE':
         return <Navigate to="/usuario/dashboard" replace />;
-      case 'AGENTE':
-        return <Navigate to="/agente/dashboard" replace />;
+      case 'PROMOTOR':
+        return <Navigate to="/promotor/dashboard" replace />;
       case 'AGENCIA':
         return <Navigate to="/agencia/dashboard" replace />;
       case 'ADMIN':

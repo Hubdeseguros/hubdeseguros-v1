@@ -113,7 +113,7 @@ export const userRoutes: RouteConfig = {
 
 // Configuración de rutas para el rol de agente
 export const agentRoutes: RouteConfig = {
-  path: '/agente/dashboard',
+  path: '/promotor/dashboard',
   sections: [
     {
       title: 'PRINCIPALES',
@@ -122,42 +122,42 @@ export const agentRoutes: RouteConfig = {
           key: 'clientes', 
           label: 'Clientes', 
           icon: Users, 
-          path: '/agente/clientes',
+          path: '/promotor/clientes',
           tooltip: 'Administra tu cartera de clientes'
         },
         { 
           key: 'polizas', 
           label: 'Pólizas', 
           icon: Shield, 
-          path: '/agente/polizas',
+          path: '/promotor/polizas',
           tooltip: 'Gestiona las pólizas de tus clientes'
         },
         { 
           key: 'siniestros', 
           label: 'Siniestros', 
           icon: AlertCircle, 
-          path: '/agente/siniestros',
+          path: '/promotor/siniestros',
           tooltip: 'Seguimiento de siniestros reportados'
         },
         { 
           key: 'ventas', 
           label: 'Ventas', 
           icon: ShoppingCart, 
-          path: '/agente/ventas',
+          path: '/promotor/ventas',
           tooltip: 'Administra tus ventas y comisiones'
         },
         { 
           key: 'cobros', 
           label: 'Cobros', 
           icon: CreditCard, 
-          path: '/agente/cobros',
+          path: '/promotor/cobros',
           tooltip: 'Gestiona cobros y pagos pendientes'
         },
         { 
           key: 'notificaciones', 
           label: 'Notificaciones', 
           icon: Bell, 
-          path: '/agente/notificaciones',
+          path: '/promotor/notificaciones',
           notificationCount: 5,
           tooltip: 'Centro de notificaciones'
         }
@@ -170,14 +170,14 @@ export const agentRoutes: RouteConfig = {
           key: 'leads', 
           label: 'Leads', 
           icon: UserPlus, 
-          path: '/agente/leads',
+          path: '/promotor/leads',
           tooltip: 'Administra tus prospectos de clientes'
         },
         { 
           key: 'tareas', 
           label: 'Tareas', 
           icon: CheckSquare, 
-          path: '/agente/tareas',
+          path: '/promotor/tareas',
           tooltip: 'Gestiona tus tareas pendientes',
           notificationCount: 3
         },
@@ -185,7 +185,7 @@ export const agentRoutes: RouteConfig = {
           key: 'calendario', 
           label: 'Calendario', 
           icon: Calendar, 
-          path: '/agente/calendario',
+          path: '/promotor/calendario',
           tooltip: 'Organiza tus citas y recordatorios'
         }
       ]
@@ -197,14 +197,14 @@ export const agentRoutes: RouteConfig = {
           key: 'estadisticas', 
           label: 'Estadísticas', 
           icon: BarChart4, 
-          path: '/agente/estadisticas',
+          path: '/promotor/estadisticas',
           tooltip: 'Visualiza tus indicadores de desempeño'
         },
         { 
           key: 'cotizaciones', 
           label: 'Cotizaciones', 
           icon: FileText, 
-          path: '/agente/cotizaciones',
+          path: '/promotor/cotizaciones',
           tooltip: 'Administra tus cotizaciones',
           notificationCount: 2
         },
@@ -212,7 +212,7 @@ export const agentRoutes: RouteConfig = {
           key: 'facturas', 
           label: 'Facturas', 
           icon: FileText, 
-          path: '/agente/facturas',
+          path: '/promotor/facturas',
           tooltip: 'Gestiona tus facturas y comprobantes'
         }
       ]
@@ -473,4 +473,3 @@ export const getRoutesByRole = (role: UserRole): RouteConfig => {
       return adminRoutes; // Por defecto, si es ADMIN mostramos la vista de administrador
   }
 };
-
