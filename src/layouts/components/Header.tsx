@@ -241,7 +241,6 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
       icon: <Settings size={16} />,
       label: 'Configuración',
       onClick: () => navigate('/settings'),
-      permission: 'settings.view',
       dividerAfter: true
     },
     {
