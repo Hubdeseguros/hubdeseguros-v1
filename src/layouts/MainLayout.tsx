@@ -2,6 +2,7 @@ import { ReactNode, useState, useRef, useEffect, useCallback } from 'react';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import { AuthProvider } from '@/hooks/use-auth';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -25,7 +26,8 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   }, []);
 
   return (
-    <SidebarProvider defaultOpen={!mobileMenuOpen}>
+    <AuthProvider>
+      <SidebarProvider defaultOpen={!mobileMenuOpen}>
       <div className="min-h-screen flex w-full overflow-hidden">
         {/* Sidebar (en versión desktop y overlay en móvil) */}
         <div className={`
@@ -66,6 +68,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
           </main>
         </div>
       </div>
-    </SidebarProvider>
+      </SidebarProvider>
+    </AuthProvider>
   );
 };
