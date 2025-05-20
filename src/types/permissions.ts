@@ -1,4 +1,4 @@
-export type UserRole = 'ADMIN' | 'SUPERVISOR' | 'PROMOTOR' | 'ASISTENTE' | 'CLIENTE';
+export type UserRole = 'ADMIN' | 'AGENCIA' | 'PROMOTOR' | 'ASISTENTE' | 'CLIENTE';
 
 export type Permission = {
   id: string;
@@ -37,17 +37,31 @@ export const ROLES: Record<UserRole, Role> = {
     ],
     level: 'admin'
   },
-  SUPERVISOR: {
-    id: 'supervisor',
-    name: 'Supervisor',
-    description: 'Gestiona promotores y clientes',
+  AGENCIA: {
+    id: 'agencia',
+    name: 'Agencia',
+    description: 'Gestiona promotores y clientes asignados',
     permissions: [
       { 
         id: 'promotors.manage', 
         name: 'Gestionar promotores', 
-        description: 'Crear, editar y eliminar promotores', 
+        description: 'Crear, editar y eliminar promotores asignados', 
         module: 'promotors', 
         level: 'edit' 
+      },
+      { 
+        id: 'clientes.agencia', 
+        name: 'Gestionar clientes', 
+        description: 'Administrar clientes asignados a la agencia', 
+        module: 'clientes', 
+        level: 'edit' 
+      },
+      { 
+        id: 'reportes.agencia', 
+        name: 'Ver reportes', 
+        description: 'Acceso a reportes de la agencia', 
+        module: 'reportes', 
+        level: 'view' 
       },
       { 
         id: 'clients.manage', 

@@ -1,6 +1,6 @@
 import { Permission, RolePermissions } from '@/types/permissions';
 
-export type UserRole = 'ADMIN' | 'SUPERVISOR' | 'PROMOTOR' | 'ASISTENTE' | 'CLIENTE';
+export type UserRole = 'ADMIN' | 'AGENCIA' | 'PROMOTOR' | 'ASISTENTE' | 'CLIENTE';
 
 export type UserLevel = 'BASICO' | 'INTERMEDIO' | 'AVANZADO';
 

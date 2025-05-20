@@ -3,7 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { useSidebar } from '@/components/ui/sidebar';
-import { validateRolePermission, UserRole } from '@/types/permissions';
+import type { UserRole } from '@/types/auth';
+import { validateRolePermission } from '@/types/permissions';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -61,7 +62,7 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
   // Función para obtener el menú basado en el rol
   const getMenuByRole = (roleId: string): MenuSection[] => {
     switch (roleId) {
-      case UserRole.ADMIN:
+      case 'ADMIN':
         return [
           {
             title: "ADMINISTRACIÓN",
@@ -143,7 +144,7 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
           }
         ];
 
-      case UserRole.SUPERVISOR:
+      case 'AGENCIA':
         return [
           {
             title: "GESTIÓN",
@@ -185,7 +186,7 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
           }
         ];
 
-      case UserRole.PROMOTOR:
+      case 'PROMOTOR':
         return [
           {
             title: "GESTIÓN",
@@ -215,7 +216,7 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
           }
         ];
 
-      case UserRole.ASISTENTE:
+      case 'ASISTENTE':
         return [
           {
             title: "GESTIÓN",
@@ -245,7 +246,7 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
           }
         ];
 
-      case UserRole.CLIENTE:
+      case 'CLIENTE':
         return [
           {
             title: "MI CUENTA",

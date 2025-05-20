@@ -37,7 +37,8 @@ import {
   UserPlus,
   Building2,
   DollarSign,
-  Info
+  Info,
+  GroupIcon
 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import {
@@ -124,14 +125,15 @@ const getRoleTitle = (role: UserRole): string => {
   switch (role) {
     case 'ADMIN':
       return 'Administrador';
-    case 'SUPERVISOR':
-      return 'Supervisor';
+
     case 'PROMOTOR':
       return 'Promotor';
     case 'ASISTENTE':
       return 'Asistente';
     case 'CLIENTE':
       return 'Cliente';
+    case 'AGENCIA':
+      return 'Agencia';
     default:
       return 'Usuario';
   }
@@ -142,8 +144,8 @@ const getRoleIcon = (role: UserRole): React.ReactNode => {
   switch (role) {
     case 'ADMIN':
       return <Shield className="w-4 h-4" />;
-    case 'SUPERVISOR':
-      return <Users className="w-4 h-4" />;
+    case 'AGENCIA':
+      return <GroupIcon className="w-4 h-4" />;
     case 'PROMOTOR':
       return <UserPlus className="w-4 h-4" />;
     case 'ASISTENTE':
@@ -251,6 +253,10 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const userRole = user?.role;
+
+  const isAgencia = userRole === 'AGENCIA';
+  const isAdmin = userRole === 'ADMIN';
 
   // Estado para el menú de notificaciones
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -415,9 +421,16 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
                       {user?.email || ''}
                     </p>
                     <div className="flex items-center space-x-2">
-                      <span className="text-xs text-muted-foreground">
-                        {getRoleTitle(user?.role || 'CLIENTE')}
-                      </span>
+                      {userRole === 'AGENCIA' ? (
+                        <div className="flex items-center space-x-2">
+                          <Building2 className="h-5 w-5 text-blue-500" />
+                          <span>Agencia</span>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">
+                          {getRoleTitle(user?.role || 'CLIENTE')}
+                        </span>
+                      )}
                       {getRoleIcon(user?.role || 'CLIENTE')}
                     </div>
                   </div>

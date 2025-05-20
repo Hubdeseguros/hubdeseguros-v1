@@ -40,7 +40,7 @@ const TaskList = ({ tasks, title = "Tareas", emptyMessage = 'No hay tareas pendi
     switch (role) {
       case 'ADMIN':
         return <Shield className="h-4 w-4 text-blue-600" />;
-      case 'SUPERVISOR':
+      case 'AGENCIA':
         return <Users className="h-4 w-4 text-purple-600" />;
       case 'PROMOTOR':
         return <UserPlus className="h-4 w-4 text-green-600" />;
