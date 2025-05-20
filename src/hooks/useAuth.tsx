@@ -48,9 +48,9 @@ function mapSupabaseUserToUser(supabaseUser: any): User {
 
   return {
     id: supabaseUser.id,
-    name: meta.name ?? '',                 // fallback to empty string if missing
+    name: meta.name ?? '',
     email: supabaseUser.email,
-    role: meta.role as UserRole ?? 'CLIENTE',  // fallback to CLIENTE
+    role: meta.role as UserRole ?? 'CLIENTE',
     level: meta.level ?? undefined,
     avatar: meta.avatar ?? undefined,
     phone: meta.phone ?? undefined,
@@ -63,6 +63,8 @@ function mapSupabaseUserToUser(supabaseUser: any): User {
     documentNumber: meta.documentNumber ?? undefined,
     createdAt: supabaseUser.created_at ? new Date(supabaseUser.created_at) : undefined,
     updatedAt: supabaseUser.updated_at ? new Date(supabaseUser.updated_at) : undefined,
+    permissions: meta.permissions ?? [], // ADD DEFAULT
+    rolePermissions: meta.rolePermissions ?? {}, // ADD DEFAULT
   };
 }
 
