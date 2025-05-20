@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import { UserRole } from '@/types/auth';
+import { authService } from '@/services/auth';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -32,9 +33,8 @@ const Register = () => {
     setIsLoading(true);
     
     try {
-      // Aquí iría la lógica de registro real
-      // Por ahora simulamos un registro exitoso después de un pequeño delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Realizar registro con el servicio de autenticación
+      await authService.register(name, email, password);
       
       toast({
         title: "Registro exitoso",
