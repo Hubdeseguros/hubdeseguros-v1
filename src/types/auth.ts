@@ -1,6 +1,12 @@
 import { Permission, RolePermissions } from '@/types/permissions';
 
-export type UserRole = 'ADMIN' | 'AGENCIA' | 'PROMOTOR' | 'ASISTENTE' | 'CLIENTE';
+export type UserRole = 'admin' | 'promotor' | 'cliente';
+
+// Tipos de permisos
+export type PermissionType = 'view' | 'edit' | 'admin';
+
+// Tipos de módulos
+export type ModuleType = 'system' | 'clients' | 'policies' | 'promotors' | 'reports' | 'agency';
 
 export type UserLevel = 'BASICO' | 'INTERMEDIO' | 'AVANZADO';
 
