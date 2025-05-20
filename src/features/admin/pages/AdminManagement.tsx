@@ -48,7 +48,9 @@ const AdminManagement = () => {
       }
 
       // 2. Asignar el rol de admin
-      await authService.upgradeToAdmin(newUserId, user.id);
+      const { success, error: upgradeError } = await authService.upgradeToAdmin(newUserId, user.id);
+
+      if (!success) throw new Error('No se pudo asignar el rol de admin: ' + (upgradeError ?? ''));
 
       // 3. Crear agencia por defecto para el nuevo admin
       const agencyName = `${name}'s Agencia`;

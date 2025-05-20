@@ -147,5 +147,36 @@ export const authService = {
         error: error instanceof Error ? error.message : 'Error al actualizar la contraseña'
       };
     }
+  },
+  
+  /**
+   * Asigna el rol ADMIN a un usuario. El método requiere el id del usuario a actualizar y el id del usuario que realiza la acción (por auditoría).
+   * Utiliza la función/plpgsql ya creada en Supabase via trigger para asignar el rol. Si se requiere lógica, puede insertarse directamente en usuario_roles.
+   */
+  async upgradeToAdmin(userId: string, adminActorId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      // Obtener id del rol ADMIN
+      const { data: role, error: roleError } = await supabase
+        .from('roles')
+        .select('id')
+        .eq('nombre', 'ADMIN')
+        .maybeSingle();
+
+      if (roleError) throw roleError;
+      if (!role) return { success: false, error: 'El rol ADMIN no existe.' };
+
+      // Insertar relación usuario-rol: usuario_roles
+      const { error: insertError } = await supabase
+        .from('usuario_roles')
+        .insert([{ usuario_id: userId, rol_id: role.id }]);
+
+      if (insertError) return { success: false, error: insertError.message };
+
+      // Opcional: Registrar en auditoría aquí usando adminActorId, si se desea.
+
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error instanceof Error ? error.message : 'Error al promover a admin.' };
+    }
   }
 };
