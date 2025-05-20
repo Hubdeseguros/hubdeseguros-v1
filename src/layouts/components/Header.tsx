@@ -14,7 +14,10 @@ declare global {
   }
 }
 import { useLocation, useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+import { User } from '@/types/auth';
+import { Role } from '@/types/permissions';
+// No necesitamos importar Role ya que estamos usando UserRole
+import { useAuth } from '@/hooks/useAuth';
 import { 
   Search,
   Check,
@@ -55,13 +58,18 @@ import { cn } from '@/lib/utils';
 import ErrorBoundary from '../../components/ErrorBoundary';
 
 // Importamos solo UserRole del auth para compatibilidad
-import { UserRole, User } from '../../types/auth';
+import type { Permission } from '@/types/permissions';
 
-// Definimos un tipo para los permisos como string
-type Permission = string;
+// Definimos un tipo para los ítems del menú
+type MenuItem = {
+  label: string;
+  onClick: () => void;
+  icon?: React.ReactNode;
+  dividerAfter?: boolean;
+};
 
 // Función auxiliar para verificar permisos
-const hasPermission = (user: User | null | undefined, permission: Permission): boolean => {
+const hasPermission = (user: User | null | undefined, permission: string): boolean => {
   if (!user || !user.permissions) return false;
   
   // Verificar si el usuario está autenticado
@@ -80,26 +88,36 @@ const hasPermission = (user: User | null | undefined, permission: Permission): b
 
   // Verificamos si el usuario tiene el permiso específico
   return userWithDefaults.permissions.some(perm => 
-    // Comparamos el permiso como string para evitar problemas de tipos
-    typeof perm === 'string' ? perm === permission : perm.toString() === permission
+    typeof perm === 'string' ? perm === permission : perm.name === permission
   );
 };
+
+// Definimos los tipos de notificaciones
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  type: 'info' | 'success' | 'warning' | 'error';
+  read: boolean;
+  date: Date;
+  link?: string;
+}
 
 type HeaderProps = {
   className?: string;
 };
 
-type NotificationType = 'info' | 'success' | 'warning' | 'error';
 
-interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  type: NotificationType;
-  read: boolean;
-  date: Date;
-  link?: string;
-}
+// Eliminamos esta definición duplicada ya que ya está definida arriba
+// interface Notification {
+//   id: string;
+//   title: string;
+//   message: string;
+//   type: NotificationType;
+//   read: boolean;
+//   date: Date;
+//   link?: string;
+// }
 
 type NotificationsState = {
   notifications: Notification[];
@@ -279,8 +297,8 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
       }
     ];
 
-    // Agregar opción de administración solo si el usuario tiene permiso
-    if (user && hasPermission(user, 'admin.access')) {
+    // Agregar opción de administración solo si el usuario es ADMIN
+    if (user && user.role.name === 'ADMIN') {
       items.push({
         icon: <Shield size={16} />,
         label: 'Administración',
