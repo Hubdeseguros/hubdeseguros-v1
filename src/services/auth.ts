@@ -4,24 +4,40 @@ import { UserRole } from '../types/auth';
 export const authService = {
   async register(name: string, email: string, password: string) {
     try {
-      // 1. Crear usuario en Supabase
-      const { data: { user }, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            name,
-          },
-        },
-      });
-
-      if (authError) {
-        console.error('Error de Supabase:', authError);
-        throw new Error(`Error de autenticación: ${authError.message}`);
+      console.log('Registrando usuario con:', { name, email });
+      console.log('Usando URL de Supabase:', import.meta.env.VITE_SUPABASE_URL);
+      
+      // Verificar que las variables de entorno estén definidas
+      if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+        throw new Error('Faltan variables de entorno de Supabase');
       }
-
-      const userId = user.id;
-
+      
+      // 1. Crear usuario en Supabase - Usando un enfoque más directo
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/auth/v1/signup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+          'X-Client-Info': 'supabase-js/2.x'
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          data: { name }
+        })
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error de registro:', errorData);
+        throw new Error(`Error de autenticación: ${errorData.message || response.statusText}`);
+      }
+      
+      const data = await response.json();
+      console.log('Respuesta de registro:', data);
+      
+      const userId = data.user.id;
+      
       if (!userId) {
         throw new Error('No se pudo obtener el ID del usuario');
       }
