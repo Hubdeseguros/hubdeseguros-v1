@@ -11,18 +11,20 @@ function generateTempPassword(length = 12) {
   return result;
 }
 
+import { UserRole } from '@/types/auth';
+
 export interface CreateUserData {
   name: string;
   email: string;
   phone: string;
   documentType: string;
   documentNumber: string;
-  role: 'PROMOTER' | 'CLIENT';
+  role: UserRole;
   agenciaId?: string;
   promoterId?: string;
 }
 
-export async function createPromoter(userData: Omit<CreateUserData, 'role'>) {
+export async function createPromoter(userData: CreateUserData) {
   const tempPassword = generateTempPassword();
 
   // 1. Crear usuario en Auth (Supabase Auth)
@@ -35,7 +37,7 @@ export async function createPromoter(userData: Omit<CreateUserData, 'role'>) {
         phone: userData.phone,
         document_number: userData.documentNumber,
         document_type: userData.documentType,
-        roles: ['PROMOTER'],
+        roles: [userData.role],
         must_change_password: true,
       },
     },
