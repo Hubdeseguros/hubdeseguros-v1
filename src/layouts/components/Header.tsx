@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import { Mail, Search, Check, AlertCircle, BellRing, Bell, User, Settings, HelpCircle, LogOut } from 'lucide-react';
+import { Mail, Search, Check, AlertCircle, BellRing, Bell, User } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -61,78 +61,22 @@ const defaultNotifications: Notification[] = [
 const UserMenu: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-  
-  // Obtener el rol actual de la ruta
-  const getCurrentRole = () => {
-    const pathSegments = location.pathname.split('/').filter(Boolean);
-    return pathSegments[0] || 'usuario';
-  };
-  
-  const currentRole = getCurrentRole();
-  const basePath = `/${currentRole}`;
-  
-  // Función para navegar a una ruta específica dentro del rol actual
-  const navigateTo = (path: string) => {
-    navigate(`${basePath}${path}`);
-  };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
-          <Avatar className="h-8 w-8">
-            <AvatarImage 
-              src={user?.avatar || '/placeholder.svg'} 
-              alt={user?.name || 'Usuario'}
-              className="object-cover"
-            />
-            <AvatarFallback className="bg-primary/10 text-primary font-medium">
-              {user?.name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U'}
-            </AvatarFallback>
+        <Button variant="ghost" size="icon">
+          <Avatar>
+            <AvatarImage src={user?.avatar || '/placeholder.svg'} />
+            <AvatarFallback>{user?.name?.[0] || 'U'}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end" sideOffset={8}>
-        <div className="px-2 py-1.5">
-          <p className="text-sm font-medium truncate">{user?.name || 'Usuario'}</p>
-          <p className="text-xs text-muted-foreground truncate">{user?.email || ''}</p>
-        </div>
-        <DropdownMenuSeparator />
-        
-        {/* Opciones de perfil */}
-        <DropdownMenuItem onClick={() => navigateTo('/perfil')}>
-          <User className="mr-2 h-4 w-4" />
-          <span>Mi Perfil</span>
-        </DropdownMenuItem>
-        
-        {/* Opciones de configuración */}
-        <DropdownMenuItem onClick={() => navigateTo('/configuracion')}>
-          <Settings className="mr-2 h-4 w-4" />
-          <span>Configuración</span>
-        </DropdownMenuItem>
-        
-        <DropdownMenuSeparator />
-        
-        {/* Opciones de ayuda */}
-        <DropdownMenuItem onClick={() => navigateTo('/ayuda')}>
-          <HelpCircle className="mr-2 h-4 w-4" />
-          <span>Ayuda y Soporte</span>
-        </DropdownMenuItem>
-        
-        <DropdownMenuSeparator />
-        
-        {/* Cerrar sesión */}
-        <DropdownMenuItem 
-          onClick={() => {
-            logout();
-            navigate('/auth/login');
-          }}
-          className="text-destructive focus:text-destructive"
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          <span>Cerrar Sesión</span>
-        </DropdownMenuItem>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => navigate('/perfil')}>Mi Perfil</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate('/configuracion')}>Configuración</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate('/ayuda')}>Ayuda</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => logout()}>Cerrar Sesión</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
