@@ -1,8 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { useSidebar } from '@/components/ui/sidebar';
+import { validateRolePermission, Permission } from '@/types/permissions';
+import { useNotifications } from '@/hooks/useNotifications';
+import { useRoutes } from '@/hooks/useRoutes';
+import type { User } from '@/types/auth';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -11,29 +15,12 @@ import {
   LogOut, 
   BarChart2, 
   FileUser, 
-  Laptop, 
   Users, 
-  CheckSquare, 
   FileText, 
   DollarSign, 
-  Box, 
-  Clipboard, 
   FilePieChart, 
-  File, 
-  Mail, 
-  Settings, 
-  Info, 
-  MapPin, 
-  Shield, 
-  Grid, 
-  List, 
-  Upload, 
-  UserPlus, 
-  Paperclip,
-  ArrowUpRight,
   Home,
-  BellRing,
-  AlertTriangle
+  BellRing
 } from 'lucide-react';
 
 type MenuIcon = React.ComponentType<{ size?: string | number; className?: string }>;
@@ -44,18 +31,19 @@ interface MenuItem {
   icon: MenuIcon;
   path: string;
   subMenu?: MenuItem[];
-  isOpen?: boolean;
+  permission?: Permission;
+  module?: string;
   target?: string;
-}
-
-interface SidebarProps {
-  onToggleMobileMenu?: () => void;
 }
 
 interface MenuSection {
   title?: string;
   items: MenuItem[];
   isDivider?: boolean;
+}
+
+interface SidebarProps {
+  onToggleMobileMenu?: () => void;
 }
 
 const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
@@ -67,46 +55,143 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
   const [activeKey, setActiveKey] = useState('');
   const [menuSections, setMenuSections] = useState<MenuSection[]>([]);
   const [openMenuItems, setOpenMenuItems] = useState<Record<string, boolean>>({});
-  
-  // Datos de ejemplo para notificaciones
-  const notifications = [
-    {
-      id: '1',
-      title: 'Nuevo mensaje',
-      message: 'Tienes un nuevo mensaje del equipo de soporte',
-      date: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
-      read: false,
-      type: 'info' as const
-    },
-    {
-      id: '2',
-      title: 'Pago recibido',
-      message: 'Se ha registrado el pago de la póliza #12345',
-      date: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
-      read: false,
-      type: 'success' as const
-    },
-    {
-      id: '3',
-      title: 'Recordatorio',
-      message: 'La póliza #54321 vence en 15 días',
-      date: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
-      read: true,
-      type: 'warning' as const
-    }
-  ];
-  
-  const unreadCount = notifications.filter(n => !n.read).length;
 
-  // El estado de colapso se deriva directamente del estado del sidebar
+  // Validar que el usuario exista y tenga rol
+  if (!user || !user.role) {
+    return <div className="text-red-500">Usuario no autorizado</div>;
+  }
+
+  // Obtener las rutas autorizadas para este rol
+  const { getAuthorizedRoutes } = useRoutes();
+  const authorizedRoutes = getAuthorizedRoutes(user.role);
+
+  // Inicializar el sistema de notificaciones
+  const { notifications: notificationsData, unreadCount: unreadNotificationsCount } = useNotifications();
+  const { markAsRead } = useNotifications();
 
   // Cargar el menú basado en el rol del usuario
   useEffect(() => {
-    if (user) {
+    if (user?.role) {
       const menuConfig = getMenuByRole(user.role);
       setMenuSections(menuConfig);
+      // Reiniciar los estados de menú al cambiar de rol
+      setActiveKey('');
+      setOpenMenuItems({});
     }
-  }, [user]);
+  }, [user?.role]);
+
+  // Memoizar el menú para mejorar el rendimiento
+  const memoizedMenu = useMemo(() => {
+    return getMenuByRole(user.role);
+  }, [user.role]);
+
+  // Función para obtener el menú basado en el rol
+  const getMenuByRole = (role: string): MenuSection[] => {
+    const roleRoute = role.toLowerCase();
+    const baseMenu: MenuSection[] = [
+      {
+        title: "PRINCIPAL",
+        items: [
+          {
+            key: 'inicio',
+            label: 'Inicio',
+            icon: Home,
+            path: `/${roleRoute}/dashboard`,
+            permission: 'dashboard.view',
+            module: 'dashboard'
+          },
+          {
+            key: 'clientes',
+            label: 'Clientes',
+            icon: Users,
+            path: `/${roleRoute}/clientes`,
+            permission: 'clientes.view',
+            module: 'clientes'
+          },
+          {
+            key: 'polizas',
+            label: 'Pólizas',
+            icon: FileText,
+            path: `/${roleRoute}/polizas`,
+            permission: 'polizas.view',
+            module: 'polizas'
+          },
+          {
+            key: 'cobranzas',
+            label: 'Cobranzas',
+            icon: DollarSign,
+            path: `/${roleRoute}/cobranzas`,
+            permission: 'cobranzas.view',
+            module: 'cobranzas'
+          }
+        ]
+      },
+      {
+        title: "REPORTES",
+        items: [
+          {
+            key: 'reportes-venta',
+            label: 'Reportes de Venta',
+            icon: BarChart2,
+            path: `/${roleRoute}/reportes/venta`,
+            permission: 'reportes.venta',
+            module: 'reportes'
+          },
+          {
+            key: 'reportes-cobranza',
+            label: 'Reportes de Cobranza',
+            icon: FilePieChart,
+            path: `/${roleRoute}/reportes/cobranza`,
+            permission: 'reportes.cobranza',
+            module: 'reportes'
+          }
+        ]
+      },
+      {
+        isDivider: true,
+        items: []
+      },
+      {
+        title: "CONFIGURACIÓN",
+        items: [
+          {
+            key: 'usuarios',
+            label: 'Usuarios',
+            icon: FileUser,
+            path: `/${roleRoute}/usuarios`,
+            permission: 'usuarios.manage',
+            module: 'usuarios'
+          },
+          {
+            key: 'roles',
+            label: 'Roles',
+            icon: ChevronLeft,
+            path: `/${roleRoute}/roles`,
+            permission: 'roles.manage',
+            module: 'roles'
+          }
+        ]
+      }
+    ];
+
+    // Filtrar menú basado en permisos y rutas autorizadas
+    return baseMenu.map(section => {
+      if (section.isDivider) return section;
+      
+      const filteredItems = section.items.filter(item => {
+        // Verificar si la ruta está autorizada
+        const isAuthorizedRoute = authorizedRoutes.includes(item.path);
+        // Verificar si el usuario tiene el permiso necesario
+        const hasPermission = validateRolePermission(user?.rolePermissions || {}, user?.role || '', item.permission || '');
+        return isAuthorizedRoute && hasPermission;
+      });
+
+      return {
+        ...section,
+        items: filteredItems
+      };
+    }).filter(section => !section.isDivider || section.items.length > 0);
+  };
 
   // Detectar la ruta activa y abrir los submenús correspondientes
   useEffect(() => {
@@ -152,28 +237,594 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
 
   // Manejar clic en un item del menú
   const handleItemClick = (path: string, key: string, target?: string) => {
-    setActiveKey(key);
-    
-    // Si el ítem tiene un submenú, no navegamos, solo expandimos/colapsamos
-    const menuItem = menuSections
-      .flatMap(section => section.items)
-      .find(item => item.key === key);
+    try {
+      setActiveKey(key);
       
-    if (menuItem?.subMenu) {
-      // Si tiene submenú, no hacemos nada aquí (se maneja en toggleSubMenu)
-      return;
+      // Verificar si la ruta es válida
+      if (!path.startsWith('/')) {
+        console.error('Ruta inválida:', path);
+        return;
+      }
+
+      // Si el ítem tiene un submenú, no navegamos, solo expandimos/colapsamos
+      const menuItem = menuSections
+        .flatMap(section => section.items)
+        .find(item => item.key === key);
+      
+      if (menuItem?.subMenu) {
+        // Si tiene submenú, no hacemos nada aquí (se maneja en toggleSubMenu)
+        return;
+      }
+      
+      // Cerrar el menú móvil si está abierto
+      if (onToggleMobileMenu && window.innerWidth < 1024) {
+        onToggleMobileMenu();
+      }
+      
+      // Navegar a la ruta correspondiente
+      if (target === '_blank') {
+        window.open(path, '_blank');
+      } else {
+        navigate(path);
+      }
+    } catch (error) {
+      console.error('Error al manejar clic en menú:', error);
+    }
+  };
+
+  // Alternar la apertura/cierre de un submenú
+  const toggleSubMenu = (key: string, event: React.MouseEvent) => {
+    event.preventDefault();
+    setOpenMenuItems(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
+
+  // Efecto para manejar el estado de los submenús cuando se colapsa la barra lateral
+  useEffect(() => {
+    if (collapsed) {
+      // Cerrar todos los submenús al colapsar
+      setOpenMenuItems({});
+    }
+  }, [collapsed]);
+
+  // Función para renderizar un ítem del menú
+  const renderMenuItem = (item: MenuItem, sectionIndex: number, itemIndex: number) => {
+    const isActive = activeKey === item.key;
+    const isOpen = openMenuItems[item.key] || false;
+    const isSubItem = itemIndex > 0;
+
+    return (
+      <div key={item.key} className={`relative ${isSubItem ? 'pl-6' : ''}`}>
+        <Button
+          variant="ghost"
+          size={collapsed ? 'icon' : 'default'}
+          className={`w-full justify-start ${
+            isActive
+              ? 'bg-primary/10 text-primary'
+              : 'text-foreground hover:bg-accent'
+          }`}
+          onClick={(e) => {
+            if (item.subMenu) {
+              toggleSubMenu(item.key, e);
+            } else {
+              handleItemClick(item.path, item.key, item.target);
+            }
+          }}
+        >
+          <div className={`flex items-center gap-3 ${collapsed ? 'justify-center' : ''}`}>
+            <item.icon className={`h-4 w-4 ${collapsed ? 'mr-0' : 'mr-2'}`} />
+            {!collapsed && (
+              <span className="truncate">
+                {item.label}
+                {item.module && (
+                  <Badge variant="secondary" className="ml-2">
+                    {item.module}
+                  </Badge>
+                )}
+              </span>
+            )}
+          </div>
+        </Button>
+        {item.subMenu && isOpen && !collapsed && (
+          <div className="pl-6">
+            {item.subMenu.map((subItem, subIndex) =>
+              renderMenuItem(subItem, sectionIndex, subIndex + 1)
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div className={`flex h-full flex-col bg-sidebar text-sidebar-foreground ${collapsed ? 'w-16' : 'w-64'} transition-all duration-300`}>
+      {/* Header del sidebar */}
+      <div className="flex items-center justify-between p-4">
+        <div className="flex items-center gap-2">
+          <img src="/assets/logo.svg" alt="Hub de Seguros" className="h-8 w-8" />
+          {!collapsed && <span className="text-lg font-semibold">Hub de Seguros</span>}
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggleSidebar}
+          className="rounded-full"
+        >
+          {collapsed ? <ChevronRight /> : <ChevronLeft />}
+        </Button>
+      </div>
+
+      <nav className="flex-1 overflow-y-auto py-2">
+        {menuSections.map((section, sectionIndex) => (
+          <div key={`section-${sectionIndex}`} className="mb-2">
+            {section.isDivider ? (
+              <Separator className="my-3 bg-[#2a3c5a]" />
+            ) : (
+              <>
+                {!collapsed && section.title && (
+                  <div className="px-3 py-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    {section.title}
+                  </div>
+                )}
+                {section.items.map((item, itemIndex) =>
+                  renderMenuItem(item, sectionIndex, itemIndex)
+                )}
+              </>
+            )}
+          </div>
+        ))}
+      </nav>
+
+      <div className="border-t border-[#2a3c5a] p-4 space-y-2">
+        {/* Notification Link */}
+        <Button 
+          variant="ghost" 
+          size={collapsed ? 'icon' : 'default'}
+          onClick={() => navigate(`/notifications`)}
+        >
+          <div className="flex items-center gap-3">
+            <BellRing className="h-4 w-4" />
+            {!collapsed && (
+              <span className="flex items-center gap-2">
+                <span>Notificaciones</span>
+                {unreadNotificationsCount > 0 && (
+                  <Badge variant="destructive" size="sm">
+                    {unreadNotificationsCount}
+                  </Badge>
+                )}
+              </span>
+            )}
+          </div>
+        </Button>
+
+        {/* Logout Button */}
+        <Button 
+          variant="ghost" 
+          size={collapsed ? 'icon' : 'default'}
+          onClick={logout}
+        >
+          <div className="flex items-center gap-3">
+            <LogOut className="h-4 w-4" />
+            {!collapsed && <span>Cerrar sesión</span>}
+          </div>
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+export default Sidebar;
+
+  // Función para obtener el menú basado en el rol
+  const getMenuByRole = (role: string): MenuSection[] => {
+    const roleRoute = role.toLowerCase();
+    const baseMenu: MenuSection[] = [
+      {
+        title: "PRINCIPAL",
+        items: [
+          {
+            key: 'inicio',
+            label: 'Inicio',
+            icon: Home,
+            path: `/${roleRoute}/dashboard`,
+            permission: 'dashboard.view',
+            module: 'dashboard'
+          },
+          {
+            key: 'clientes',
+            label: 'Clientes',
+            icon: Users,
+            path: `/${roleRoute}/clientes`,
+            permission: 'clientes.view',
+            module: 'clientes'
+          },
+          {
+            key: 'polizas',
+            label: 'Pólizas',
+            icon: FileText,
+            path: `/${roleRoute}/polizas`,
+            permission: 'polizas.view',
+            module: 'polizas'
+          },
+          {
+            key: 'cobranzas',
+            label: 'Cobranzas',
+            icon: DollarSign,
+            path: `/${roleRoute}/cobranzas`,
+            permission: 'cobranzas.view',
+            module: 'cobranzas'
+          }
+        ]
+      },
+      {
+        title: "REPORTES",
+        items: [
+          {
+            key: 'reportes-venta',
+            label: 'Reportes de Venta',
+            icon: BarChart2,
+            path: `/${roleRoute}/reportes/venta`,
+            permission: 'reportes.venta',
+            module: 'reportes'
+          },
+          {
+            key: 'reportes-cobranza',
+            label: 'Reportes de Cobranza',
+            icon: FilePieChart,
+            path: `/${roleRoute}/reportes/cobranza`,
+            permission: 'reportes.cobranza',
+            module: 'reportes'
+          }
+        ]
+      },
+      {
+        isDivider: true,
+        items: []
+      },
+      {
+        title: "CONFIGURACIÓN",
+        items: [
+          {
+            key: 'usuarios',
+            label: 'Usuarios',
+            icon: FileUser,
+            path: `/${roleRoute}/usuarios`,
+            permission: 'usuarios.manage',
+            module: 'usuarios'
+          },
+          {
+            key: 'roles',
+            label: 'Roles',
+            icon: Shield,
+            path: `/${roleRoute}/roles`,
+            permission: 'roles.manage',
+            module: 'roles'
+          }
+        ]
+      }
+    ];
+
+    // Filtrar menú basado en permisos y rutas autorizadas
+    return baseMenu.map(section => {
+      if (section.isDivider) return section;
+      
+      const filteredItems = section.items.filter(item => {
+        // Verificar si la ruta está autorizada
+        const isAuthorizedRoute = authorizedRoutes.includes(item.path);
+        // Verificar si el usuario tiene el permiso necesario
+        const hasPermission = validateRolePermission(user?.rolePermissions || {}, user?.role || '', item.permission || '');
+        return isAuthorizedRoute && hasPermission;
+      });
+
+      return {
+        ...section,
+        items: filteredItems
+      };
+    }).filter(section => !section.isDivider || section.items.length > 0);
+  };
+
+  // Detectar la ruta activa y abrir los submenús correspondientes
+  useEffect(() => {
+    const path = location.pathname;
+    const newOpenItems: Record<string, boolean> = {};
+    let foundActiveKey = '';
+
+    if (menuSections) {
+      // Buscar coincidencias en los items principales y submenús
+      menuSections.forEach(section => {
+        section.items.forEach(item => {
+          // Verificar si la ruta coincide con el item principal
+          if (path === item.path || path.startsWith(item.path + '/')) {
+            foundActiveKey = item.key;
+            if (item.subMenu) {
+              newOpenItems[item.key] = true;
+            }
+          }
+          
+          // Verificar si la ruta coincide con algún subitem
+          if (item.subMenu) {
+            item.subMenu.forEach(subItem => {
+              if (path === subItem.path || path.startsWith(subItem.path + '/')) {
+                foundActiveKey = subItem.key;
+                newOpenItems[item.key] = true;
+              }
+            });
+          }
+        });
+      });
+    }
+
+    // Actualizar el estado solo si hay cambios
+    if (foundActiveKey !== activeKey) {
+      setActiveKey(foundActiveKey);
     }
     
-    // Cerrar el menú móvil si está abierto
-    if (onToggleMobileMenu && window.innerWidth < 1024) {
-      onToggleMobileMenu();
+    setOpenMenuItems(prev => ({
+      ...prev,
+      ...newOpenItems
+    }));
+  }, [location.pathname, menuSections]);
+
+  // Manejar clic en un item del menú
+  const handleItemClick = (path: string, key: string, target?: string) => {
+    try {
+      setActiveKey(key);
+      
+      // Verificar si la ruta es válida
+      if (!path.startsWith('/')) {
+        console.error('Ruta inválida:', path);
+        return;
+      }
+
+      // Si el ítem tiene un submenú, no navegamos, solo expandimos/colapsamos
+      const menuItem = menuSections
+        .flatMap(section => section.items)
+        .find(item => item.key === key);
+      
+      if (menuItem?.subMenu) {
+        // Si tiene submenú, no hacemos nada aquí (se maneja en toggleSubMenu)
+        return;
+      }
+      
+      // Cerrar el menú móvil si está abierto
+      if (onToggleMobileMenu && window.innerWidth < 1024) {
+        onToggleMobileMenu();
+      }
+      
+      // Navegar a la ruta correspondiente
+      if (target === '_blank') {
+        window.open(path, '_blank');
+      } else {
+        navigate(path);
+      }
+    } catch (error) {
+      console.error('Error al manejar clic en menú:', error);
+    }
+  };
+
+  // Alternar la apertura/cierre de un submenú
+  const toggleSubMenu = (key: string, event: React.MouseEvent) => {
+    event.preventDefault();
+    setOpenMenuItems(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
+
+  // Efecto para manejar el estado de los submenús cuando se colapsa la barra lateral
+  useEffect(() => {
+    if (collapsed) {
+      // Cerrar todos los submenús al colapsar
+      setOpenMenuItems({});
+    }
+  }, [collapsed]);
+
+  // Función para renderizar un ítem del menú
+  const renderMenuItem = (item: MenuItem, sectionIndex: number, itemIndex: number) => {
+    const isActive = activeKey === item.key;
+    const isOpen = openMenuItems[item.key] || false;
+    const isSubItem = itemIndex > 0;
+
+    return (
+      <div key={item.key} className={`relative ${isSubItem ? 'pl-6' : ''}`}>
+        <Button
+          variant="ghost"
+          size={collapsed ? 'icon' : 'default'}
+          className={`w-full justify-start ${
+            isActive
+              ? 'bg-primary/10 text-primary'
+              : 'text-foreground hover:bg-accent'
+          }`}
+          onClick={(e) => {
+            if (item.subMenu) {
+              toggleSubMenu(item.key, e);
+            } else {
+              handleItemClick(item.path, item.key, item.target);
+            }
+          }}
+        >
+          <div className={`flex items-center gap-3 ${collapsed ? 'justify-center' : ''}`}>
+            <item.icon className={`h-4 w-4 ${collapsed ? 'mr-0' : 'mr-2'}`} />
+            {!collapsed && (
+              <span className="truncate">
+                {item.label}
+                {item.module && (
+                  <Badge variant="secondary" className="ml-2">
+                    {item.module}
+                  </Badge>
+                )}
+              </span>
+            )}
+          </div>
+        </Button>
+        {item.subMenu && isOpen && !collapsed && (
+          <div className="pl-6">
+            {item.subMenu.map((subItem, subIndex) =>
+              renderMenuItem(subItem, sectionIndex, subIndex + 1)
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div className={`flex h-full flex-col bg-sidebar text-sidebar-foreground ${collapsed ? 'w-16' : 'w-64'} transition-all duration-300`}>
+      {/* Header del sidebar */}
+      <div className="flex items-center justify-between p-4">
+        <div className="flex items-center gap-2">
+          <img src="/assets/logo.svg" alt="Hub de Seguros" className="h-8 w-8" />
+          {!collapsed && <span className="text-lg font-semibold">Hub de Seguros</span>}
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggleSidebar}
+          className="rounded-full"
+        >
+          {collapsed ? <ChevronRight /> : <ChevronLeft />}
+        </Button>
+      </div>
+
+      <nav className="flex-1 overflow-y-auto py-2">
+        {menuSections.map((section, sectionIndex) => (
+          <div key={`section-${sectionIndex}`} className="mb-2">
+            {section.isDivider ? (
+              <Separator className="my-3 bg-[#2a3c5a]" />
+            ) : (
+              <>
+                {!collapsed && section.title && (
+                  <div className="px-3 py-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    {section.title}
+                  </div>
+                )}
+                {section.items.map((item, itemIndex) =>
+                  renderMenuItem(item, sectionIndex, itemIndex)
+                )}
+              </>
+            )}
+          </div>
+        ))}
+      </nav>
+
+      <div className="border-t border-[#2a3c5a] p-4 space-y-2">
+        {/* Notification Link */}
+        <Button 
+          variant="ghost" 
+          size={collapsed ? 'icon' : 'default'}
+          onClick={() => navigate(`/notifications`)}
+        >
+          <div className="flex items-center gap-3">
+            <BellRing className="h-4 w-4" />
+            {!collapsed && (
+              <span className="flex items-center gap-2">
+                <span>Notificaciones</span>
+                {unreadNotificationsCount > 0 && (
+                  <Badge variant="destructive" size="sm">
+                    {unreadNotificationsCount}
+                  </Badge>
+                )}
+              </span>
+            )}
+          </div>
+        </Button>
+
+        {/* Logout Button */}
+        <Button 
+          variant="ghost" 
+          size={collapsed ? 'icon' : 'default'}
+          onClick={logout}
+        >
+          <div className="flex items-center gap-3">
+            <LogOut className="h-4 w-4" />
+            {!collapsed && <span>Cerrar sesión</span>}
+          </div>
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+export default Sidebar;
+
+  // Detectar la ruta activa y abrir los submenús correspondientes
+  useEffect(() => {
+    const path = location.pathname;
+    const newOpenItems: Record<string, boolean> = {};
+    let foundActiveKey = '';
+
+    if (menuSections) {
+      // Buscar coincidencias en los items principales y submenús
+      menuSections.forEach(section => {
+        section.items.forEach(item => {
+          // Verificar si la ruta coincide con el item principal
+          if (path === item.path || path.startsWith(item.path + '/')) {
+            foundActiveKey = item.key;
+            if (item.subMenu) {
+              newOpenItems[item.key] = true;
+            }
+          }
+          
+          // Verificar si la ruta coincide con algún subitem
+          if (item.subMenu) {
+            item.subMenu.forEach(subItem => {
+              if (path === subItem.path || path.startsWith(subItem.path + '/')) {
+                foundActiveKey = subItem.key;
+                newOpenItems[item.key] = true;
+              }
+            });
+          }
+        });
+      });
+    }
+
+    // Actualizar el estado solo si hay cambios
+    if (foundActiveKey !== activeKey) {
+      setActiveKey(foundActiveKey);
     }
     
-    // Navegar a la ruta correspondiente
-    if (target === '_blank') {
-      window.open(path, '_blank');
-    } else {
-      navigate(path);
+    setOpenMenuItems(prev => ({
+      ...prev,
+      ...newOpenItems
+    }));
+  }, [location.pathname, menuSections]);
+
+  // Manejar clic en un item del menú
+  const handleItemClick = (path: string, key: string, target?: string) => {
+    try {
+      setActiveKey(key);
+      
+      // Verificar si la ruta es válida
+      if (!path.startsWith('/')) {
+        console.error('Ruta inválida:', path);
+        return;
+      }
+
+      // Si el ítem tiene un submenú, no navegamos, solo expandimos/colapsamos
+      const menuItem = menuSections
+        .flatMap(section => section.items)
+        .find(item => item.key === key);
+      
+      if (menuItem?.subMenu) {
+        // Si tiene submenú, no hacemos nada aquí (se maneja en toggleSubMenu)
+        return;
+      }
+      
+      // Cerrar el menú móvil si está abierto
+      if (onToggleMobileMenu && window.innerWidth < 1024) {
+        onToggleMobileMenu();
+      }
+      
+      // Navegar a la ruta correspondiente
+      if (target === '_blank') {
+        window.open(path, '_blank');
+      } else {
+        navigate(path);
+      }
+    } catch (error) {
+      console.error('Error al manejar clic en menú:', error);
     }
   };
 
@@ -206,6 +857,8 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
         }))
       }));
       setMenuSections(updatedMenu);
+      // También limpiar los estados de apertura de submenús
+      setOpenMenuItems({});
     }
   }, [collapsed]);
 
@@ -213,30 +866,25 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
     const roleRoute = role.toLowerCase();
     const baseMenu: MenuSection[] = [
       {
-        title: "PRINCIPAL",
-        items: [
-          {
-            key: 'inicio',
-            label: 'Inicio',
-            icon: BarChart2,
-            path: `/${roleRoute}/dashboard`
-          },
-          {
-            key: 'clientes',
-            label: 'Clientes',
-            icon: FileUser,
-            path: `/${roleRoute}/clientes`,
-            isOpen: true,
-            subMenu: [
-              {
-                key: 'listado-clientes',
-                label: 'Listado de Clientes',
-                icon: FileUser,
-                path: `/${roleRoute}/clientes/listado`
-              },
-              {
-                key: 'crm',
-                label: 'Asistente Comercial/CRM',
+
+  // Filtrar menú basado en permisos y rutas autorizadas
+  return baseMenu.map(section => {
+    if (section.isDivider) return section;
+    
+    const filteredItems = section.items.filter(item => {
+      // Verificar si la ruta está autorizada
+      const isAuthorizedRoute = authorizedRoutes.includes(item.path);
+      // Verificar si el usuario tiene el permiso necesario
+      const hasPermission = validateRolePermission(user?.rolePermissions || {}, user?.role || '', item.permission || '');
+      return isAuthorizedRoute && hasPermission;
+    });
+
+    return {
+      ...section,
+      items: filteredItems
+    };
+  }).filter(section => !section.isDivider || section.items.length > 0);
+};
                 icon: Laptop,
                 path: `/${roleRoute}/clientes/crm`
               }
@@ -337,120 +985,6 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
           {
             key: 'facturas',
             label: 'Facturas',
-            icon: FileText,
-            path: `/${roleRoute}/facturas`
-          },
-          {
-            key: 'diligencias',
-            label: 'Diligencias',
-            icon: Mail,
-            path: `/${roleRoute}/diligencias`
-          }
-        ]
-      },
-      {
-        title: "ADMINISTRACIÓN",
-        items: [
-          {
-            key: 'productos',
-            label: 'Productos',
-            icon: Box,
-            path: `/${roleRoute}/productos`
-          },
-          {
-            key: 'sucursales',
-            label: 'Sucursales',
-            icon: MapPin,
-            path: `/${roleRoute}/sucursales`
-          },
-          {
-            key: 'usuarios',
-            label: 'Usuarios',
-            icon: Users,
-            path: `/${roleRoute}/usuarios`
-          },
-          {
-            key: 'roles',
-            label: 'Roles',
-            icon: Shield,
-            path: `/${roleRoute}/roles`
-          },
-          {
-            key: 'permisos',
-            label: 'Permisos',
-            icon: Grid,
-            path: `/${roleRoute}/permisos`
-          }
-        ]
-      },
-      {
-        title: "REPORTES",
-        items: [
-          {
-            key: 'reportes-venta',
-            label: 'Reportes de Venta',
-            icon: BarChart2,
-            path: `/${roleRoute}/reportes/venta`
-          },
-          {
-            key: 'reportes-cobranza',
-            label: 'Reportes de Cobranza',
-            icon: DollarSign,
-            path: `/${roleRoute}/reportes/cobranza`
-          },
-          {
-            key: 'reportes-cliente',
-            label: 'Reportes de Cliente',
-            icon: FileUser,
-            path: `/${roleRoute}/reportes/cliente`
-          }
-        ]
-      }
-    ];
-
-    if (role === 'AGENCIA' || role === 'ADMIN') {
-      baseMenu.push(
-        {
-          isDivider: true,
-          items: []
-        },
-        {
-          title: "CONFIGURACIÓN",
-          items: [
-            {
-              key: 'config-agencia',
-              label: 'Configuración Agencia',
-              icon: Settings,
-              path: `/${roleRoute}/configuracion`,
-              isOpen: true,
-              subMenu: [
-                {
-                  key: 'usuarios',
-                  label: 'Usuarios',
-                  icon: Users,
-                  path: `/${roleRoute}/configuracion/usuarios`
-                },
-                {
-                  key: 'info-agencia',
-                  label: 'Información de agencia',
-                  icon: Info,
-                  path: `/${roleRoute}/configuracion/informacion`
-                },
-                {
-                  key: 'sedes',
-                  label: 'Sedes',
-                  icon: MapPin,
-                  path: `/${roleRoute}/configuracion/sedes`
-                },
-                {
-                  key: 'aseguradoras',
-                  label: 'Aseguradoras',
-                  icon: Shield,
-                  path: `/${roleRoute}/configuracion/aseguradoras`
-                },
-                {
-                  key: 'ramos',
-                  label: 'Ramos',
                   icon: Grid,
                   path: `/${roleRoute}/configuracion/ramos`
                 },

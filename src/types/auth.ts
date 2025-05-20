@@ -1,3 +1,4 @@
+import { Permission, RolePermissions } from '@/types/permissions';
 
 export type UserRole = 'ADMIN' | 'CLIENTE' | 'PROMOTOR' | 'AGENCIA';
 
@@ -20,6 +21,8 @@ export interface User {
   documentNumber?: string;
   createdAt?: Date;
   updatedAt?: Date;
+  permissions: Permission[];
+  rolePermissions: RolePermissions;
 }
 
 export interface AuthState {
