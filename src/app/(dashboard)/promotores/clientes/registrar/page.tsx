@@ -1,10 +1,6 @@
-import { Metadata } from 'next';
-import { RegisterClientForm } from '@/components/clients/RegisterClientForm';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'Registrar Cliente',
-  description: 'Registra un nuevo cliente en el sistema',
-};
+import { RegisterClientForm } from '@/components/clients/RegisterClientForm';
 
 export default function RegisterClientPage() {
   return (
