@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import PrivateRoute from './PrivateRoute';
 import { UserRole } from '@/types/auth';
+import { Role } from '@/types/permissions';
 import NotificationsPage from "@/pages/Notifications";
 import GestionClientes from "@/features/clientes/pages/GestionClientes";
 import PolizasListado from "@/features/polizas/pages/PolizasListado";
@@ -26,7 +27,7 @@ const AuthPages = {
 const Dashboards = {
   User: lazy(() => import('../features/dashboard/user/UserDashboard')),
   Promotor: lazy(() => import('../features/dashboard/agent/PromotorDashboard')),
-  Agency: lazy(() => import('../features/dashboard/agency/AgencyDashboard')),
+  Agencia: lazy(() => import('../features/dashboard/agency/AgencyDashboard')),
   Admin: lazy(() => import('../features/dashboard/admin/AdminDashboard')),
   AgentSales: lazy(() => import('../features/dashboard/agent/AgentSalesDashboard'))
 };
@@ -252,7 +253,7 @@ const AppRoutes = () => {
         </Route>
 
         {/* Rutas para AGENCIA */}
-        <Route path="/agencia" element={<PrivateRoute allowedRoles={['AGENCIA', 'ADMIN']} />}>
+        <Route path="/agencia/*" element={<PrivateRoute allowedRoles={['AGENCIA', 'ADMIN']} />}>
           <Route path="dashboard" element={<AgencyDashboardWithErrorBoundary />} />
           
           {/* Rutas de Clientes */}

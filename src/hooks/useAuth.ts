@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Permission, Role, RolePermissions, validatePermission, validateRoleAccess, validateRolePermission, getRolePermissions } from '@/types/permissions';
+import { Permission, RolePermissions, validatePermission, validateRoleAccess, validateRolePermission, getRolePermissions } from '@/types/permissions';
+import { UserRole } from '@/types/auth';
 import { User as UserType } from '@/types/auth';
 
 interface User extends UserType {
-  role: Role;
+  role: UserRole;
   permissions: Permission[];
   lastLogin: Date;
 }

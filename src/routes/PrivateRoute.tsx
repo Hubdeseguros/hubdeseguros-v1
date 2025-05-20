@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { UserRole } from '../types/auth';
+import { Role } from '../types/permissions';
 import { MainLayout } from '../layouts/MainLayout';
 import { toast } from '@/components/ui/use-toast';
 import { useEffect } from 'react';
@@ -8,11 +9,13 @@ import { useEffect } from 'react';
 interface PrivateRouteProps {
   allowedRoles?: UserRole[];
   requiresAuthentication?: boolean;
+  role?: UserRole;
 }
 
 const PrivateRoute = ({ 
   allowedRoles = [],
-  requiresAuthentication = true
+  requiresAuthentication = true,
+  role
 }: PrivateRouteProps) => {
   const { isAuthenticated, user } = useAuth();
 
@@ -48,7 +51,20 @@ const PrivateRoute = ({
     </MainLayout>
   );
 
-  // Si se especifican roles permitidos y el usuario no tiene el rol adecuado
+  // Verificar si el usuario tiene el rol permitido
+  if (requiresAuthentication && !isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Si se especifica un rol específico
+  if (role && user?.role !== role) {
+    return <Navigate to="/access-denied" replace />;
+  }
+
+  // Si se especifican roles permitidos
+  if (allowedRoles.length > 0 && !allowedRoles.includes(user?.role as UserRole)) {
+    return <Navigate to="/access-denied" replace />;
+  }
   if (allowedRoles.length > 0 && user && !allowedRoles.includes(user.role)) {
     toast({
       variant: "destructive",
