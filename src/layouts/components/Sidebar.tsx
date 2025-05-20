@@ -46,17 +46,19 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
-  const { user, logout } = useAuth();
+  const { user, logout, hasPermission, hasRoleAccess } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { open: isOpen } = useSidebar();
   const collapsed = false; // Siempre expandido
+
+  // Estados del menú
   const [activeKey, setActiveKey] = useState('');
   const [openMenuItems, setOpenMenuItems] = useState<Record<string, boolean>>({});
   const [unreadCount, setUnreadCount] = useState(3); // Simulación de notificaciones no leídas
 
   // Función para obtener el menú basado en el rol
-  const getMenuByRole = (role: string): MenuSection[] => {
+  const getMenuByRole = (roleId: string): MenuSection[] => {
     // Menú base para cualquier rol
     const baseMenu: MenuSection[] = [
       {
@@ -67,24 +69,28 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
             label: 'Inicio',
             icon: Home,
             path: `/dashboard`,
+            permission: 'dashboard.view'
           },
           {
             key: 'clientes',
             label: 'Clientes',
             icon: Users,
             path: `/clientes`,
+            permission: 'clientes.view'
           },
           {
             key: 'polizas',
             label: 'Pólizas',
             icon: FileText,
             path: `/polizas`,
+            permission: 'polizas.view'
           },
           {
             key: 'cobranzas',
             label: 'Cobranzas',
             icon: DollarSign,
             path: `/cobranzas`,
+            permission: 'cobranzas.view'
           }
         ]
       },
@@ -96,24 +102,28 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
             label: 'Reportes de Venta',
             icon: BarChart2,
             path: `/reportes/venta`,
+            permission: 'reportes.venta.view'
           },
           {
             key: 'reportes-cobranza',
             label: 'Reportes de Cobranza',
             icon: FilePieChart,
             path: `/reportes/cobranza`,
+            permission: 'reportes.cobranza.view'
           },
           {
             key: 'reportes-clientes',
             label: 'Reportes de Clientes',
             icon: Users,
             path: `/reportes/clientes`,
+            permission: 'reportes.clientes.view'
           },
           {
             key: 'reportes-polizas',
             label: 'Reportes de Pólizas',
             icon: FileText,
             path: `/reportes/polizas`,
+            permission: 'reportes.polizas.view'
           }
         ]
       },
@@ -129,103 +139,53 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
             label: 'Mi Perfil',
             icon: User,
             path: `/agencia/perfil`,
+            permission: 'agencia.perfil.view'
           },
           {
             key: 'agencia-configuracion',
             label: 'Configuración',
             icon: Settings,
             path: `/agencia/configuracion`,
+            permission: 'agencia.configuracion.view'
           },
           {
             key: 'agencia-documentos',
             label: 'Documentos',
             icon: FileText,
             path: `/agencia/documentos`,
+            permission: 'agencia.documentos.view'
           },
           {
             key: 'agencia-notificaciones',
             label: 'Notificaciones',
             icon: BellRing,
             path: `/agencia/notificaciones`,
+            permission: 'agencia.notificaciones.view'
           }
         ]
       }
     ];
 
-    // Agregar ítems específicos según el rol
-    if (role === 'agencia') {
-      return baseMenu;
-    }
-
-    // Para otros roles, filtrar el menú
+    // Filtrar menú según permisos del usuario
     return baseMenu.map(section => ({
       ...section,
-      items: section.items.filter(item => validateRolePermission(role, item.permission))
+      items: section.items.filter(item => {
+        if (!item.permission) return true;
+        return hasPermission(item.permission);
+      })
     }));
   };
 
   // Cargar el menú basado en el rol del usuario
   const [menuSections, setMenuSections] = useState<MenuSection[]>([]);
-  
   useEffect(() => {
-    if (user?.role) {
-      const menuConfig = getMenuByRole(user.role);
+    if (user) {
+      const menuConfig = getMenuByRole(user.role.id);
       setMenuSections(menuConfig);
-      // Reiniciar los estados de menú al cambiar de rol
       setActiveKey('');
       setOpenMenuItems({});
     }
-  }, [user?.role]);
-
-  // Detectar la ruta activa
-  useEffect(() => {
-    const path = location.pathname;
-    let foundActiveKey = '';
-
-    menuSections.forEach(section => {
-      if (!section.isDivider) {
-        section.items.forEach(item => {
-          if (path === item.path || path.startsWith(item.path + '/')) {
-            foundActiveKey = item.key;
-          }
-          
-          if (item.subMenu) {
-            item.subMenu.forEach(subItem => {
-              if (path === subItem.path || path.startsWith(subItem.path + '/')) {
-                foundActiveKey = subItem.key;
-                setOpenMenuItems(prev => ({ ...prev, [item.key]: true }));
-              }
-            });
-          }
-        });
-      }
-    });
-
-    if (foundActiveKey) {
-      setActiveKey(foundActiveKey);
-    }
-  }, [location.pathname, menuSections]);
-
-  // Función para manejar el clic en un ítem del menú
-  const handleItemClick = (path: string, key: string, target?: string) => {
-    setActiveKey(key);
-    
-    if (target === '_blank') {
-      window.open(path, '_blank');
-    } else {
-      navigate(path);
-    }
-    
-    if (onToggleMobileMenu) {
-      onToggleMobileMenu();
-    }
-  };
-
-  // Alternar la apertura/cierre de un submenú
-  const toggleSubMenu = (key: string, event: React.MouseEvent) => {
-    event.stopPropagation();
-    setOpenMenuItems(prev => ({ ...prev, [key]: !prev[key] }));
-  };
+  }, [user]);
 
   // Detectar la ruta activa
   useEffect(() => {
@@ -285,101 +245,89 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-2">
           <img src="/assets/logo.svg" alt="Hub de Seguros" className="h-8 w-8" />
-          <h1 className="text-xl font-bold">Hub de Seguros</h1>
+          <h1 className="text-xl font-semibold">Hub de Seguros</h1>
         </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={logout}
+          className="text-red-500 hover:text-red-700"
+        >
+          <LogOut className="h-5 w-5" />
+        </Button>
       </div>
 
-      {/* Información del usuario */}
-      <div className="p-4 border-b border-[#2a3c5a]">
-        <div className="flex items-center">
-          <div className="flex-shrink-0">
-            <div className="w-8 h-8 rounded-full bg-blue-700 flex items-center justify-center text-white font-medium">
-              {user?.name?.charAt(0) || 'U'}
-            </div>
-          </div>
-          {!collapsed && (
-            <div className="ml-3 overflow-hidden">
-              <p className="text-sm font-medium text-white truncate">{user?.name || 'Usuario'}</p>
-              <p className="text-xs text-gray-300 truncate">{user?.role || 'Rol'}</p>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Menú de navegación */}
       <nav className="flex-1 overflow-y-auto py-2">
         {menuSections.map((section, sectionIndex) => (
           <div key={`section-${sectionIndex}`} className="mb-2">
             {section.isDivider ? (
               <Separator className="my-3 bg-[#2a3c5a]" />
             ) : (
-              <div className="mb-2">
-                {!collapsed && section.title && (
-                  <h3 className="text-xs font-semibold tracking-wider uppercase text-gray-400 mb-2 px-4">
+              <>
+                {section.title && (
+                  <div className="px-3 py-1 text-sm font-medium text-sidebar-foreground/70">
                     {section.title}
-                  </h3>
+                  </div>
                 )}
-                <ul>
+                <div className="space-y-1">
                   {section.items.map((item) => (
-                    <li key={item.key} className="mb-0.5">
-                      {/* Item principal */}
-                      <div 
-                        className={`flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-[#2a3c5a] rounded-md 
-                          transition-all duration-150 cursor-pointer select-none 
-                          ${activeKey === item.key ? 'bg-[#2a3c5a] font-medium text-blue-400' : ''}`}
-                        onClick={(e) => {
-                          if (item.subMenu) {
-                            toggleSubMenu(item.key, e);
-                          } else {
-                            handleItemClick(item.path, item.key, item.target);
-                          }
-                        }}
-                      >
-                        <div className="mr-2 min-w-[24px] flex justify-center items-center">
-                          {item.icon && <item.icon size={18} />}
-                        </div>
-                        {!collapsed && (
-                          <div className="flex justify-between items-center w-full">
-                            <span>{item.label}</span>
-                            {item.subMenu && (
-                              <ChevronRight 
-                                size={16} 
-                                className={`transition-transform duration-200 ${openMenuItems[item.key] ? 'rotate-90' : ''}`} 
-                              />
-                            )}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Submenú */}
-                      {item.subMenu && (
-                        <div 
-                          className={`overflow-hidden transition-all duration-200 ease-in-out pl-6 
-                            ${openMenuItems[item.key] ? 'max-h-96 opacity-100 mt-1' : 'max-h-0 opacity-0'}`}
-                        >
-                          <ul className="border-l border-[#2a3c5a] pl-2">
-                            {item.subMenu.map((subItem) => (
-                              <li key={subItem.key} className="mb-0.5">
-                                <div 
-                                  className={`flex items-center px-4 py-1.5 text-sm text-gray-300 hover:bg-[#2a3c5a] rounded-md 
-                                    transition-colors duration-150 cursor-pointer select-none 
-                                    ${activeKey === subItem.key ? 'bg-[#2a3c5a] font-medium text-blue-400' : ''}`}
-                                  onClick={() => handleItemClick(subItem.path, subItem.key, subItem.target)}
+                    <div key={item.key}>
+                      {item.subMenu ? (
+                        <div className="relative">
+                          <Button
+                            variant="ghost"
+                            className={`w-full justify-start px-3 py-2 text-left text-sm font-medium transition-colors ${
+                              activeKey === item.key ? 'bg-sidebar-hover' : ''
+                            }`}
+                            onClick={(e) => toggleSubMenu(item.key, e)}
+                          >
+                            <div className="flex items-center gap-2">
+                              <item.icon className="h-4 w-4" />
+                              <span>{item.label}</span>
+                              <ChevronRight className="h-4 w-4 transition-transform ${
+                                openMenuItems[item.key] ? 'rotate-90' : ''
+                              }" />
+                            </div>
+                          </Button>
+                          <div
+                            className={`overflow-hidden transition-all duration-300 ${
+                              openMenuItems[item.key] ? 'max-h-96' : 'max-h-0'
+                            }`}
+                          >
+                            <div className="pl-6">
+                              {item.subMenu.map((subItem) => (
+                                <Button
+                                  key={subItem.key}
+                                  variant="ghost"
+                                  className={`w-full justify-start px-3 py-2 text-left text-sm font-medium transition-colors ${
+                                    activeKey === subItem.key ? 'bg-sidebar-hover' : ''
+                                  }`}
+                                  onClick={() => handleItemClick(subItem.path, subItem.key)}
                                 >
-                                  <div className="mr-2 min-w-[24px] flex justify-center items-center">
-                                    {subItem.icon && <subItem.icon size={16} />}
-                                  </div>
-                                  {!collapsed && <span>{subItem.label}</span>}
-                                </div>
-                              </li>
-                            ))}
-                          </ul>
+                                  {subItem.label}
+                                </Button>
+                              ))}
+                            </div>
+                          </div>
                         </div>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          className={`w-full justify-start px-3 py-2 text-left text-sm font-medium transition-colors ${
+                            activeKey === item.key ? 'bg-sidebar-hover' : ''
+                          }`}
+                          onClick={() => handleItemClick(item.path, item.key, item.target)}
+                        >
+                          <div className="flex items-center gap-2">
+                            <item.icon className="h-4 w-4" />
+                            <span>{item.label}</span>
+                          </div>
+                        </Button>
                       )}
-                    </li>
+                    </div>
                   ))}
-                </ul>
-              </div>
+                </div>
+              </>
             )}
           </div>
         ))}
