@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
@@ -175,5 +176,4 @@ export const RegisterPromoterForm = () => {
     </Form>
   );
 };
-
-export { RegisterPromoterForm };
+// (¡No se debe volver a exportar aquí!)
