@@ -14,7 +14,7 @@ declare global {
   }
 }
 import { useLocation, useNavigate, Link } from 'react-router-dom';
-import { User } from '@/types/auth';
+import type { UserRole, User } from '@/types/auth';
 import { Role } from '@/types/permissions';
 // No necesitamos importar Role ya que estamos usando UserRole
 import { useAuth } from '@/hooks/useAuth';
@@ -298,7 +298,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
     ];
 
     // Agregar opción de administración solo si el usuario es ADMIN
-    if (user && user.role.name === 'ADMIN') {
+    if (user && user.role === UserRole.ADMIN) {
       items.push({
         icon: <Shield size={16} />,
         label: 'Administración',

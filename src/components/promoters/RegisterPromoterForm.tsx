@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/select';
 import { toast } from '@/components/ui/use-toast';
 import { createPromoter } from '@/services/user.service';
+import type { UserRole } from '@/types/auth';
 import { useAuth } from '@/hooks/use-auth';
 
 type FormData = {
@@ -43,7 +44,7 @@ export function RegisterPromoterForm() {
         phone: formData.phone,
         documentType: formData.documentType,
         documentNumber: formData.documentNumber,
-        role: 'PROMOTER',
+        role: 'PROMOTOR' as UserRole,
         agenciaId: user?.user_metadata?.agencia_id
       };
       
@@ -71,7 +72,13 @@ export function RegisterPromoterForm() {
         <FormField
           control={form.control}
           name="name"
-          rules={{ required: 'El nombre es requerido' }}
+          rules={{
+            required: 'El correo es requerido',
+            pattern: {
+              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+              message: 'Correo electrónico inválido',
+            },
+          }}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Nombre completo</FormLabel>
