@@ -1,5 +1,4 @@
-import React, { useState, useReducer, useCallback, useMemo } from 'react';
-import ReactDOM from 'react-dom';
+import React, { useState, useReducer, useCallback, useMemo, useEffect } from 'react';
 
 // Declaración de tipos para elementos JSX personalizados
 declare global {
@@ -12,7 +11,14 @@ declare global {
       'form': React.DetailedHTMLProps<React.FormHTMLAttributes<HTMLFormElement>, HTMLFormElement>;
     }
   }
+
+  interface Window {
+    HubDeSeguros: {
+      handleError: (error: Error) => void;
+    };
+  }
 }
+
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import type { User } from '@/types/auth';
 import { useAuth } from '@/hooks/useAuth';
@@ -321,11 +327,18 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
 
   return (
     <ErrorBoundary>
-      <header className={cn("w-full bg-white border-b border-gray-200 z-50", className)}>
+      <header
+        className={cn("w-full bg-white border-b border-gray-200 z-50", className)}
+        aria-label="Header principal"
+      >
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
           {/* Logo y breadcrumbs */}
           <div className="flex items-center space-x-4">
-            <Link to="/" className="font-bold text-xl text-primary">
+            <Link
+              to="/"
+              className="font-bold text-xl text-primary"
+              aria-label="HubDeSeguros - Inicio"
+            >
               HubDeSeguros
             </Link>
             
@@ -337,7 +350,12 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
                       <>
                         <BreadcrumbItem>
                           <BreadcrumbLink asChild>
-                            <Link to={crumb.path}>{crumb.label}</Link>
+                            <Link
+                              to={crumb.path}
+                              aria-label={`Ir a ${crumb.label}`}
+                            >
+                              {crumb.label}
+                            </Link>
                           </BreadcrumbLink>
                         </BreadcrumbItem>
                         <BreadcrumbSeparator />
@@ -356,26 +374,41 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
           {/* Búsqueda, notificaciones y menú de usuario */}
           <div className="flex items-center space-x-2">
             {/* Búsqueda */}
-            <form onSubmit={handleSearch} className="relative hidden md:block mr-2">
+            <form
+              onSubmit={handleSearch}
+              className="relative hidden md:block mr-2"
+              role="search"
+              aria-label="Búsqueda general"
+            >
               <Input
                 type="search"
                 placeholder="Buscar..."
                 className="w-[200px] lg:w-[300px] h-9 pl-8"
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
+                aria-label="Buscar en el sitio"
               />
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Search
+                className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
+                aria-hidden="true"
+              />
             </form>
             
             {/* Notificaciones */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative"
+                  aria-label="Abrir menú de notificaciones"
+                >
                   <BellRing className="h-5 w-5" />
                   {notificationsState.unreadCount > 0 && (
                     <Badge
                       variant="destructive"
                       className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                      aria-label={`${notificationsState.unreadCount} notificaciones no leídas`}
                     >
                       {notificationsState.unreadCount}
                     </Badge>
@@ -391,6 +424,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
                       size="sm"
                       onClick={handleMarkAllAsRead}
                       className="text-xs h-8"
+                      aria-label="Marcar todas las notificaciones como leídas"
                     >
                       Marcar todas como leídas
                     </Button>
