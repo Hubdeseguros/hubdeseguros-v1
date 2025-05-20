@@ -3,39 +3,40 @@ import { supabase } from "@/integrations/supabase/client";
 
 export type Notification = {
   id: string;
-  recipient: string;
-  type: "SMS" | "EMAIL" | "PUSH" | "WEBHOOK";
-  status: "PENDING" | "SENT" | "FAILED";
-  content: string | null;
-  created_at: string | null;
-  updated_at: string | null;
-  next_retry_at: string | null;
-  retry_count: number | null;
-  sent_at: string | null;
-  transaction_id: string | null;
+  usuario_id: string;
+  titulo: string;
+  mensaje: string;
+  leida: boolean | null;
+  fecha_envio: string | null;
 };
 
-export async function getNotifications(recipient: string): Promise<Notification[]> {
+export async function getNotifications(usuario_id: string): Promise<Notification[]> {
   const { data, error } = await supabase
-    .from("payment_notifications")
+    .from("notificaciones")
     .select("*")
-    .eq("recipient", recipient)
-    .order("created_at", { ascending: false });
+    .eq("usuario_id", usuario_id)
+    .order("fecha_envio", { ascending: false });
   if (error) throw error;
   return data || [];
 }
 
 export async function markAsRead(id: string) {
-  // No `read` field yet
+  await supabase
+    .from("notificaciones")
+    .update({ leida: true })
+    .eq("id", id);
 }
 
-export async function markAllAsRead(user_id: string) {
-  // No `read` field yet
+export async function markAllAsRead(usuario_id: string) {
+  await supabase
+    .from("notificaciones")
+    .update({ leida: true })
+    .eq("usuario_id", usuario_id);
 }
 
 export async function addNotification(notification: Notification) {
   const { error } = await supabase
-    .from("payment_notifications")
+    .from("notificaciones")
     .insert(notification);
   if (error) throw error;
 }

@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 /**
  * We will treat "Agent" as "Promotor" based on the current DB schema.
@@ -26,11 +25,10 @@ export type AgentFormData = {
 
 // Map DB row to FE type
 function mapDbToAgent(row: any): Agent {
-  // Promotores only have 'nombre' (no last_name split)
   return {
     id: row.id,
     first_name: row.nombre,
-    last_name: "", // not present
+    last_name: "",
     email: row.email ?? "",
     phone: null,
     license_number: null,
@@ -55,8 +53,13 @@ export const agentService = {
     if (error) throw error;
     return data ? mapDbToAgent(data) : null;
   },
-  create: async (form: AgentFormData): Promise<Agent> => {
-    const dbData = { nombre: form.first_name, email: form.email };
+  create: async (form: AgentFormData & { agencia_id?: string }) => {
+    // For demo, we'll use a placeholder agencia_id if not present
+    const dbData = {
+      nombre: form.first_name,
+      email: form.email,
+      agencia_id: form.agencia_id || '00000000-0000-0000-0000-000000000000'
+    };
     const { data: created, error } = await supabase
       .from('promotores')
       .insert([dbData])
@@ -65,7 +68,7 @@ export const agentService = {
     if (error) throw error;
     return mapDbToAgent(created);
   },
-  update: async (id: string, form: Partial<AgentFormData>): Promise<Agent> => {
+  update: async (id: string, form: Partial<AgentFormData>) => {
     const dbData: any = {};
     if (form.first_name) dbData.nombre = form.first_name;
     if (form.email) dbData.email = form.email;
@@ -78,7 +81,7 @@ export const agentService = {
     if (error) throw error;
     return mapDbToAgent(updated);
   },
-  delete: async (id: string): Promise<void> => {
+  delete: async (id: string) => {
     const { error } = await supabase.from('promotores').delete().eq('id', id);
     if (error) throw error;
   },

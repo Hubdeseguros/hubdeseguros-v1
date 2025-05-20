@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, UserRole, UserLevel } from '../types/auth';
@@ -51,25 +50,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
 
     try {
-      // Simulamos una petición a API con un delay
       await new Promise((resolve) => setTimeout(resolve, 800));
-      
       const foundUser = mockUsers.find(
         (u) => u.email === email && u.password === password
       );
-      
       if (foundUser) {
         const { password, ...userWithoutPassword } = foundUser;
         setUser(userWithoutPassword as User);
         localStorage.setItem('hubseguros_user', JSON.stringify(userWithoutPassword));
-        
-        // Navegar a la ruta correspondiente según el rol
+        // Use mapped allowed roles only
         switch (foundUser.role) {
           case 'CLIENTE':
             navigate('/usuario/dashboard');
             break;
-          case 'AGENTE':
-            navigate('/agente/dashboard');
+          case 'PROMOTOR':
+            navigate('/promotor/dashboard');
             break;
           case 'AGENCIA':
             navigate('/agencia/dashboard');
@@ -80,12 +75,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           default:
             navigate('/dashboard');
         }
-        
         toast({
           title: "Inicio de sesión exitoso",
           description: `Bienvenido, ${foundUser.name}`,
         });
-        
         return true;
       } else {
         setError('Credenciales incorrectas. Inténtelo de nuevo.');
@@ -125,19 +118,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     
     try {
-      // Simulamos una petición a la API con un delay
       await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Actualizamos el usuario con los nuevos datos
       const updatedUser = { ...user, ...data };
       setUser(updatedUser);
       localStorage.setItem('hubseguros_user', JSON.stringify(updatedUser));
-      
       toast({
         title: "Perfil actualizado",
         description: "Tus datos se han actualizado correctamente.",
       });
-      
       return true;
     } catch (error) {
       toast({
