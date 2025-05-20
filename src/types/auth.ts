@@ -1,6 +1,6 @@
 import { Permission, RolePermissions } from '@/types/permissions';
 
-export type UserRole = 'ADMIN' | 'CLIENTE' | 'PROMOTOR' | 'AGENCIA';
+export type UserRole = 'ADMIN' | 'SUPERVISOR' | 'PROMOTOR' | 'ASISTENTE' | 'CLIENTE';
 
 export type UserLevel = 'BASICO' | 'INTERMEDIO' | 'AVANZADO';
 
@@ -22,7 +22,7 @@ export interface User {
   createdAt?: Date;
   updatedAt?: Date;
   permissions: Permission[];
-  rolePermissions: RolePermissions;
+  rolePermissions?: Permission[];
 }
 
 export interface AuthState {

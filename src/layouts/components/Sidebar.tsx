@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { useSidebar } from '@/components/ui/sidebar';
-import { validateRolePermission } from '@/types/permissions';
+import { validateRolePermission, UserRole } from '@/types/permissions';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -19,7 +19,8 @@ import {
   Home,
   BellRing,
   Settings,
-  User
+  User,
+  UserPlus
 } from 'lucide-react';
 
 type MenuIcon = React.ComponentType<{ size?: string | number; className?: string }>;
@@ -59,121 +60,224 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
 
   // Función para obtener el menú basado en el rol
   const getMenuByRole = (roleId: string): MenuSection[] => {
-    // Menú base para cualquier rol
-    const baseMenu: MenuSection[] = [
-      {
-        title: "PRINCIPAL",
-        items: [
+    switch (roleId) {
+      case UserRole.ADMIN:
+        return [
           {
-            key: 'inicio',
-            label: 'Inicio',
-            icon: Home,
-            path: `/dashboard`,
-            permission: 'dashboard.view'
+            title: "ADMINISTRACIÓN",
+            items: [
+              {
+                key: 'dashboard',
+                label: 'Dashboard',
+                icon: Home,
+                path: '/admin/dashboard',
+                permission: 'dashboard.view'
+              },
+              {
+                key: 'users',
+                label: 'Usuarios',
+                icon: Users,
+                path: '/admin/users',
+                permission: 'users.manage'
+              },
+              {
+                key: 'roles',
+                label: 'Roles y Permisos',
+                icon: Settings,
+                path: '/admin/roles',
+                permission: 'roles.manage'
+              }
+            ]
           },
           {
-            key: 'clientes',
-            label: 'Clientes',
-            icon: Users,
-            path: `/clientes`,
-            permission: 'clientes.view'
+            title: "GESTIÓN",
+            items: [
+              {
+                key: 'promotors',
+                label: 'Promotores',
+                icon: UserPlus,
+                path: '/admin/promotors',
+                permission: 'promotors.manage'
+              },
+              {
+                key: 'clients',
+                label: 'Clientes',
+                icon: Users,
+                path: '/admin/clients',
+                permission: 'clients.manage'
+              },
+              {
+                key: 'policies',
+                label: 'Pólizas',
+                icon: FileText,
+                path: '/admin/policies',
+                permission: 'policies.manage'
+              }
+            ]
           },
           {
-            key: 'polizas',
-            label: 'Pólizas',
-            icon: FileText,
-            path: `/polizas`,
-            permission: 'polizas.view'
-          },
-          {
-            key: 'cobranzas',
-            label: 'Cobranzas',
-            icon: DollarSign,
-            path: `/cobranzas`,
-            permission: 'cobranzas.view'
+            title: "REPORTES",
+            items: [
+              {
+                key: 'sales',
+                label: 'Ventas',
+                icon: DollarSign,
+                path: '/admin/reports/sales',
+                permission: 'reports.sales'
+              },
+              {
+                key: 'collections',
+                label: 'Cobranzas',
+                icon: FilePieChart,
+                path: '/admin/reports/collections',
+                permission: 'reports.collections'
+              },
+              {
+                key: 'clients',
+                label: 'Clientes',
+                icon: Users,
+                path: '/admin/reports/clients',
+                permission: 'reports.clients'
+              }
+            ]
           }
-        ]
-      },
-      {
-        title: "REPORTES",
-        items: [
-          {
-            key: 'reportes-venta',
-            label: 'Reportes de Venta',
-            icon: BarChart2,
-            path: `/reportes/venta`,
-            permission: 'reportes.venta.view'
-          },
-          {
-            key: 'reportes-cobranza',
-            label: 'Reportes de Cobranza',
-            icon: FilePieChart,
-            path: `/reportes/cobranza`,
-            permission: 'reportes.cobranza.view'
-          },
-          {
-            key: 'reportes-clientes',
-            label: 'Reportes de Clientes',
-            icon: Users,
-            path: `/reportes/clientes`,
-            permission: 'reportes.clientes.view'
-          },
-          {
-            key: 'reportes-polizas',
-            label: 'Reportes de Pólizas',
-            icon: FileText,
-            path: `/reportes/polizas`,
-            permission: 'reportes.polizas.view'
-          }
-        ]
-      },
-      {
-        isDivider: true,
-        items: []
-      },
-      {
-        title: "AGENCIA",
-        items: [
-          {
-            key: 'agencia-perfil',
-            label: 'Mi Perfil',
-            icon: User,
-            path: `/agencia/perfil`,
-            permission: 'agencia.perfil.view'
-          },
-          {
-            key: 'agencia-configuracion',
-            label: 'Configuración',
-            icon: Settings,
-            path: `/agencia/configuracion`,
-            permission: 'agencia.configuracion.view'
-          },
-          {
-            key: 'agencia-documentos',
-            label: 'Documentos',
-            icon: FileText,
-            path: `/agencia/documentos`,
-            permission: 'agencia.documentos.view'
-          },
-          {
-            key: 'agencia-notificaciones',
-            label: 'Notificaciones',
-            icon: BellRing,
-            path: `/agencia/notificaciones`,
-            permission: 'agencia.notificaciones.view'
-          }
-        ]
-      }
-    ];
+        ];
 
-    // Filtrar menú según permisos del usuario
-    return baseMenu.map(section => ({
-      ...section,
-      items: section.items.filter(item => {
-        if (!item.permission) return true;
-        return hasPermission(item.permission);
-      })
-    }));
+      case UserRole.SUPERVISOR:
+        return [
+          {
+            title: "GESTIÓN",
+            items: [
+              {
+                key: 'promotors',
+                label: 'Promotores',
+                icon: UserPlus,
+                path: '/supervisor/promotors',
+                permission: 'promotors.manage'
+              },
+              {
+                key: 'clients',
+                label: 'Clientes',
+                icon: Users,
+                path: '/supervisor/clients',
+                permission: 'clients.manage'
+              }
+            ]
+          },
+          {
+            title: "REPORTES",
+            items: [
+              {
+                key: 'sales',
+                label: 'Ventas',
+                icon: DollarSign,
+                path: '/supervisor/reports/sales',
+                permission: 'reports.sales'
+              },
+              {
+                key: 'collections',
+                label: 'Cobranzas',
+                icon: FilePieChart,
+                path: '/supervisor/reports/collections',
+                permission: 'reports.collections'
+              }
+            ]
+          }
+        ];
+
+      case UserRole.PROMOTOR:
+        return [
+          {
+            title: "GESTIÓN",
+            items: [
+              {
+                key: 'clients',
+                label: 'Clientes',
+                icon: Users,
+                path: '/promotor/clients',
+                permission: 'clients.view'
+              },
+              {
+                key: 'policies',
+                label: 'Pólizas',
+                icon: FileText,
+                path: '/promotor/policies',
+                permission: 'policies.manage'
+              },
+              {
+                key: 'collections',
+                label: 'Cobranzas',
+                icon: DollarSign,
+                path: '/promotor/collections',
+                permission: 'collections.view'
+              }
+            ]
+          }
+        ];
+
+      case UserRole.ASISTENTE:
+        return [
+          {
+            title: "GESTIÓN",
+            items: [
+              {
+                key: 'policies',
+                label: 'Pólizas',
+                icon: FileText,
+                path: '/asistente/policies',
+                permission: 'policies.view'
+              },
+              {
+                key: 'collections',
+                label: 'Cobranzas',
+                icon: DollarSign,
+                path: '/asistente/collections',
+                permission: 'collections.manage'
+              },
+              {
+                key: 'documents',
+                label: 'Documentos',
+                icon: FileText,
+                path: '/asistente/documents',
+                permission: 'documents.manage'
+              }
+            ]
+          }
+        ];
+
+      case UserRole.CLIENTE:
+        return [
+          {
+            title: "MI CUENTA",
+            items: [
+              {
+                key: 'profile',
+                label: 'Mi Perfil',
+                icon: User,
+                path: '/cliente/profile',
+                permission: 'profile.view'
+              },
+              {
+                key: 'policies',
+                label: 'Mis Pólizas',
+                icon: FileText,
+                path: '/cliente/policies',
+                permission: 'policies.view'
+              },
+              {
+                key: 'payments',
+                label: 'Mis Pagos',
+                icon: DollarSign,
+                path: '/cliente/payments',
+                permission: 'payments.view'
+              }
+            ]
+          }
+        ];
+
+      default:
+        return [];
+    }
   };
 
   // Cargar el menú basado en el rol del usuario

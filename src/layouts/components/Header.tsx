@@ -62,7 +62,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import ErrorBoundary from '../../components/ErrorBoundary';
 
-import { UserRole } from '@/types/auth';
+import { UserRole } from '@/types/permissions';
 
 // Importamos solo UserRole del auth para compatibilidad
 // Definimos un tipo para los ítems del menú
@@ -82,19 +82,17 @@ const hasPermission = (user: User | null | undefined, permission: string): boole
     return false;
   }
   
-  // Asegurarse de que el usuario tenga los campos requeridos
-  const userWithDefaults = {
-    ...user,
-    name: user.name || 'Usuario',
-    email: user.email || '',
-    permissions: user.permissions || [],
-    rolePermissions: user.rolePermissions || {}
-  };
-
-  // Verificamos si el usuario tiene el permiso específico
-  return userWithDefaults.permissions.some(perm => 
-    typeof perm === 'string' ? perm === permission : perm.name === permission
+  // Verificar si el usuario tiene el permiso directo
+  const hasDirectPermission = user.permissions.some(perm => 
+    typeof perm === 'string' ? perm === permission : perm.id === permission
   );
+  
+  // Verificar si el usuario tiene el permiso a través del rol
+  const hasRolePermission = user.rolePermissions?.some(perm => 
+    typeof perm === 'string' ? perm === permission : perm.id === permission
+  );
+  
+  return hasDirectPermission || hasRolePermission;
 };
 
 // Definimos los tipos de notificaciones
@@ -112,18 +110,6 @@ type HeaderProps = {
   className?: string;
 };
 
-
-// Eliminamos esta definición duplicada ya que ya está definida arriba
-// interface Notification {
-//   id: string;
-//   title: string;
-//   message: string;
-//   type: NotificationType;
-//   read: boolean;
-//   date: Date;
-//   link?: string;
-// }
-
 type NotificationsState = {
   notifications: Notification[];
   unreadCount: number;
@@ -132,6 +118,42 @@ type NotificationsState = {
 type NotificationsAction =
   | { type: 'MARK_AS_READ'; id: string }
   | { type: 'MARK_ALL_AS_READ' };
+
+// Función para obtener el título del rol
+const getRoleTitle = (role: UserRole): string => {
+  switch (role) {
+    case 'ADMIN':
+      return 'Administrador';
+    case 'SUPERVISOR':
+      return 'Supervisor';
+    case 'PROMOTOR':
+      return 'Promotor';
+    case 'ASISTENTE':
+      return 'Asistente';
+    case 'CLIENTE':
+      return 'Cliente';
+    default:
+      return 'Usuario';
+  }
+};
+
+// Función para obtener el icono del rol
+const getRoleIcon = (role: UserRole): React.ReactNode => {
+  switch (role) {
+    case 'ADMIN':
+      return <Shield className="w-4 h-4" />;
+    case 'SUPERVISOR':
+      return <Users className="w-4 h-4" />;
+    case 'PROMOTOR':
+      return <UserPlus className="w-4 h-4" />;
+    case 'ASISTENTE':
+      return <Building2 className="w-4 h-4" />;
+    case 'CLIENTE':
+      return <UserIcon className="w-4 h-4" />;
+    default:
+      return <UserIcon className="w-4 h-4" />;
+  }
+};
 
 const notificationsReducer = (state: NotificationsState, action: NotificationsAction): NotificationsState => {
   switch (action.type) {
@@ -226,174 +248,90 @@ interface UserMenuItem {
 }
 
 const Header: React.FC<HeaderProps> = ({ className }) => {
-  const { user: currentUser, logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Asegurar que el usuario tenga valores por defecto
-  const user = currentUser ? {
-    ...currentUser,
-    name: currentUser.name || 'Usuario',
-    email: currentUser.email || '',
-    avatar: currentUser.avatar,
-    permissions: currentUser.permissions || [],
-    rolePermissions: currentUser.rolePermissions || {}
-  } : null;
-
-  // Estado para notificaciones
-  const [notificationsState, dispatchNotifications] = useReducer(notificationsReducer, {
+  // Estado para el menú de notificaciones
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [state, dispatch] = useReducer(notificationsReducer, {
     notifications: defaultNotifications,
     unreadCount: defaultNotifications.filter(n => !n.read).length
   });
 
-  // Estado para la búsqueda
-  const [searchValue, setSearchValue] = useState('');
-
-  // Obtener rutas de migas de pan
-  const getBreadcrumbs = useCallback((): BreadcrumbItemType[] => {
-    const paths = location.pathname.split('/').filter(Boolean);
-    const breadcrumbs: BreadcrumbItemType[] = [{ label: 'Inicio', path: '/' }];
-    
-    let currentPath = '';
-    paths.forEach(path => {
-      currentPath += `/${path}`;
-      const label = path.charAt(0).toUpperCase() + path.slice(1).replace(/-/g, ' ');
-      breadcrumbs.push({ label, path: currentPath });
-    });
-    
-    return breadcrumbs;
-  }, [location.pathname]);
-
-  const breadcrumbs = useMemo(() => getBreadcrumbs(), [getBreadcrumbs]);
-
-  // Manejadores de eventos
-  const handleSearch = useCallback((e: React.FormEvent) => {
-    e.preventDefault();
-    // Implementar lógica de búsqueda
-    console.log('Búsqueda:', searchValue);
-  }, [searchValue]);
-
+  // Función para marcar una notificación como leída
   const handleNotificationRead = useCallback((id: string) => {
-    dispatchNotifications({ type: 'MARK_AS_READ', id });
+    dispatch({ type: 'MARK_AS_READ', id });
   }, []);
 
+  // Función para marcar todas las notificaciones como leídas
   const handleMarkAllAsRead = useCallback(() => {
-    dispatchNotifications({ type: 'MARK_ALL_AS_READ' });
+    dispatch({ type: 'MARK_ALL_AS_READ' });
   }, []);
 
-  const handleLogout = useCallback(() => {
-    logout();
-    navigate('/login');
-  }, [logout, navigate]);
+  // Función para obtener el icono de notificación
+  const getNotificationIcon = useCallback((type: Notification['type']): React.ReactNode => {
+    switch (type) {
+      case 'success':
+        return <Check className="h-4 w-4 text-green-500" />;
+      case 'warning':
+        return <AlertCircle className="h-4 w-4 text-yellow-500" />;
+      case 'error':
+        return <AlertCircle className="h-4 w-4 text-red-500" />;
+      case 'info':
+        return <Info className="h-4 w-4 text-blue-500" />;
+      default:
+        return null;
+    }
+  }, []);
 
-  // Opciones del menú de usuario
-  const userMenuItems = useMemo((): UserMenuItem[] => {
-    if (!user) return [];
-
-    const items: UserMenuItem[] = [
+  // Menú de usuario
+  const userMenuItems: MenuItem[] = useMemo(() => {
+    const items: MenuItem[] = [
       {
-        icon: <UserIcon size={16} />,
-        label: 'Mi Perfil',
+        label: 'Mi perfil',
         onClick: () => navigate('/profile'),
+        icon: <UserIcon className="w-4 h-4" />
       },
       {
-        icon: <Settings size={16} />,
-        label: 'Configuración',
+        label: 'Ajustes',
         onClick: () => navigate('/settings'),
-        dividerAfter: true
+        icon: <Settings className="w-4 h-4" />
+      },
+      {
+        label: 'Ayuda',
+        onClick: () => navigate('/help'),
+        icon: <HelpCircle className="w-4 h-4" />
+      },
+      {
+        label: 'Cerrar sesión',
+        onClick: () => logout(),
+        icon: <LogOut className="w-4 h-4" />
       }
     ];
 
-    // Agregar opción de administración solo si el usuario es ADMIN
-    if (user && user.role === 'ADMIN') {
-      items.push({
-        icon: <Shield size={16} />,
-        label: 'Administración',
-        onClick: () => navigate('/admin'),
-        dividerAfter: false
-      });
-    }
-
-    // Siempre agregar la opción de cerrar sesión al final
-    items.push({
-      icon: <LogOut size={16} />,
-      label: 'Cerrar Sesión',
-      onClick: handleLogout,
-      dividerAfter: true
+    // Filtrar menú según rol
+    return items.filter(item => {
+      // Aquí podríamos agregar lógica específica por rol
+      // Por ahora mostramos todo para todos los roles
+      return true;
     });
-
-    return items;
-  }, [navigate, handleLogout, user]);
+  }, [navigate, logout]);
 
   return (
     <ErrorBoundary>
-      <header
-        className={cn("w-full bg-white border-b border-gray-200 z-50", className)}
-        aria-label="Header principal"
-      >
-        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-          {/* Logo y breadcrumbs */}
-          <div className="flex items-center space-x-4">
-            <Link
-              to="/"
-              className="font-bold text-xl text-primary"
-              aria-label="HubDeSeguros - Inicio"
-            >
-              HubDeSeguros
+      <header className={cn(
+        'fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm',
+        className
+      )}>
+        <div className="flex items-center justify-between h-16 px-4">
+          <div className="flex items-center">
+            <Link to="/" className="flex items-center">
+              <span className="text-xl font-bold text-primary">HubDeSeguros</span>
             </Link>
-            
-            <Breadcrumb className="hidden md:flex">
-              <BreadcrumbList>
-                {breadcrumbs.map((crumb, index) => (
-                  <React.Fragment key={crumb.path}>
-                    {index < breadcrumbs.length - 1 ? (
-                      <>
-                        <BreadcrumbItem>
-                          <BreadcrumbLink asChild>
-                            <Link
-                              to={crumb.path}
-                              aria-label={`Ir a ${crumb.label}`}
-                            >
-                              {crumb.label}
-                            </Link>
-                          </BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                      </>
-                    ) : (
-                      <BreadcrumbItem>
-                        <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
-                      </BreadcrumbItem>
-                    )}
-                  </React.Fragment>
-                ))}
-              </BreadcrumbList>
-            </Breadcrumb>
           </div>
-          
-          {/* Búsqueda, notificaciones y menú de usuario */}
-          <div className="flex items-center space-x-2">
-            {/* Búsqueda */}
-            <form
-              onSubmit={handleSearch}
-              className="relative hidden md:block mr-2"
-              role="search"
-              aria-label="Búsqueda general"
-            >
-              <Input
-                type="search"
-                placeholder="Buscar..."
-                className="w-[200px] lg:w-[300px] h-9 pl-8"
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                aria-label="Buscar en el sitio"
-              />
-              <Search
-                className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
-                aria-hidden="true"
-              />
-            </form>
-            
+
+          <div className="flex items-center space-x-4">
             {/* Notificaciones */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -404,104 +342,101 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
                   aria-label="Abrir menú de notificaciones"
                 >
                   <BellRing className="h-5 w-5" />
-                  {notificationsState.unreadCount > 0 && (
+                  {state.unreadCount > 0 && (
                     <Badge
                       variant="destructive"
                       className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
-                      aria-label={`${notificationsState.unreadCount} notificaciones no leídas`}
+                      aria-label={`${state.unreadCount} notificaciones no leídas`}
                     >
-                      {notificationsState.unreadCount}
+                      {state.unreadCount}
                     </Badge>
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[380px]">
-                <DropdownMenuLabel className="flex justify-between items-center">
-                  <span>Notificaciones</span>
-                  {notificationsState.unreadCount > 0 && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleMarkAllAsRead}
-                      className="text-xs h-8"
-                      aria-label="Marcar todas las notificaciones como leídas"
-                    >
-                      Marcar todas como leídas
-                    </Button>
-                  )}
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">Notificaciones</p>
+                    <p className="text-xs text-muted-foreground">
+                      {state.unreadCount} no leídas
+                    </p>
+                  </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {notificationsState.notifications.length === 0 ? (
-                  <div className="px-2 py-4 text-center text-muted-foreground">
-                    No tienes notificaciones
-                  </div>
-                ) : (
-                  <div className="max-h-[300px] overflow-auto">
-                    {notificationsState.notifications.map((notification) => (
-                      <DropdownMenuItem
-                        key={notification.id}
-                        onClick={() => handleNotificationRead(notification.id)}
-                        className="cursor-pointer"
-                      >
-                        <div className="flex items-center space-x-2">
-                          {notification.type === 'success' && <Check className="h-4 w-4 mr-2 text-green-500" />}
-                          {notification.type === 'warning' && <AlertCircle className="h-4 w-4 mr-2 text-yellow-500" />}
-                          {notification.type === 'error' && <AlertCircle className="h-4 w-4 mr-2 text-red-500" />}
-                          {notification.type === 'info' && <Info className="h-4 w-4 mr-2 text-blue-500" />}
-                          <div className="flex flex-col space-y-1">
-                            <span className="font-medium">{notification.title}</span>
-                            <span className="text-xs text-muted-foreground">
-                              {formatTimeAgo(notification.date)}
-                            </span>
-                          </div>
+                <div className="max-h-[300px] overflow-auto">
+                  {state.notifications.map((notification) => (
+                    <DropdownMenuItem
+                      key={notification.id}
+                      onClick={() => handleNotificationRead(notification.id)}
+                      className="cursor-pointer"
+                    >
+                      <div className="flex items-center space-x-2">
+                        {getNotificationIcon(notification.type)}
+                        <div className="flex flex-col space-y-1">
+                          <span className="font-medium">{notification.title}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {formatTimeAgo(notification.date)}
+                          </span>
                         </div>
-                        <p className="text-sm text-muted-foreground mt-1">{notification.message}</p>
-                      </DropdownMenuItem>
-                    ))}
-                  </div>
-                )}
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {notification.message}
+                      </p>
+                    </DropdownMenuItem>
+                  ))}
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleMarkAllAsRead}>
+                  <span>Marcar todo como leído</span>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            
-            {/* Menú de usuario */}
-            {user && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="rounded-full">
-                    <Avatar className="h-8 w-8">
-                      {user?.avatar ? (
-                        <AvatarImage src={user.avatar} alt={user.name || 'Usuario'} />
-                      ) : (
-                        <AvatarFallback>
-                          {user?.name?.charAt(0) || 'U'}
-                        </AvatarFallback>
-                      )}
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-[200px]">
-                  <DropdownMenuLabel>
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium">{user?.name || 'Usuario'}</p>
-                      <p className="text-xs text-muted-foreground">{user?.email || ''}</p>
+
+            {/* Usuario */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-full">
+                  <Avatar className="h-8 w-8">
+                    {user?.avatar ? (
+                      <AvatarImage src={user.avatar} alt={user.name || 'Usuario'} />
+                    ) : (
+                      <AvatarFallback>
+                        {user?.name?.charAt(0) || 'U'}
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-[200px]">
+                <DropdownMenuLabel>
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium">{user?.name || 'Usuario'}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {user?.email || ''}
+                    </p>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-xs text-muted-foreground">
+                        {getRoleTitle(user?.role || 'CLIENTE')}
+                      </span>
+                      {getRoleIcon(user?.role || 'CLIENTE')}
                     </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  {userMenuItems.map((item, index) => (
-                    <React.Fragment key={index}>
-                      <DropdownMenuItem
-                        onClick={item.onClick}
-                        className="cursor-pointer"
-                      >
-                        <span className="mr-2">{item.icon}</span>
-                        <span>{item.label}</span>
-                      </DropdownMenuItem>
-                      {item.dividerAfter && <DropdownMenuSeparator />}
-                    </React.Fragment>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {userMenuItems.map((item, index) => (
+                  <React.Fragment key={index}>
+                    <DropdownMenuItem
+                      onClick={item.onClick}
+                      className="cursor-pointer"
+                    >
+                      <span className="mr-2">{item.icon}</span>
+                      <span>{item.label}</span>
+                    </DropdownMenuItem>
+                    {item.dividerAfter && <DropdownMenuSeparator />}
+                  </React.Fragment>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>
