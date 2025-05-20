@@ -1,8 +1,10 @@
+
 import { ReactNode, useState, useRef, useEffect, useCallback } from 'react';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { AuthProvider } from '@/hooks/use-auth';
+// Corregir import (de "@/hooks/use-auth" a "@/hooks/useAuth")
+import { AuthProvider } from '@/hooks/useAuth';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -72,3 +74,4 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
     </AuthProvider>
   );
 };
+
