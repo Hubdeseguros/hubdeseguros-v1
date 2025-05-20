@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Permission, RolePermissions, validatePermission, validateRoleAccess, validateRolePermission, getRolePermissions } from '@/types/permissions';
-import { UserRole } from '@/types/auth';
-import { User as UserType } from '@/types/auth';
+import { Permission, RolePermissions, validatePermission, validateRoleAccess, validateRolePermission, getRolePermissions, Role } from '@/types/permissions';
+import { User as UserType, UserRole } from '@/types/auth';
 
 interface User extends UserType {
   role: UserRole;
-  permissions: Permission[];
   lastLogin: Date;
 }
 
@@ -32,6 +30,7 @@ export const useAuth = (): AuthContext => {
       const updatedUser = {
         ...userData,
         lastLogin: now,
+        role: userData.role,
       };
       setUser(updatedUser);
       localStorage.setItem('user', JSON.stringify(updatedUser));
@@ -56,9 +55,18 @@ export const useAuth = (): AuthContext => {
     return validatePermission(user.permissions, permissionId, level);
   };
 
+  // Función auxiliar para convertir UserRole a Role
+  const getRoleObject = (role: UserRole): Role => ({
+    id: user?.id || '',
+    name: role,
+    description: '',
+    permissions: user?.permissions || [],
+    level: 'basic'
+  });
+
   const hasRoleAccess = (level: 'basic' | 'advanced' | 'admin' = 'basic') => {
     if (!user) return false;
-    return validateRoleAccess(user.role, level);
+    return validateRoleAccess(getRoleObject(user.role), level);
   };
 
   const refresh = async () => {

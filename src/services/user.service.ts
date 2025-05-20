@@ -11,7 +11,8 @@ function generateTempPassword(length = 12) {
   return result;
 }
 
-import { UserRole } from '@/types/auth';
+import type { UserRole } from '@/types/auth';
+export type { UserRole };
 
 export interface CreateUserData {
   name: string;
@@ -25,6 +26,22 @@ export interface CreateUserData {
 }
 
 export async function createPromoter(userData: CreateUserData) {
+  // Validaciones adicionales
+  if (!userData.email || !userData.email.includes('@')) {
+    throw new Error('Correo electrónico inválido');
+  }
+
+  if (!userData.phone || userData.phone.length < 10) {
+    throw new Error('Número de teléfono inválido');
+  }
+
+  if (!userData.documentNumber || userData.documentNumber.length < 6) {
+    throw new Error('Número de documento inválido');
+  }
+
+  if (!userData.name || userData.name.trim().length < 2) {
+    throw new Error('Nombre inválido');
+  }
   const tempPassword = generateTempPassword();
 
   // 1. Crear usuario en Auth (Supabase Auth)

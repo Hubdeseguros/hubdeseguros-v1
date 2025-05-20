@@ -14,10 +14,9 @@ declare global {
   }
 }
 import { useLocation, useNavigate, Link } from 'react-router-dom';
-import type { UserRole, User } from '@/types/auth';
-import { Role } from '@/types/permissions';
-// No necesitamos importar Role ya que estamos usando UserRole
+import type { User } from '@/types/auth';
 import { useAuth } from '@/hooks/useAuth';
+import type { Permission } from '@/types/permissions';
 import { 
   Search,
   Check,
@@ -57,9 +56,9 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import ErrorBoundary from '../../components/ErrorBoundary';
 
-// Importamos solo UserRole del auth para compatibilidad
-import type { Permission } from '@/types/permissions';
+import { UserRole } from '@/types/auth';
 
+// Importamos solo UserRole del auth para compatibilidad
 // Definimos un tipo para los ítems del menú
 type MenuItem = {
   label: string;
@@ -298,7 +297,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
     ];
 
     // Agregar opción de administración solo si el usuario es ADMIN
-    if (user && user.role === UserRole.ADMIN) {
+    if (user && user.role === 'ADMIN') {
       items.push({
         icon: <Shield size={16} />,
         label: 'Administración',
