@@ -180,7 +180,7 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
   const [menuSections, setMenuSections] = useState<MenuSection[]>([]);
   useEffect(() => {
     if (user) {
-      const menuConfig = getMenuByRole(user.role.id);
+      const menuConfig = getMenuByRole(user.role); // <-- FIXED: pass user.role instead of user.role.id
       setMenuSections(menuConfig);
       setActiveKey('');
       setOpenMenuItems({});

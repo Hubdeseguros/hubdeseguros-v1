@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/useAuth'; // must come from useAuth.tsx!
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -16,7 +16,7 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await login(email, password);
+    await login(email, password); // only email, password
   };
 
   // Si está autenticado, redirigimos al dashboard de admin
@@ -77,17 +77,19 @@ const Login = () => {
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold mb-2">Hubseguros</h2>
             <h3 className="text-xl font-semibold">Iniciar sesión</h3>
-            <p className="text-gray-600 mt-2">Ingresa tus credenciales para acceder a la plataforma</p>
+            <p className="text-gray-600 mt-2">
+              Ingresa tus credenciales para acceder a la plataforma
+            </p>
           </div>
-          
           {error && (
             <Alert variant="destructive" className="mb-6">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
+              <AlertDescription>
+                {typeof error === 'string' ? error : error.message}
+              </AlertDescription>
             </Alert>
           )}
-          
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Correo electrónico</Label>
@@ -126,9 +128,7 @@ const Login = () => {
               {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
             </Button>
           </form>
-          
           <Separator className="my-6" />
-          
           <p className="text-center text-sm">
             ¿No tienes una cuenta? <a href="/register" className="text-blue-700 hover:underline">Regístrate</a>
           </p>
