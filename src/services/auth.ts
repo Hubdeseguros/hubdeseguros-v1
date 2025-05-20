@@ -43,62 +43,162 @@ export const authService = {
       }
 
       // 2. Crear registro en la tabla users
-      const { error: userError } = await supabase
-        .from('users')
-        .insert([
-          {
+      try {
+        // Usar fetch directamente para evitar problemas de esquema
+        const userResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/usuarios`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({
             id: userId,
             email,
-            first_name: name.split(' ')[0],
-            last_name: name.split(' ').slice(1).join(' '),
-            active: true,
-          },
-        ]);
-
-      if (userError) throw userError;
+            nombre: name.split(' ')[0],
+            apellido: name.split(' ').slice(1).join(' '),
+            activo: true,
+          })
+        });
+        
+        if (!userResponse.ok) {
+          const errorData = await userResponse.json();
+          console.error('Error al crear usuario:', errorData);
+          throw new Error(`Error al crear usuario: ${errorData.message || userResponse.statusText}`);
+        }
+        
+        console.log('Usuario creado correctamente');
+      } catch (error) {
+        console.error('Error al crear usuario:', error);
+        throw error;
+      }
 
       // 3. Asignar rol de admin
-      const { error: roleError } = await supabase
-        .from('user_roles')
-        .insert([
-          {
-            user_id: userId,
-            role_id: (await supabase
-              .from('roles')
-              .select('id')
-              .eq('name', 'admin')
-              .single())?.data?.id,
+      try {
+        // Obtener el ID del rol admin
+        const rolesResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/roles?name=eq.admin&select=id`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
+          }
+        });
+        
+        if (!rolesResponse.ok) {
+          const errorData = await rolesResponse.json();
+          console.error('Error al obtener rol admin:', errorData);
+          throw new Error(`Error al obtener rol admin: ${errorData.message || rolesResponse.statusText}`);
+        }
+        
+        const roles = await rolesResponse.json();
+        console.log('Roles obtenidos:', roles);
+        
+        if (!roles || roles.length === 0) {
+          throw new Error('No se encontró el rol admin');
+        }
+        
+        const adminRoleId = roles[0].id;
+        
+        // Asignar rol admin al usuario
+        const roleResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/usuario_roles`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            'Prefer': 'return=minimal'
           },
-        ]);
-
-      if (roleError) throw roleError;
+          body: JSON.stringify({
+            usuario_id: userId,
+            rol_id: adminRoleId
+          })
+        });
+        
+        if (!roleResponse.ok) {
+          const errorData = await roleResponse.json();
+          console.error('Error al asignar rol admin:', errorData);
+          throw new Error(`Error al asignar rol admin: ${errorData.message || roleResponse.statusText}`);
+        }
+        
+        console.log('Rol admin asignado correctamente');
+      } catch (error) {
+        console.error('Error al asignar rol admin:', error);
+        throw error;
+      }
 
       // 4. Crear agencia por defecto
-      const agencyName = `${name}'s Agencia`;
-      const { error: agencyError } = await supabase
-        .from('agencies')
-        .insert([
-          {
-            name: agencyName,
-            created_by: userId,
+      try {
+        const agencyName = `${name}'s Agencia`;
+        
+        // Crear agencia
+        const agencyResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/agencias`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            'Prefer': 'return=representation'
           },
-        ]);
-
-      if (agencyError) throw agencyError;
+          body: JSON.stringify({
+            nombre: agencyName,
+            creado_por: userId
+          })
+        });
+        
+        if (!agencyResponse.ok) {
+          const errorData = await agencyResponse.json();
+          console.error('Error al crear agencia:', errorData);
+          throw new Error(`Error al crear agencia: ${errorData.message || agencyResponse.statusText}`);
+        }
+        
+        const agencyData = await agencyResponse.json();
+        console.log('Agencia creada:', agencyData);
+        
+        if (!agencyData || agencyData.length === 0) {
+          throw new Error('No se pudo crear la agencia');
+        }
+        
+        const agencyId = agencyData[0].id;
+        console.log('Agencia creada correctamente con ID:', agencyId);
+        
+        return agencyId;
+      } catch (error) {
+        console.error('Error al crear agencia:', error);
+        throw error;
+      }
 
       // 5. Crear relación de administrador (como propio admin)
-      const { error: adminRelationError } = await supabase
-        .from('users_admin')
-        .insert([
-          {
-            user_id: userId,
-            admin_id: userId,
+      try {
+        // Crear relación de administrador
+        const adminRelationResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/usuarios_admin`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            'Prefer': 'return=minimal'
           },
-        ]);
-
-      if (adminRelationError) throw adminRelationError;
-
-      return { success: true };
+          body: JSON.stringify({
+            usuario_id: userId,
+            admin_id: userId
+          })
+        });
+        
+        if (!adminRelationResponse.ok) {
+          const errorData = await adminRelationResponse.json();
+          console.error('Error al crear relación de administrador:', errorData);
+          throw new Error(`Error al crear relación de administrador: ${errorData.message || adminRelationResponse.statusText}`);
+        }
+        
+        console.log('Relación de administrador creada correctamente');
+        
+        return { success: true };
+      } catch (error) {
+        console.error('Error al crear relación de administrador:', error);
+        throw error;
+      }
     } catch (error) {
       console.error('Error en registro:', error);
       throw error;
