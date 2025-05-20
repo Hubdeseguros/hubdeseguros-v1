@@ -229,6 +229,12 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
             isOpen: true,
             subMenu: [
               {
+                key: 'registrar-cliente',
+                label: 'Registrar Cliente',
+                icon: UserPlus,
+                path: `/${roleRoute}/clientes/registrar`
+              },
+              {
                 key: 'listado-clientes',
                 label: 'Listado de Clientes',
                 icon: FileUser,
