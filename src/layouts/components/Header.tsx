@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import { Mail, Search, Check, AlertCircle, BellRing, Bell, User } from 'lucide-react';
+import { Mail, Search, Check, AlertCircle, BellRing, Bell } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
@@ -361,14 +361,7 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
               <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
             </Button>
             
-            <Button 
-              variant="outline" 
-              className="hidden md:flex items-center gap-2"
-              onClick={() => navigate('/perfil')}
-            >
-              <User className="h-4 w-4" />
-              Mi Perfil
-            </Button>
+            <Separator orientation="vertical" className="h-8" />
             
             <UserMenu />
           </div>

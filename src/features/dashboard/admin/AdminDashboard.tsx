@@ -8,8 +8,7 @@ import {
   Shield, 
   BarChart4,
   AlertCircle,
-  Clock,
-  UserPlus
+  Clock
 } from 'lucide-react';
 
 // Datos de ejemplo para el panel de administración
@@ -266,17 +265,6 @@ export const AdminDashboard = () => {
               </div>
               <p className="text-2xl font-bold mt-2">92%</p>
               <p className="text-xs text-green-600 mt-1">+5% respecto al mes anterior</p>
-            </div>
-          </Link>
-          
-          <Link to="/admin/promotores/registrar">
-            <div className="rounded-lg border border-blue-200 bg-blue-50 p-6 shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex justify-between items-center">
-                <h3 className="font-medium text-blue-800">Registrar Nuevo Promotor</h3>
-                <UserPlus className="h-5 w-5 text-blue-700" />
-              </div>
-              <p className="text-sm text-blue-700 mt-2">Agregue un nuevo promotor al sistema</p>
-              <p className="text-xs text-blue-600 mt-1">Haga clic para comenzar</p>
             </div>
           </Link>
         </div>

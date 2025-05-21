@@ -1,4 +1,3 @@
-// Using the current supabase client
 import { supabase } from '@/integrations/supabase/client';
 
 // Helper to generate a simple temporary password
@@ -25,7 +24,7 @@ export interface CreateUserData {
 export async function createPromoter(userData: Omit<CreateUserData, 'role'>) {
   const tempPassword = generateTempPassword();
 
-  // 1. Crear usuario en Auth (Supabase Auth)
+  // 1. Crear usuario en Auth
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email: userData.email,
     password: tempPassword,
@@ -50,36 +49,35 @@ export async function createPromoter(userData: Omit<CreateUserData, 'role'>) {
     throw new Error('No se pudo obtener el usuario creado');
   }
 
-  const userId = authData.user.id;
-  const nombre = userData.name || '';
-  const email = userData.email;
-  const agencia_id = userData.agenciaId || null;
-
-  // 2. Crear registro en 'promotores'
-  const { error: promotorError } = await supabase.from('promotores').insert([
+  // 2. Crear perfil en la tabla de perfiles
+  const { error: profileError } = await supabase.from('profiles').insert([
     {
-      id: userId,
-      nombre,
-      email,
-      agencia_id,
-      // creado_por: podría ser incluido si tienes el contexto
-    }
+      id: authData.user.id,
+      name: userData.name,
+      email: userData.email,
+      phone: userData.phone,
+      document_type: userData.documentType,
+      document_number: userData.documentNumber,
+      role: 'PROMOTER',
+      agencia_id: userData.agenciaId,
+    },
   ]);
-  if (promotorError) {
-    console.error('Error al crear promotor:', promotorError);
-    throw new Error('Error al crear el registro del promotor');
+
+  if (profileError) {
+    console.error('Error al crear perfil:', profileError);
+    throw new Error('Error al crear el perfil del promotor');
   }
 
   // 3. Enviar correo con la contraseña temporal
   // Aquí iría la lógica para enviar el correo con la contraseña temporal
 
-  return { userId };
+  return { userId: authData.user.id };
 }
 
 export async function createClient(userData: Omit<CreateUserData, 'role'>) {
   const tempPassword = generateTempPassword();
 
-  // 1. Crear usuario en Auth (Supabase Auth)
+  // 1. Crear usuario en Auth
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email: userData.email,
     password: tempPassword,
@@ -104,37 +102,36 @@ export async function createClient(userData: Omit<CreateUserData, 'role'>) {
     throw new Error('No se pudo obtener el cliente creado');
   }
 
-  const userId = authData.user.id;
-  const nombre = userData.name || '';
-  const email = userData.email;
-  const promotor_id = userData.promoterId || null;
-
-  // 2. Crear registro en 'clientes'
-  const { error: clienteError } = await supabase.from('clientes').insert([
+  // 2. Crear perfil en la tabla de perfiles
+  const { error: profileError } = await supabase.from('profiles').insert([
     {
-      id: userId,
-      nombre,
-      email,
-      promotor_id,
-      // creado_por: podría ser incluido si tienes el contexto
-    }
+      id: authData.user.id,
+      name: userData.name,
+      email: userData.email,
+      phone: userData.phone,
+      document_type: userData.documentType,
+      document_number: userData.documentNumber,
+      role: 'CLIENT',
+      promoter_id: userData.promoterId,
+    },
   ]);
-  if (clienteError) {
-    console.error('Error al crear cliente:', clienteError);
-    throw new Error('Error al crear el registro de cliente');
+
+  if (profileError) {
+    console.error('Error al crear perfil de cliente:', profileError);
+    throw new Error('Error al crear el perfil del cliente');
   }
 
   // 3. Enviar correo con la contraseña temporal
   // Aquí iría la lógica para enviar el correo con la contraseña temporal
 
-  return { userId };
+  return { userId: authData.user.id };
 }
 
-// Obtener promotores según agencia
 export async function getPromoters(agenciaId: string) {
   const { data, error } = await supabase
-    .from('promotores')
+    .from('profiles')
     .select('*')
+    .eq('role', 'PROMOTER')
     .eq('agencia_id', agenciaId);
 
   if (error) {
@@ -145,12 +142,12 @@ export async function getPromoters(agenciaId: string) {
   return data || [];
 }
 
-// Obtener clientes según promotor
 export async function getClientsByPromoter(promoterId: string) {
   const { data, error } = await supabase
-    .from('clientes')
+    .from('profiles')
     .select('*')
-    .eq('promotor_id', promoterId);
+    .eq('role', 'CLIENT')
+    .eq('promoter_id', promoterId);
 
   if (error) {
     console.error('Error al obtener clientes:', error);
