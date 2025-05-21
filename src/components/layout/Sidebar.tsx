@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { menuItems } from '@/config/menu';
+import { UserRole } from '@/types/auth';
 
 interface SidebarProps {
   open: boolean;
@@ -13,8 +14,13 @@ export const Sidebar = ({ open, onOpenChange }: SidebarProps) => {
   const location = useLocation();
 
   const filteredMenu = menuItems.filter(item => 
-    item.roles.includes(user?.role as any)
+    item.roles.includes(user?.role || 'PROMOTOR')
   );
+
+  // Función para verificar si un usuario tiene acceso a un menú
+  const hasAccess = (roles: UserRole[]) => {
+    return roles.includes(user?.role || 'PROMOTOR');
+  };
 
   const handleNavigate = (path: string) => {
     navigate(path);
