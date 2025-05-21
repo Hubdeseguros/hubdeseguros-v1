@@ -24,7 +24,7 @@ const AuthPages = {
 // Dashboards agrupados por rol
 const Dashboards = {
   User: lazy(() => import('../features/dashboard/user/UserDashboard')),
-  Promotor: lazy(() => import('../features/dashboard/agent/PromotorDashboard')),
+  Agent: lazy(() => import('../features/dashboard/agent/AgentDashboard')),
   Agency: lazy(() => import('../features/dashboard/agency/AgencyDashboard')),
   Admin: lazy(() => import('../features/dashboard/admin/AdminDashboard')),
   AgentSales: lazy(() => import('../features/dashboard/agent/AgentSalesDashboard'))
@@ -111,7 +111,7 @@ const NotFoundWithErrorBoundary = withErrorBoundary(AuthPages.NotFound);
 
 // Dashboards con manejo de errores
 const UserDashboardWithErrorBoundary = withErrorBoundary(Dashboards.User);
-const PromotorDashboardWithErrorBoundary = withErrorBoundary(Dashboards.Promotor);
+const AgentDashboardWithErrorBoundary = withErrorBoundary(Dashboards.Agent);
 const AgencyDashboardWithErrorBoundary = withErrorBoundary(Dashboards.Agency);
 const AdminDashboardWithErrorBoundary = withErrorBoundary(Dashboards.Admin);
 const AgentSalesDashboardWithErrorBoundary = withErrorBoundary(Dashboards.AgentSales);
@@ -126,8 +126,8 @@ const AppRoutes = () => {
     switch (user?.role) {
       case 'CLIENTE':
         return '/usuario/dashboard';
-      case 'PROMOTOR':
-        return '/promotor/dashboard';
+      case 'AGENTE':
+        return '/agente/dashboard';
       case 'AGENCIA':
         return '/agencia/dashboard';
       case 'ADMIN':
@@ -168,14 +168,14 @@ const AppRoutes = () => {
         </Route>
 
         {/* Rutas para AGENTE */}
-        <Route path="/promotor" element={<PrivateRoute allowedRoles={['PROMOTOR', 'ADMIN']} />}>
-          <Route path="dashboard" element={<PromotorDashboardWithErrorBoundary />} />
+        <Route path="/agente" element={<PrivateRoute allowedRoles={['AGENTE', 'ADMIN']} />}>
+          <Route path="dashboard" element={<AgentDashboardWithErrorBoundary />} />
           
           {/* Rutas de Clientes */}
           <Route path="clientes">
             <Route index element={<Navigate to="listado" replace />} />
             <Route path="listado" element={<GestionClientes clientes={[]} />} />
-            <Route path="crm" element={<CrmDashboard />} />
+            <Route path="crm" element={<GestionClientes clientes={[]} />} />
           </Route>
           
           {/* Rutas de Pólizas */}
@@ -259,6 +259,8 @@ const AppRoutes = () => {
             <Route index element={<Navigate to="listado" replace />} />
             <Route path="listado" element={<GestionClientes clientes={[]} />} />
             <Route path="crm" element={<CrmDashboard />} />
+            <Route path="crm/*" element={<CrmDashboard />} />
+            <Route path="crm" element={<CrmDashboard />} />
           </Route>
           
           {/* Rutas de Pólizas */}
@@ -296,6 +298,38 @@ const AppRoutes = () => {
             <Route path="informacion" element={<Placeholder title="Información de agencia" />} />
             <Route path="sedes" element={<Placeholder title="Sedes" />} />
             <Route path="aseguradoras" element={<Placeholder title="Aseguradoras" />} />
+            <Route path="ramos" element={<Placeholder title="Ramos" />} />
+            <Route path="vendedores" element={<Placeholder title="Vendedores" />} />
+            <Route path="estados-siniestros" element={<Placeholder title="Estados Siniestros" />} />
+            <Route path="estados-arl" element={<Placeholder title="Estados ARL" />} />
+            <Route path="motivos-estados" element={<Placeholder title="Motivos estados póliza" />} />
+            <Route path="tipo-afiliacion" element={<Placeholder title="Tipo afiliación" />} />
+            <Route path="mensajeros" element={<Placeholder title="Mensajeros" />} />
+            <Route path="coberturas" element={<Placeholder title="Coberturas" />} />
+            <Route path="seguridad" element={<Placeholder title="Seguridad" />} />
+            <Route path="notificaciones" element={<Placeholder title="Notificaciones" />} />
+          </Route>
+
+          {/* Importar Plantillas */}
+          <Route path="importar" element={<Placeholder title="Importar Plantillas" />}>
+            <Route index element={<Navigate to="aseguradoras" replace />} />
+            <Route path="aseguradoras" element={<Placeholder title="Importar Aseguradoras" />} />
+            <Route path="ramos" element={<Placeholder title="Importar Ramos" />} />
+            <Route path="vendedores" element={<Placeholder title="Importar Vendedores" />} />
+            <Route path="clientes" element={<Placeholder title="Importar Clientes" />} />
+            <Route path="polizas" element={<Placeholder title="Importar Pólizas" />} />
+            <Route path="polizas-cumplimiento" element={<Placeholder title="Importar Pólizas de cumplimiento y judicial" />} />
+            <Route path="campos-ramo" element={<Placeholder title="Campos adicionales por ramo" />} />
+            <Route path="anexos" element={<Placeholder title="Anexos" />} />
+            <Route path="cobros" element={<Placeholder title="Cobros" />} />
+            <Route path="vinculados" element={<Placeholder title="Vinculados" />} />
+            <Route path="beneficiarios" element={<Placeholder title="Beneficiarios" />} />
+            <Route path="crm" element={<Placeholder title="CRM" />} />
+            <Route path="siniestros" element={<Placeholder title="Siniestros" />} />
+            <Route path="amparos" element={<Placeholder title="Amparos" />} />
+            <Route path="coberturas" element={<Placeholder title="Coberturas" />} />
+            <Route path="tareas" element={<Placeholder title="Tareas" />} />
+            <Route path="datos-adicionales" element={<Placeholder title="Datos adicionales" />} />
           </Route>
         </Route>
 
@@ -307,9 +341,12 @@ const AppRoutes = () => {
             <Route index element={<Navigate to="general" replace />} />
             <Route path="general" element={<Placeholder title="Configuración General" />} />
             <Route path="seguridad" element={<Placeholder title="Configuración de Seguridad" />} />
-            <Route path="integraciones" element={<Placeholder title="Integraciones" />} />
+            <Route path="notificaciones" element={<Placeholder title="Configuración de Notificaciones" />} />
           </Route>
         </Route>
+
+        {/* Ruta 404 */}
+        <Route path="*" element={<NotFoundWithErrorBoundary />} />
       </Routes>
     </Suspense>
   );

@@ -5,10 +5,9 @@ export type Role = {
 }
 
 export const mockRoles: Role[] = [
-  { id: "1", name: "Administrador", permissions: ["usuarios", "agencias", "agentes", "pólizas", "configuración", "logs", "apikeys"] },
-  { id: "2", name: "Cliente", permissions: ["pólizas"] },
-  { id: "3", name: "Promotor", permissions: ["pólizas", "remisiones", "cobros", "informes"] },
-  { id: "4", name: "Agencia", permissions: ["usuarios", "agentes", "pólizas", "remisiones", "cobros", "informes", "configuración"] }
+  { id: "1", name: "Administrador", permissions: ["usuarios", "agencias", "pólizas", "configuración"] },
+  { id: "2", name: "Agente", permissions: ["pólizas"] },
+  { id: "3", name: "Auditor", permissions: ["logs"] },
 ]
 
 export const allPermissions = [
@@ -16,10 +15,7 @@ export const allPermissions = [
   "agencias",
   "agentes",
   "pólizas",
-  "remisiones",
-  "cobros",
-  "informes",
   "configuración",
   "logs",
   "apikeys",
-]
+] 

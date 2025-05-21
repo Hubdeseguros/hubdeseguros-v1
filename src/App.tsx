@@ -10,11 +10,7 @@ import React from "react";
 
 const queryClient = new QueryClient();
 
-interface ErrorFallbackProps {
-  error: Error | null;
-}
-
-const ErrorFallback = ({ error }: ErrorFallbackProps) => (
+const ErrorFallback = ({ error }: { error: any }) => (
   <div className="min-h-screen flex flex-col items-center justify-center bg-red-50 text-red-700 px-8">
     <h2 className="text-3xl font-bold mb-2">¡Algo salió mal!</h2>
     <p className="mb-6">Se ha producido un error al cargar la aplicación.</p>
@@ -30,23 +26,18 @@ const ErrorFallback = ({ error }: ErrorFallbackProps) => (
   </div>
 );
 
-interface ErrorBoundaryState {
-  hasError: boolean;
-  error: Error | null;
-}
-
 class ErrorBoundary extends React.Component<
   { children: React.ReactNode },
-  ErrorBoundaryState
+  { hasError: boolean; error: any }
 > {
-  constructor(props: { children: React.ReactNode }) {
+  constructor(props: any) {
     super(props);
     this.state = { hasError: false, error: null };
   }
-  static getDerivedStateFromError(error: Error) {
+  static getDerivedStateFromError(error: any) {
     return { hasError: true, error };
   }
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  componentDidCatch(error: any, errorInfo: any) {
     // Podrías enviar el error a un servicio externo aquí
     console.error("ErrorBoundary atrapó un error:", error, errorInfo);
   }

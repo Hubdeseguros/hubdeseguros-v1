@@ -11,7 +11,7 @@ const stats = [
     change: "activos",
     timeframe: "gestión de cartera",
     icon: <Users className="h-6 w-6" />,
-    linkTo: "/promotor/clientes"
+    linkTo: "/agente/clientes"
   },
   {
     title: "Pólizas",
@@ -27,7 +27,7 @@ const stats = [
     change: "este mes",
     timeframe: "rendimiento comercial",
     icon: <ShoppingCart className="h-6 w-6" />,
-    linkTo: "/promotor/ventas"
+    linkTo: "/agente/ventas"
   },
   {
     title: "Renovaciones",

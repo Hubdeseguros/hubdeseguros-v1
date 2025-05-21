@@ -59,7 +59,7 @@ const defaultNotifications: Notification[] = [
 
 // Componente UserMenu
 const UserMenu: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   return (
@@ -67,7 +67,7 @@ const UserMenu: React.FC = () => {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon">
           <Avatar>
-            <AvatarImage src={user?.avatar || '/placeholder.svg'} />
+            <AvatarImage src={user?.avatar || '/logo.png'} />
             <AvatarFallback>{user?.name?.[0] || 'U'}</AvatarFallback>
           </Avatar>
         </Button>
@@ -76,14 +76,14 @@ const UserMenu: React.FC = () => {
         <DropdownMenuItem onClick={() => navigate('/perfil')}>Mi Perfil</DropdownMenuItem>
         <DropdownMenuItem onClick={() => navigate('/configuracion')}>Configuración</DropdownMenuItem>
         <DropdownMenuItem onClick={() => navigate('/ayuda')}>Ayuda</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => logout()}>Cerrar Sesión</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate('/logout')}>Cerrar Sesión</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 };
 
 const Header: React.FC<HeaderProps> = ({ className = '' }) => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const notificationsRef = useRef<HTMLDivElement>(null);

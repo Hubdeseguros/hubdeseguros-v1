@@ -34,20 +34,10 @@ const PrivateRoute = ({
     }
   }, [isAuthenticated, user]);
 
-  // Si el usuario es ADMIN, tiene acceso completo sin restricciones
-  if (user?.role === 'ADMIN') {
-    return (
-      <MainLayout>
-        <Outlet />
-      </MainLayout>
-    );
+  // Si se requiere autenticación y el usuario no está autenticado, redirige al landing
+  if (requiresAuthentication && !isAuthenticated) {
+    return <Navigate to="/landing" replace />;
   }
-
-  return (
-    <MainLayout>
-      <Outlet />
-    </MainLayout>
-  );
 
   // Si se especifican roles permitidos y el usuario no tiene el rol adecuado
   if (allowedRoles.length > 0 && user && !allowedRoles.includes(user.role)) {
