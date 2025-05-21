@@ -125,6 +125,9 @@ const AppRoutes = () => {
   const getDefaultRoute = () => {
     if (!isAuthenticated) return '/landing';
     
+    // Si el usuario está autenticado pero no tiene rol asignado, redirigir al dashboard de administrador
+    if (!user?.role) return '/admin/dashboard';
+    
     switch (user?.role) {
       case 'CLIENTE':
         return '/usuario/dashboard';
@@ -135,7 +138,7 @@ const AppRoutes = () => {
       case 'ADMIN':
         return '/admin/dashboard';
       default:
-        return '/dashboard';
+        return '/admin/dashboard';
     }
   };
 

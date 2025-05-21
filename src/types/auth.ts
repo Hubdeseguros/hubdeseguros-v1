@@ -1,6 +1,6 @@
 import { Permission, RolePermissions } from '@/types/permissions';
 
-export type UserRole = 'admin' | 'promotor' | 'cliente';
+export type UserRole = 'ADMIN' | 'AGENCIA' | 'PROMOTOR' | 'CLIENTE';
 
 // Tipos de permisos
 export type PermissionType = 'view' | 'edit' | 'admin';
