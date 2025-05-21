@@ -9,10 +9,7 @@ import {
   BarChart4,
   AlertCircle,
   Clock,
-  UserPlus,
-  UserCheck,
-  UserX,
-  UserCog
+  UserPlus
 } from 'lucide-react';
 
 // Datos de ejemplo para el panel de administración
@@ -136,30 +133,22 @@ export const AdminDashboard = () => {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Panel de Administración</h1>
-        <p className="text-muted-foreground">Bienvenido, Admin. Gestiona todos los aspectos de la plataforma y supervisa el rendimiento del sistema.</p>
+        <p className="text-muted-foreground">Bienvenido, Admin. Gestiona todos los aspectos de la plataforma.</p>
       </div>
 
       {/* Tabs de navegación rápida */}
       <div className="flex flex-wrap gap-2 border-b pb-2">
-        {[
-          { name: "Vista General", icon: <BarChart4 className="h-4 w-4" /> },
-          { name: "Usuarios", icon: <Users className="h-4 w-4" /> },
-          { name: "Roles y Permisos", icon: <UserCog className="h-4 w-4" /> },
-          { name: "Agencias", icon: <Building className="h-4 w-4" /> },
-          { name: "Agentes", icon: <UserCheck className="h-4 w-4" /> },
-          { name: "Configuración", icon: <Settings className="h-4 w-4" /> }
-        ].map((tab) => (
+        {["Vista General", "Usuarios", "Agencias", "Agentes", "Configuración"].map((tab) => (
           <Link
-            key={tab.name}
-            to={`/admin/${tab.name.toLowerCase().replace(" ", "-")}`}
-            className={`px-4 py-2 rounded-md flex items-center gap-2 ${
-              tab.name === "Vista General" 
+            key={tab}
+            to={`/admin/${tab.toLowerCase().replace(" ", "-")}`}
+            className={`px-4 py-2 rounded-md ${
+              tab === "Vista General" 
                 ? "bg-blue-700 text-white" 
                 : "hover:bg-blue-50"
             }`}
           >
-            {tab.icon}
-            {tab.name}
+            {tab}
           </Link>
         ))}
       </div>
@@ -248,9 +237,8 @@ export const AdminDashboard = () => {
         <div className="md:col-span-2 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Tareas Pendientes</h2>
-            <Link to="/admin/tareas" className="text-sm text-blue-700 hover:underline flex items-center gap-2">
+            <Link to="/admin/tareas" className="text-sm text-blue-700 hover:underline">
               Ver todas
-              <Clock className="h-4 w-4" />
             </Link>
           </div>
           
@@ -281,25 +269,14 @@ export const AdminDashboard = () => {
             </div>
           </Link>
           
-          <Link to="/admin/roles">
+          <Link to="/admin/promotores/registrar">
             <div className="rounded-lg border border-blue-200 bg-blue-50 p-6 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex justify-between items-center">
-                <h3 className="font-medium text-blue-800">Gestionar Roles</h3>
-                <UserCog className="h-5 w-5 text-blue-700" />
+                <h3 className="font-medium text-blue-800">Registrar Nuevo Promotor</h3>
+                <UserPlus className="h-5 w-5 text-blue-700" />
               </div>
-              <p className="text-sm text-blue-700 mt-2">Administrar roles y permisos del sistema</p>
-              <p className="text-xs text-blue-600 mt-1">Haga clic para gestionar</p>
-            </div>
-          </Link>
-          
-          <Link to="/admin/usuarios/nuevo">
-            <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-6 shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex justify-between items-center">
-                <h3 className="font-medium text-emerald-800">Nuevo Usuario</h3>
-                <UserPlus className="h-5 w-5 text-emerald-700" />
-              </div>
-              <p className="text-sm text-emerald-700 mt-2">Crear nuevo usuario del sistema</p>
-              <p className="text-xs text-emerald-600 mt-1">Haga clic para comenzar</p>
+              <p className="text-sm text-blue-700 mt-2">Agregue un nuevo promotor al sistema</p>
+              <p className="text-xs text-blue-600 mt-1">Haga clic para comenzar</p>
             </div>
           </Link>
         </div>

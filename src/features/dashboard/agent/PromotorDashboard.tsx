@@ -1,8 +1,5 @@
 import { Link } from 'react-router-dom';
 import DashboardCard from '@/components/dashboard/DashboardCard';
-import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import TaskList from '@/components/dashboard/TaskList';
 import { Users, Shield, ShoppingCart, AlertCircle } from 'lucide-react';
 
@@ -51,12 +48,6 @@ const pendingTasks = [
 ];
 
 const AgentDashboard = () => {
-  const navigate = useNavigate();
-
-  const handleNewClient = () => {
-    navigate('/promotor/clientes/nuevo');
-  };
-
   return (
     <div className="space-y-6">
       <div>
@@ -64,37 +55,19 @@ const AgentDashboard = () => {
         <p className="text-muted-foreground">Gestión de clientes, pólizas y ventas</p>
       </div>
       
-      <div className="flex flex-col gap-4 p-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <DashboardCard
-            title="Nuevo Cliente"
-            value=""
-            icon={<Plus className="h-6 w-6" />}
-            color="green"
-            change=""
-            timeframe=""
-            linkTo=""
-          >
-            <Button
-              className="mt-4 w-full"
-              onClick={handleNewClient}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Registrar Cliente
-            </Button>
-          </DashboardCard>
-          {stats.map((stat) => (
-            <Link key={stat.title} to={stat.linkTo}>
-              <DashboardCard
-                title={stat.title}
-                value={stat.value}
-                icon={stat.icon}
-                change={stat.change}
-                timeframe={stat.timeframe}
-              />
-            </Link>
-          ))}
-        </div>
+      {/* Estadísticas principales */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat, index) => (
+          <Link key={index} to={stat.linkTo}>
+            <DashboardCard
+              title={stat.title}
+              value={stat.value}
+              change={stat.change}
+              timeframe={stat.timeframe}
+              icon={stat.icon}
+            />
+          </Link>
+        ))}
       </div>
       
       {/* Clientes recientes y tareas */}

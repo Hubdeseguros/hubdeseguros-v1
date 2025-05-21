@@ -1,282 +1,113 @@
-import React, { useState, useReducer, useCallback, useMemo, useEffect } from 'react';
-
-// Declaración de tipos para elementos JSX personalizados
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'div': React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
-      'span': React.DetailedHTMLProps<React.HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>;
-      'p': React.DetailedHTMLProps<React.HTMLAttributes<HTMLParagraphElement>, HTMLParagraphElement>;
-      'header': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-      'form': React.DetailedHTMLProps<React.FormHTMLAttributes<HTMLFormElement>, HTMLFormElement>;
-    }
-  }
-
-  interface Window {
-    HubDeSeguros: {
-      handleError: (error: Error) => void;
-    };
-  }
-}
-
-import { useLocation, useNavigate, Link } from 'react-router-dom';
-import type { User } from '@/types/auth';
-import { useAuth } from '@/hooks/useAuth';
-import type { Permission } from '@/types/permissions';
-import { 
-  Search,
-  Check,
-  AlertCircle,
-  BellRing,
-  Settings,
-  HelpCircle,
-  LogOut,
-  Shield,
-  User as UserIcon,
-  Users,
-  UserPlus,
-  Building2,
-  DollarSign,
-  Info,
-  GroupIcon
-} from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
+import { Mail, Search, Check, AlertCircle, BellRing, Bell, User } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import ErrorBoundary from '../../components/ErrorBoundary';
+import { Separator } from '@/components/ui/separator';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
+import { UserRole } from '@/types/auth';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
-import { UserRole } from '@/types/permissions';
-
-// Importamos solo UserRole del auth para compatibilidad
-// Definimos un tipo para los ítems del menú
-type MenuItem = {
-  label: string;
-  onClick: () => void;
-  icon?: React.ReactNode;
-  dividerAfter?: boolean;
-};
-
-// Función auxiliar para verificar permisos
-const hasPermission = (user: User | null | undefined, permission: string): boolean => {
-  if (!user || !user.permissions) return false;
-  
-  // Verificar si el usuario está autenticado
-  if (!user) {
-    return false;
-  }
-  
-  // Verificar si el usuario tiene el permiso directo
-  const hasDirectPermission = user.permissions.some(perm => 
-    typeof perm === 'string' ? perm === permission : perm.id === permission
-  );
-  
-  // Verificar si el usuario tiene el permiso a través del rol
-  const hasRolePermission = user.rolePermissions?.some(perm => 
-    typeof perm === 'string' ? perm === permission : perm.id === permission
-  );
-  
-  return hasDirectPermission || hasRolePermission;
-};
-
-// Definimos los tipos de notificaciones
-interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  type: 'info' | 'success' | 'warning' | 'error';
-  read: boolean;
-  date: Date;
-  link?: string;
+interface HeaderProps {
+  className?: string;
 }
 
-type HeaderProps = {
-  className?: string;
-};
-
-type NotificationsState = {
-  notifications: Notification[];
-  unreadCount: number;
-};
-
-type NotificationsAction =
-  | { type: 'MARK_AS_READ'; id: string }
-  | { type: 'MARK_ALL_AS_READ' };
-
-// Función para obtener el título del rol
-const getRoleTitle = (role: UserRole): string => {
-  switch (role) {
-    case 'ADMIN':
-      return 'Administrador';
-
-    case 'PROMOTOR':
-      return 'Promotor';
-    case 'ASISTENTE':
-      return 'Asistente';
-    case 'CLIENTE':
-      return 'Cliente';
-    case 'AGENCIA':
-      return 'Agencia';
-    default:
-      return 'Usuario';
-  }
-};
-
-// Función para obtener el icono del rol
-const getRoleIcon = (role: UserRole): React.ReactNode => {
-  switch (role) {
-    case 'ADMIN':
-      return <Shield className="w-4 h-4" />;
-    case 'AGENCIA':
-      return <GroupIcon className="w-4 h-4" />;
-    case 'PROMOTOR':
-      return <UserPlus className="w-4 h-4" />;
-    case 'ASISTENTE':
-      return <Building2 className="w-4 h-4" />;
-    case 'CLIENTE':
-      return <UserIcon className="w-4 h-4" />;
-    default:
-      return <UserIcon className="w-4 h-4" />;
-  }
-};
-
-const notificationsReducer = (state: NotificationsState, action: NotificationsAction): NotificationsState => {
-  switch (action.type) {
-    case 'MARK_AS_READ':
-      const updatedNotifications = state.notifications.map(notification =>
-        notification.id === action.id ? { ...notification, read: true } : notification
-      );
-      return {
-        notifications: updatedNotifications,
-        unreadCount: updatedNotifications.filter(n => !n.read).length
-      };
-    case 'MARK_ALL_AS_READ':
-      return {
-        notifications: state.notifications.map(n => ({ ...n, read: true })),
-        unreadCount: 0
-      };
-    default:
-      return state;
-  }
-};
-
-// Notificaciones de ejemplo
-const defaultNotifications: Notification[] = [
-  {
-    id: '1',
-    title: 'Nueva póliza creada',
-    message: 'Se ha creado una nueva póliza para el cliente Juan Pérez',
-    type: 'success',
-    read: false,
-    date: new Date(Date.now() - 1000 * 60 * 30) // 30 minutos atrás
-  },
-  {
-    id: '2',
-    title: 'Recordatorio de vencimiento',
-    message: 'La póliza #12345 vencerá en 7 días',
-    type: 'warning',
-    read: false,
-    date: new Date(Date.now() - 1000 * 60 * 60 * 2) // 2 horas atrás
-  },
-  {
-    id: '3',
-    title: 'Pago recibido',
-    message: 'Se ha registrado un pago por $250.000 para la póliza #54321',
-    type: 'info',
-    read: true,
-    date: new Date(Date.now() - 1000 * 60 * 60 * 24) // 1 día atrás
-  },
-  {
-    id: '4',
-    title: 'Error en procesamiento',
-    message: 'Hubo un error al procesar el pago de la póliza #98765',
-    type: 'error',
-    read: false,
-    date: new Date(Date.now() - 1000 * 60 * 60 * 5) // 5 horas atrás
-  }
-];
-
-interface BreadcrumbItemType {
+interface Breadcrumb {
   label: string;
   path: string;
 }
 
-// Función para formatear fechas de notificaciones
-const formatTimeAgo = (date: Date): string => {
-  const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
-  
-  let interval = Math.floor(seconds / 31536000);
-  if (interval >= 1) return `hace ${interval} año${interval === 1 ? '' : 's'}`;
-  
-  interval = Math.floor(seconds / 2592000);
-  if (interval >= 1) return `hace ${interval} mes${interval === 1 ? '' : 'es'}`;
-  
-  interval = Math.floor(seconds / 86400);
-  if (interval >= 1) return `hace ${interval} día${interval === 1 ? '' : 's'}`;
-  
-  interval = Math.floor(seconds / 3600);
-  if (interval >= 1) return `hace ${interval} hora${interval === 1 ? '' : 's'}`;
-  
-  interval = Math.floor(seconds / 60);
-  if (interval >= 1) return `hace ${interval} minuto${interval === 1 ? '' : 's'}`;
-  
-  return 'hace unos segundos';
-};
-
-// Opciones del menú de usuario basadas en roles
-interface UserMenuItem {
-  icon: React.ReactNode;
-  label: string;
-  onClick: () => void;
-  permission?: Permission;
-  dividerAfter?: boolean;
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  date: Date;
+  read: boolean;
+  type: 'info' | 'warning' | 'success' | 'error';
 }
 
-const Header: React.FC<HeaderProps> = ({ className }) => {
+const defaultNotifications: Notification[] = [
+  {
+    id: '1',
+    title: 'Nuevo mensaje',
+    message: 'Tienes un nuevo mensaje del equipo de soporte',
+    date: new Date(Date.now() - 1000 * 60 * 5),
+    read: false,
+    type: 'info'
+  },
+  {
+    id: '2',
+    title: 'Pago recibido',
+    message: 'Se ha registrado el pago de la póliza #12345',
+    date: new Date(Date.now() - 1000 * 60 * 60),
+    read: false,
+    type: 'success'
+  },
+  {
+    id: '3',
+    title: 'Recordatorio',
+    message: 'La póliza #54321 vence en 15 días',
+    date: new Date(Date.now() - 1000 * 60 * 60 * 24),
+    read: true,
+    type: 'warning'
+  }
+];
+
+// Componente UserMenu
+const UserMenu: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon">
+          <Avatar>
+            <AvatarImage src={user?.avatar || '/placeholder.svg'} />
+            <AvatarFallback>{user?.name?.[0] || 'U'}</AvatarFallback>
+          </Avatar>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => navigate('/perfil')}>Mi Perfil</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate('/configuracion')}>Configuración</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate('/ayuda')}>Ayuda</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => logout()}>Cerrar Sesión</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
+const Header: React.FC<HeaderProps> = ({ className = '' }) => {
+  const { user, logout } = useAuth();
   const location = useLocation();
-  const userRole = user?.role;
+  const navigate = useNavigate();
+  const notificationsRef = useRef<HTMLDivElement>(null);
+  const [breadcrumbs, setBreadcrumbs] = useState<Breadcrumb[]>([]);
+  const [pageTitle, setPageTitle] = useState('');
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>(defaultNotifications);
 
-  const isAgencia = userRole === 'AGENCIA';
-  const isAdmin = userRole === 'ADMIN';
+  const unreadCount = notifications?.filter?.(n => !n.read)?.length || 0;
 
-  // Estado para el menú de notificaciones
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [state, dispatch] = useReducer(notificationsReducer, {
-    notifications: defaultNotifications,
-    unreadCount: defaultNotifications.filter(n => !n.read).length
-  });
+  const markAsRead = (id: string) => {
+    setNotifications(notifications.map(notification => 
+      notification.id === id ? { ...notification, read: true } : notification
+    ));
+  };
+  
+  const markAllAsRead = () => {
+    setNotifications(notifications.map(notification => ({
+      ...notification,
+      read: true
+    })));
+  };
 
-  // Función para marcar una notificación como leída
-  const handleNotificationRead = useCallback((id: string) => {
-    dispatch({ type: 'MARK_AS_READ', id });
-  }, []);
-
-  // Función para marcar todas las notificaciones como leídas
-  const handleMarkAllAsRead = useCallback(() => {
-    dispatch({ type: 'MARK_ALL_AS_READ' });
-  }, []);
-
-  // Función para obtener el icono de notificación
-  const getNotificationIcon = useCallback((type: Notification['type']): React.ReactNode => {
+  const getNotificationIcon = (type: Notification['type']) => {
     switch (type) {
       case 'success':
         return <Check className="h-4 w-4 text-green-500" />;
@@ -284,177 +115,268 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
         return <AlertCircle className="h-4 w-4 text-yellow-500" />;
       case 'error':
         return <AlertCircle className="h-4 w-4 text-red-500" />;
-      case 'info':
-        return <Info className="h-4 w-4 text-blue-500" />;
       default:
-        return null;
+        return <BellRing className="h-4 w-4 text-blue-500" />;
+    }
+  };
+
+  const formatTimeAgo = useCallback((date: Date) => {
+    try {
+      if (!date) return 'hace unos segundos';
+      const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+      
+      let interval = Math.floor(seconds / 31536000);
+      if (interval >= 1) return `hace ${interval} año${interval === 1 ? '' : 's'}`;
+      
+      interval = Math.floor(seconds / 2592000);
+      if (interval >= 1) return `hace ${interval} mes${interval === 1 ? '' : 'es'}`;
+      
+      interval = Math.floor(seconds / 86400);
+      if (interval >= 1) return `hace ${interval} día${interval === 1 ? '' : 's'}`;
+      
+      interval = Math.floor(seconds / 3600);
+      if (interval >= 1) return `hace ${interval} hora${interval === 1 ? '' : 's'}`;
+      
+      interval = Math.floor(seconds / 60);
+      if (interval >= 1) return `hace ${interval} minuto${interval === 1 ? '' : 's'}`;
+      
+      return 'hace unos segundos';
+    } catch (error) {
+      console.error('Error formatting time:', error);
+      return 'hace unos segundos';
     }
   }, []);
 
-  // Menú de usuario
-  const userMenuItems: MenuItem[] = useMemo(() => {
-    const items: MenuItem[] = [
-      {
-        label: 'Mi perfil',
-        onClick: () => navigate('/profile'),
-        icon: <UserIcon className="w-4 h-4" />
-      },
-      {
-        label: 'Ajustes',
-        onClick: () => navigate('/settings'),
-        icon: <Settings className="w-4 h-4" />
-      },
-      {
-        label: 'Ayuda',
-        onClick: () => navigate('/help'),
-        icon: <HelpCircle className="w-4 h-4" />
-      },
-      {
-        label: 'Cerrar sesión',
-        onClick: () => logout(),
-        icon: <LogOut className="w-4 h-4" />
+  // Cerrar notificaciones al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notificationsRef.current && !notificationsRef.current.contains(event.target as Node)) {
+        setShowNotifications(false);
       }
-    ];
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
-    // Filtrar menú según rol
-    return items.filter(item => {
-      // Aquí podríamos agregar lógica específica por rol
-      // Por ahora mostramos todo para todos los roles
-      return true;
-    });
-  }, [navigate, logout]);
+  useEffect(() => {
+    try {
+      const pathSegments = location.pathname.split('/').filter(Boolean);
+      const newBreadcrumbs: Breadcrumb[] = [];
+      let currentPath = '';
+
+      if (pathSegments.length > 0) {
+        // Primera parte (usuario, agente, agencia)
+        const roleSegment = pathSegments[0];
+        currentPath = `/${roleSegment}`;
+        let roleLabel = '';
+
+        switch (roleSegment) {
+          case 'usuario':
+            roleLabel = 'Cliente';
+            break;
+          case 'agente':
+            roleLabel = 'Agente';
+            break;
+          case 'agencia':
+            roleLabel = 'Agencia';
+            break;
+          default:
+            roleLabel = roleSegment.charAt(0).toUpperCase() + roleSegment.slice(1);
+        }
+
+        newBreadcrumbs.push({ 
+          label: roleLabel, 
+          path: `/${roleSegment}/dashboard` 
+        });
+
+        // Secciones adicionales
+        for (let i = 1; i < pathSegments.length; i++) {
+          const segment = pathSegments[i];
+          currentPath += `/${segment}`;
+          
+          // Formateamos el label para el breadcrumb
+          let label = segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' ');
+          
+          // Especial para dashboard
+          if (segment === 'dashboard') {
+            label = 'Dashboard';
+          }
+
+          newBreadcrumbs.push({ 
+            label: label, 
+            path: currentPath 
+          });
+        }
+
+        // Actualizamos el título de la página
+        const lastSegment = pathSegments[pathSegments.length - 1];
+        const title = lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1).replace(/-/g, ' ');
+        setPageTitle(title);
+      }
+
+      setBreadcrumbs(newBreadcrumbs);
+    } catch (error) {
+      console.error('Error generando breadcrumbs:', error);
+    }
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notificationsRef.current && !notificationsRef.current.contains(event.target as Node)) {
+        setShowNotifications(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <ErrorBoundary>
-      <header className={cn(
-        'fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm',
-        className
-      )}>
-        <div className="flex items-center justify-between h-16 px-4">
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center">
-              <span className="text-xl font-bold text-primary">HubDeSeguros</span>
-            </Link>
+      <header className={`h-16 bg-white border-b border-gray-200 ${className}`}>
+        <div className="flex h-full items-center justify-between px-6">
+          {/* Breadcrumbs */}
+          <div className="flex flex-col">
+            <Breadcrumb>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/">Inicio</BreadcrumbLink>
+              </BreadcrumbItem>
+              {breadcrumbs?.map?.((breadcrumb, index) => (
+                <>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbLink href={breadcrumb.path}>
+                      {breadcrumb.label}
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                </>
+              ))}
+            </Breadcrumb>
+            <h1 className="text-xl font-bold text-hubseguros-dark mt-1">
+              {pageTitle || 'Sin título'}
+            </h1>
           </div>
 
-          <div className="flex items-center space-x-4">
-            {/* Notificaciones */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="relative"
-                  aria-label="Abrir menú de notificaciones"
-                >
-                  <BellRing className="h-5 w-5" />
-                  {state.unreadCount > 0 && (
-                    <Badge
-                      variant="destructive"
-                      className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
-                      aria-label={`${state.unreadCount} notificaciones no leídas`}
+          {/* Barra de búsqueda y acciones */}
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+              <Input
+                type="search"
+                placeholder="Buscar..."
+                className="w-64 pl-9 rounded-full bg-gray-50"
+              />
+            </div>
+            
+            <Separator orientation="vertical" className="h-8" />
+            
+            <div className="relative" ref={notificationsRef}>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="relative"
+                onClick={() => setShowNotifications(!showNotifications)}
+              >
+                <Bell size={20} />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500"></span>
+                )}
+              </Button>
+              
+              {showNotifications && (
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden z-50">
+                  <div className="flex items-center justify-between p-3 border-b border-gray-200">
+                    <h3 className="font-medium text-gray-900">Notificaciones</h3>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-6 px-2 text-xs text-blue-600 hover:text-blue-800"
+                      onClick={markAllAsRead}
                     >
-                      {state.unreadCount}
-                    </Badge>
-                  )}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">Notificaciones</p>
-                    <p className="text-xs text-muted-foreground">
-                      {state.unreadCount} no leídas
-                    </p>
+                      Marcar todo como leído
+                    </Button>
                   </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <div className="max-h-[300px] overflow-auto">
-                  {state.notifications.map((notification) => (
-                    <DropdownMenuItem
-                      key={notification.id}
-                      onClick={() => handleNotificationRead(notification.id)}
-                      className="cursor-pointer"
-                    >
-                      <div className="flex items-center space-x-2">
-                        {getNotificationIcon(notification.type)}
-                        <div className="flex flex-col space-y-1">
-                          <span className="font-medium">{notification.title}</span>
-                          <span className="text-xs text-muted-foreground">
-                            {formatTimeAgo(notification.date)}
-                          </span>
-                        </div>
+                  
+                  <div className="max-h-96 overflow-y-auto">
+                    {notifications?.length > 0 ? (
+                      <div className="divide-y divide-gray-100">
+                        {notifications?.map?.((notification) => (
+                          <div 
+                            key={notification.id}
+                            className={`p-3 hover:bg-gray-50 cursor-pointer ${!notification.read ? 'bg-blue-50' : ''}`}
+                            onClick={() => markAsRead(notification.id)}
+                          >
+                            <div className="flex items-start gap-2">
+                              <div className="mt-0.5">
+                                {getNotificationIcon(notification.type)}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex justify-between items-start">
+                                  <h4 className={`text-sm font-medium ${!notification.read ? 'text-gray-900' : 'text-gray-700'}`}>
+                                    {notification.title}
+                                  </h4>
+                                  <span className="text-xs text-gray-500 ml-2 whitespace-nowrap">
+                                    {formatTimeAgo(notification.date)}
+                                  </span>
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  {notification.message}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {notification.message}
-                      </p>
-                    </DropdownMenuItem>
-                  ))}
-                </div>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleMarkAllAsRead}>
-                  <span>Marcar todo como leído</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {/* Usuario */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  <Avatar className="h-8 w-8">
-                    {user?.avatar ? (
-                      <AvatarImage src={user.avatar} alt={user.name || 'Usuario'} />
                     ) : (
-                      <AvatarFallback>
-                        {user?.name?.charAt(0) || 'U'}
-                      </AvatarFallback>
+                      <div className="p-4 text-center text-gray-500 text-sm">
+                        No hay notificaciones
+                      </div>
                     )}
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[200px]">
-                <DropdownMenuLabel>
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium">{user?.name || 'Usuario'}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {user?.email || ''}
-                    </p>
-                    <div className="flex items-center space-x-2">
-                      {userRole === 'AGENCIA' ? (
-                        <div className="flex items-center space-x-2">
-                          <Building2 className="h-5 w-5 text-blue-500" />
-                          <span>Agencia</span>
-                        </div>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">
-                          {getRoleTitle(user?.role || 'CLIENTE')}
-                        </span>
-                      )}
-                      {getRoleIcon(user?.role || 'CLIENTE')}
-                    </div>
                   </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {userMenuItems.map((item, index) => (
-                  <React.Fragment key={index}>
-                    <DropdownMenuItem
-                      onClick={item.onClick}
-                      className="cursor-pointer"
+                  
+                  <div className="p-2 border-t border-gray-200 text-center">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-xs text-blue-600 hover:text-blue-800"
+                      onClick={() => {
+                        navigate('/notificaciones');
+                        setShowNotifications(false);
+                      }}
                     >
-                      <span className="mr-2">{item.icon}</span>
-                      <span>{item.label}</span>
-                    </DropdownMenuItem>
-                    {item.dividerAfter && <DropdownMenuSeparator />}
-                  </React.Fragment>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+                      Ver todas las notificaciones
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            <Button variant="ghost" size="icon" className="relative">
+              <Mail size={20} />
+              <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              className="hidden md:flex items-center gap-2"
+              onClick={() => navigate('/perfil')}
+            >
+              <User className="h-4 w-4" />
+              Mi Perfil
+            </Button>
+            
+            <UserMenu />
           </div>
         </div>
       </header>
     </ErrorBoundary>
   );
 };
+
 
 export default Header;

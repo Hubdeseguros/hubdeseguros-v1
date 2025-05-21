@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
@@ -21,8 +20,7 @@ import {
 } from '@/components/ui/select';
 import { toast } from '@/components/ui/use-toast';
 import { createPromoter } from '@/services/user.service';
-import type { UserRole } from '@/types/auth';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/use-auth';
 
 type FormData = {
   name: string;
@@ -32,7 +30,7 @@ type FormData = {
   documentNumber: string;
 };
 
-export const RegisterPromoterForm = () => {
+export function RegisterPromoterForm() {
   const form = useForm<FormData>();
   const { user } = useAuth();
 
@@ -45,7 +43,7 @@ export const RegisterPromoterForm = () => {
         phone: formData.phone,
         documentType: formData.documentType,
         documentNumber: formData.documentNumber,
-        role: 'PROMOTOR' as UserRole,
+        role: 'PROMOTER',
         agenciaId: user?.user_metadata?.agencia_id
       };
       
@@ -73,13 +71,7 @@ export const RegisterPromoterForm = () => {
         <FormField
           control={form.control}
           name="name"
-          rules={{
-            required: 'El correo es requerido',
-            pattern: {
-              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-              message: 'Correo electrónico inválido',
-            },
-          }}
+          rules={{ required: 'El nombre es requerido' }}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Nombre completo</FormLabel>
@@ -175,5 +167,4 @@ export const RegisterPromoterForm = () => {
       </form>
     </Form>
   );
-};
-// (¡No se debe volver a exportar aquí!)
+}

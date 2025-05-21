@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,7 +20,7 @@ import {
 } from '@/components/ui/select';
 import { toast } from '@/components/ui/use-toast';
 import { createClient } from '@/services/user.service';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/use-auth';
 
 type FormData = {
   name: string;
@@ -33,7 +32,7 @@ type FormData = {
   address: string;
 };
 
-export const RegisterClientForm = () => {
+export function RegisterClientForm() {
   const form = useForm<FormData>();
   const { user } = useAuth();
 
@@ -196,6 +195,4 @@ export const RegisterClientForm = () => {
       </form>
     </Form>
   );
-};
-
-export { RegisterClientForm };
+}

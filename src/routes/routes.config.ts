@@ -21,19 +21,17 @@ import {
   ClipboardList,
   Database,
   Bell,
-  Contact,
-  DollarSign
+  Contact
 } from "lucide-react";
 import { useNotifications } from "@/hooks/useNotifications";
 
 export interface MenuItem {
   key: string;
   label: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: typeof BarChart4;
   path: string;
   notificationCount?: number;
   tooltip?: string;
-  items?: Omit<MenuItem, 'icon' | 'items'>[];
 }
 
 export interface MenuSection {
@@ -227,284 +225,144 @@ export const agencyRoutes: RouteConfig = {
   path: '/agencia/dashboard',
   sections: [
     {
-      title: 'DASHBOARD',
+      title: 'PRINCIPALES',
       items: [
         { 
-          key: 'inicio', 
-          label: 'Inicio', 
-          icon: LayoutDashboard, 
-          path: '/agencia/dashboard',
-          tooltip: 'Panel principal de la agencia'
-        },
-        { 
-          key: 'panel-principal', 
-          label: 'Panel Principal', 
-          icon: BarChart4, 
-          path: '/agencia/panel-principal',
-          tooltip: 'Vista general de métricas y KPI\'s'
-        }
-      ]
-    },
-    {
-      title: 'GESTIÓN DE CLIENTES',
-      items: [
-        { 
-          key: 'clientes-listado', 
-          label: 'Listado de Clientes', 
+          key: 'clientes', 
+          label: 'Clientes', 
           icon: Users, 
           path: '/agencia/clientes',
-          tooltip: 'Administrar el listado de clientes'
+          tooltip: 'Administra la cartera de clientes'
         },
         { 
-          key: 'crm', 
-          label: 'Asistente Comercial/CRM', 
-          icon: Contact, 
-          path: '/agencia/crm',
-          tooltip: 'Sistema de gestión de relaciones con clientes'
-        }
-      ]
-    },
-    {
-      title: 'GESTIÓN DE PÓLIZAS',
-      items: [
-        { 
-          key: 'polizas-listado', 
-          label: 'Listado de Pólizas', 
-          icon: FileText, 
-          path: '/agencia/polizas',
-          tooltip: 'Administrar el listado de pólizas'
-        },
-        { 
-          key: 'cumplimiento-judicial', 
-          label: 'Cumplimiento y Judicial', 
+          key: 'polizas', 
+          label: 'Pólizas', 
           icon: Shield, 
-          path: '/agencia/cumplimiento',
-          tooltip: 'Gestión de pólizas en cumplimiento y procesos judiciales'
-        }
-      ]
-    },
-    {
-      title: 'GESTIÓN FINANCIERA',
-      items: [
-        { 
-          key: 'cobros', 
-          label: 'Cobros', 
-          icon: DollarSign, 
-          path: '/agencia/cobros',
-          items: [
-            { 
-              key: 'pagos-listado', 
-              label: 'Listado de pagos', 
-              path: '/agencia/cobros/pagos' 
-            },
-            { 
-              key: 'recibos-cuadre', 
-              label: 'Recibos y Cuadre de caja', 
-              path: '/agencia/cobros/recibos' 
-            },
-            { 
-              key: 'liquidar-vendedores', 
-              label: 'Liquidar vendedores', 
-              path: '/agencia/cobros/liquidacion' 
-            }
-          ]
-        },
-        { 
-          key: 'informes-financieros', 
-          label: 'Informes', 
-          icon: PieChart, 
-          path: '/agencia/informes/financieros',
-          tooltip: 'Informes y reportes financieros'
-        }
-      ]
-    },
-    {
-      title: 'GESTIÓN OPERATIVA',
-      items: [
-        { 
-          key: 'archivos', 
-          label: 'Archivos', 
-          icon: Folder, 
-          path: '/agencia/archivos',
-          tooltip: 'Gestión de archivos y documentos'
+          path: '/agencia/polizas',
+          tooltip: 'Gestión centralizada de pólizas'
         },
         { 
           key: 'siniestros', 
           label: 'Siniestros', 
           icon: AlertCircle, 
           path: '/agencia/siniestros',
-          tooltip: 'Gestión de siniestros'
+          tooltip: 'Seguimiento de siniestros reportados'
         },
         { 
-          key: 'remisiones', 
-          label: 'Remisiones', 
-          icon: ClipboardList, 
-          path: '/agencia/remisiones',
-          tooltip: 'Gestión de remisiones'
+          key: 'ventas', 
+          label: 'Ventas', 
+          icon: ShoppingCart, 
+          path: '/agencia/ventas',
+          tooltip: 'Control de ventas y comisiones'
+        },
+        { 
+          key: 'cobros', 
+          label: 'Cobros', 
+          icon: CreditCard, 
+          path: '/agencia/cobros',
+          tooltip: 'Administración de cobros y pagos'
+        },
+        { 
+          key: 'notificaciones', 
+          label: 'Notificaciones', 
+          icon: Bell, 
+          path: '/agencia/notificaciones',
+          notificationCount: 7,
+          tooltip: 'Centro de notificaciones'
         }
       ]
     },
     {
-      title: 'CONFIGURACIÓN',
+      title: 'GESTIÓN',
       items: [
         { 
-          key: 'informacion-general', 
-          label: 'Información General', 
-          icon: Settings, 
-          path: '/agencia/configuracion/general',
-          tooltip: 'Configuración general de la agencia'
+          key: 'leads', 
+          label: 'Leads', 
+          icon: UserPlus, 
+          path: '/agencia/leads',
+          tooltip: 'Gestión de prospectos' 
         },
         { 
-          key: 'sedes', 
-          label: 'Sedes', 
-          icon: Building, 
-          path: '/agencia/configuracion/sedes',
-          tooltip: 'Gestión de sedes de la agencia'
-        },
-        { 
-          key: 'aseguradoras', 
-          label: 'Aseguradoras', 
-          icon: Shield, 
-          path: '/agencia/configuracion/aseguradoras',
-          tooltip: 'Gestión de compañías aseguradoras'
+          key: 'agentes', 
+          label: 'Agentes', 
+          icon: Users, 
+          path: '/agencia/agentes',
+          tooltip: 'Administra tu fuerza de ventas',
+          notificationCount: 1
         },
         { 
           key: 'ramos', 
           label: 'Ramos', 
           icon: GitBranch, 
-          path: '/agencia/configuracion/ramos',
-          tooltip: 'Gestión de ramos de seguros'
+          path: '/agencia/ramos',
+          tooltip: 'Configuración de ramos de seguros'
         },
         { 
-          key: 'vendedores', 
-          label: 'Vendedores', 
-          icon: UserPlus, 
-          path: '/agencia/configuracion/vendedores',
-          tooltip: 'Gestión de vendedores'
+          key: 'aseguradoras', 
+          label: 'Aseguradoras', 
+          icon: Building, 
+          path: '/agencia/aseguradoras',
+          tooltip: 'Gestiona las compañías aseguradoras'
         },
         { 
-          key: 'estados-siniestros', 
-          label: 'Estados Siniestros', 
-          icon: AlertCircle, 
-          path: '/agencia/configuracion/estados-siniestros',
-          tooltip: 'Configuración de estados de siniestros'
-        },
-        { 
-          key: 'estados-arl', 
-          label: 'Estados ARL', 
+          key: 'tareas', 
+          label: 'Tareas', 
           icon: CheckSquare, 
-          path: '/agencia/configuracion/estados-arl',
-          tooltip: 'Configuración de estados ARL'
+          path: '/agencia/tareas',
+          tooltip: 'Gestiona tus tareas pendientes'
         },
         { 
-          key: 'motivos-estados', 
-          label: 'Motivos estados póliza', 
-          icon: FileText, 
-          path: '/agencia/configuracion/motivos-estados',
-          tooltip: 'Configuración de motivos de estados de póliza'
-        },
-        { 
-          key: 'tipo-afiliacion', 
-          label: 'Tipo afiliación', 
-          icon: Users, 
-          path: '/agencia/configuracion/tipo-afiliacion',
-          tooltip: 'Configuración de tipos de afiliación'
-        },
-        { 
-          key: 'mensajeros', 
-          label: 'Mensajeros', 
-          icon: UserPlus, 
-          path: '/agencia/configuracion/mensajeros',
-          tooltip: 'Gestión de mensajeros'
-        },
-        { 
-          key: 'coberturas', 
-          label: 'Coberturas', 
-          icon: Shield, 
-          path: '/agencia/configuracion/coberturas',
-          tooltip: 'Gestión de coberturas de seguros'
+          key: 'calendario', 
+          label: 'Calendario', 
+          icon: Calendar, 
+          path: '/agencia/calendario',
+          tooltip: 'Organiza tus citas y recordatorios'
         }
       ]
     },
     {
-      title: 'IMPORTACIÓN DE DATOS',
+      title: 'REPORTES',
       items: [
         { 
-          key: 'importar-aseguradoras', 
-          label: 'Aseguradoras', 
-          icon: Database, 
-          path: '/agencia/importar/aseguradoras',
-          tooltip: 'Importar datos de aseguradoras'
+          key: 'estadisticas', 
+          label: 'Estadísticas', 
+          icon: PieChart, 
+          path: '/agencia/estadisticas',
+          tooltip: 'Análisis de rendimiento y KPIs'
         },
         { 
-          key: 'importar-ramos', 
-          label: 'Ramos', 
-          icon: GitBranch, 
-          path: '/agencia/importar/ramos',
-          tooltip: 'Importar datos de ramos'
-        },
-        { 
-          key: 'importar-vendedores', 
-          label: 'Vendedores', 
-          icon: UserPlus, 
-          path: '/agencia/importar/vendedores',
-          tooltip: 'Importar datos de vendedores'
-        },
-        { 
-          key: 'importar-clientes', 
-          label: 'Clientes', 
-          icon: Users, 
-          path: '/agencia/importar/clientes',
-          tooltip: 'Importar datos de clientes'
-        },
-        { 
-          key: 'importar-polizas', 
-          label: 'Pólizas', 
+          key: 'cotizaciones', 
+          label: 'Cotizaciones', 
           icon: FileText, 
-          path: '/agencia/importar/polizas',
-          tooltip: 'Importar datos de pólizas'
+          path: '/agencia/cotizaciones',
+          tooltip: 'Gestión de cotizaciones',
+          notificationCount: 5
         },
         { 
-          key: 'importar-polizas-cumplimiento', 
-          label: 'Pólizas de cumplimiento', 
-          icon: Shield, 
-          path: '/agencia/importar/polizas-cumplimiento',
-          tooltip: 'Importar datos de pólizas de cumplimiento'
+          key: 'archivos', 
+          label: 'Archivos', 
+          icon: Folder, 
+          path: '/agencia/archivos',
+          tooltip: 'Repositorio de archivos y documentos'
         },
         { 
-          key: 'importar-campos-adicionales', 
-          label: 'Campos adicionales por ramo', 
+          key: 'facturas', 
+          label: 'Facturas', 
           icon: FileText, 
-          path: '/agencia/importar/campos-adicionales',
-          tooltip: 'Importar campos adicionales por ramo'
-        },
+          path: '/agencia/facturas',
+          tooltip: 'Control de facturación'
+        }
+      ]
+    },
+    {
+      title: 'SISTEMA',
+      items: [
         { 
-          key: 'importar-anexos', 
-          label: 'Anexos', 
-          icon: FileText, 
-          path: '/agencia/importar/anexos',
-          tooltip: 'Importar anexos'
-        },
-        { 
-          key: 'importar-cobros', 
-          label: 'Cobros', 
-          icon: DollarSign, 
-          path: '/agencia/importar/cobros',
-          tooltip: 'Importar datos de cobros'
-        },
-        { 
-          key: 'importar-amparos-siniestros', 
-          label: 'Amparos Siniestros', 
-          icon: AlertCircle, 
-          path: '/agencia/importar/amparos-siniestros',
-          tooltip: 'Importar datos de amparos de siniestros'
-        },
-        { 
-          key: 'importar-datos-clientes', 
-          label: 'Datos adicionales de clientes', 
-          icon: Users, 
-          path: '/agencia/importar/datos-clientes',
-          tooltip: 'Importar datos adicionales de clientes'
+          key: 'configuracion', 
+          label: 'Configuración', 
+          icon: Settings, 
+          path: '/agencia/configuracion',
+          tooltip: 'Configuración general del sistema'
         }
       ]
     }

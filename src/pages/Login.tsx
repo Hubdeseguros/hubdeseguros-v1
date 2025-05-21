@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+
+import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth'; // only this should be used
+import { useAuth } from '@/hooks/useAuth';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -13,7 +14,7 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await login(email, password);
   };
@@ -76,20 +77,18 @@ const Login = () => {
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold mb-2">Hubseguros</h2>
             <h3 className="text-xl font-semibold">Iniciar sesión</h3>
-            <p className="text-gray-600 mt-2">
-              Ingresa tus credenciales para acceder a la plataforma
-            </p>
+            <p className="text-gray-600 mt-2">Ingresa tus credenciales para acceder a la plataforma</p>
           </div>
+          
           {error && (
             <Alert variant="destructive" className="mb-6">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>
-                {typeof error === 'string' ? error : error.message}
-              </AlertDescription>
+              <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-          <form onSubmit={handleLogin} className="space-y-4">
+          
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Correo electrónico</Label>
               <Input
@@ -127,7 +126,9 @@ const Login = () => {
               {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
             </Button>
           </form>
+          
           <Separator className="my-6" />
+          
           <p className="text-center text-sm">
             ¿No tienes una cuenta? <a href="/register" className="text-blue-700 hover:underline">Regístrate</a>
           </p>

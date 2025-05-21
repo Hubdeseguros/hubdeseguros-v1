@@ -11,37 +11,18 @@ function generateTempPassword(length = 12) {
   return result;
 }
 
-import type { UserRole } from '@/types/auth';
-export type { UserRole };
-
 export interface CreateUserData {
   name: string;
   email: string;
   phone: string;
   documentType: string;
   documentNumber: string;
-  role: UserRole;
+  role: 'PROMOTER' | 'CLIENT';
   agenciaId?: string;
   promoterId?: string;
 }
 
-export async function createPromoter(userData: CreateUserData) {
-  // Validaciones adicionales
-  if (!userData.email || !userData.email.includes('@')) {
-    throw new Error('Correo electrónico inválido');
-  }
-
-  if (!userData.phone || userData.phone.length < 10) {
-    throw new Error('Número de teléfono inválido');
-  }
-
-  if (!userData.documentNumber || userData.documentNumber.length < 6) {
-    throw new Error('Número de documento inválido');
-  }
-
-  if (!userData.name || userData.name.trim().length < 2) {
-    throw new Error('Nombre inválido');
-  }
+export async function createPromoter(userData: Omit<CreateUserData, 'role'>) {
   const tempPassword = generateTempPassword();
 
   // 1. Crear usuario en Auth (Supabase Auth)
@@ -54,7 +35,7 @@ export async function createPromoter(userData: CreateUserData) {
         phone: userData.phone,
         document_number: userData.documentNumber,
         document_type: userData.documentType,
-        roles: [userData.role],
+        roles: ['PROMOTER'],
         must_change_password: true,
       },
     },

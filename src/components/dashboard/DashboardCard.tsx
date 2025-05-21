@@ -1,8 +1,5 @@
 import { ReactNode } from 'react';
 import { Card } from '@/components/ui/card';
-import { Shield, AlertCircle, Lock, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
 
 interface DashboardCardProps {
   title: string;
@@ -17,8 +14,6 @@ interface DashboardCardProps {
   alert?: boolean;
   privacyMsg?: string;
   badge?: ReactNode;
-  children?: ReactNode;
-  linkTo?: string;
 }
 
 const DashboardCard = ({
@@ -33,9 +28,7 @@ const DashboardCard = ({
   security,
   alert,
   privacyMsg,
-  badge,
-  children, // Add type annotation for children
-  linkTo
+  badge
 }: DashboardCardProps) => {
   const getBgColor = () => {
     switch (color) {
@@ -90,87 +83,56 @@ const DashboardCard = ({
           <span className="text-xs font-bold">Alerta</span>
         </div>
       )}
-      <div className="flex flex-col gap-4 p-6">
-        <div className="flex items-center gap-4">
-          {icon && (
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-muted">
-              {icon}
+      <div className="flex justify-between items-start">
+        <div>
+          <h3 className="text-gray-600 text-sm font-medium">{title}</h3>
+          <div className="flex items-center gap-2 min-h-[32px]">
+            <p className={`text-3xl font-bold ${getTextColor()} mt-1`}>
+              {value}
+            </p>
+            {badge || <span className="inline-block w-8 h-4" />}
+          </div>
+          {(subtitle || change) && (
+            <p className="text-gray-600 text-xs mt-1">
+              {subtitle || change}
+            </p>
+          )}
+          {timeframe && (
+            <p className="text-gray-500 text-xs mt-1">
+              {timeframe}
+            </p>
+          )}
+          {trend !== undefined && (
+            <div className={`flex items-center mt-2 ${getTrendColor()}`}>
+              {trend > 0 ? (
+                <svg className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                </svg>
+              ) : trend < 0 ? (
+                <svg className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              ) : null}
+              <span className="text-xs font-medium">
+                {trend > 0 ? '+' : ''}{trend}% vs. mes anterior
+              </span>
             </div>
           )}
-          <div>
-            <p className="text-sm font-medium leading-none text-muted-foreground">
-              {title}
-            </p>
-            <p className="text-2xl font-bold tracking-tight">
-              {value}
-            </p>
-            {subtitle && (
-              <p className="text-sm text-muted-foreground">{subtitle}</p>
-            )}
-          </div>
         </div>
-        {trend !== undefined && (
-          <div className="flex items-baseline">
-            <p className="text-2xl font-bold tracking-tight">
-              {value}
-            </p>
-            <p
-              className={`ml-2 flex items-baseline text-sm font-medium ${
-                trend > 0 ? 'text-green-500' : 'text-red-500'
-              }`}
-            >
-              {trend > 0 ? '+' : ''}
-              {trend}%
-            </p>
+        {icon && (
+          <div className={`p-2 rounded-full ${getBgColor()} ${getTextColor()}`}>
+            {icon}
           </div>
-        )}
-        {change && (
-          <p className="text-sm text-muted-foreground">
-            {change}
-          </p>
-        )}
-        {timeframe && (
-          <p className="text-sm text-muted-foreground">
-            {timeframe}
-          </p>
-        )}
-        {security && (
-          <div className="flex items-center gap-2">
-            <Shield className="h-4 w-4" />
-            <span className="text-sm text-muted-foreground">Protegido</span>
-          </div>
-        )}
-        {alert && (
-          <div className="flex items-center gap-2">
-            <AlertCircle className="h-4 w-4" />
-            <span className="text-sm text-muted-foreground">Alerta</span>
-          </div>
-        )}
-        {privacyMsg && (
-          <div className="flex items-center gap-2">
-            <Lock className="h-4 w-4" />
-            <span className="text-sm text-muted-foreground">{privacyMsg}</span>
-          </div>
-        )}
-        {badge && (
-          <div className="mt-2 flex items-center gap-2">
-            {badge}
-          </div>
-        )}
-        {children && (
-          <div className="mt-4">
-            {children}
-          </div>
-        )}
-        {linkTo && (
-          <Link to={linkTo} className="mt-4">
-            <Button variant="outline" className="w-full justify-start gap-2">
-              <ArrowRight className="h-4 w-4" />
-              Ver más
-            </Button>
-          </Link>
         )}
       </div>
+      {privacyMsg && (
+        <div className="mt-2 text-xs text-gray-400 flex items-center gap-1">
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c1.104 0 2-.896 2-2s-.896-2-2-2-2 .896-2 2 .896 2 2 2zm0 0v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {privacyMsg}
+        </div>
+      )}
     </Card>
   );
 };

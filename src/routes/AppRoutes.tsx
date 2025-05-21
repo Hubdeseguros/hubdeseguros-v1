@@ -3,7 +3,6 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import PrivateRoute from './PrivateRoute';
 import { UserRole } from '@/types/auth';
-import { Role } from '@/types/permissions';
 import NotificationsPage from "@/pages/Notifications";
 import GestionClientes from "@/features/clientes/pages/GestionClientes";
 import PolizasListado from "@/features/polizas/pages/PolizasListado";
@@ -27,7 +26,7 @@ const AuthPages = {
 const Dashboards = {
   User: lazy(() => import('../features/dashboard/user/UserDashboard')),
   Promotor: lazy(() => import('../features/dashboard/agent/PromotorDashboard')),
-  Agencia: lazy(() => import('../features/dashboard/agency/AgencyDashboard')),
+  Agency: lazy(() => import('../features/dashboard/agency/AgencyDashboard')),
   Admin: lazy(() => import('../features/dashboard/admin/AdminDashboard')),
   AgentSales: lazy(() => import('../features/dashboard/agent/AgentSalesDashboard'))
 };
@@ -114,7 +113,7 @@ const NotFoundWithErrorBoundary = withErrorBoundary(AuthPages.NotFound);
 // Dashboards con manejo de errores
 const UserDashboardWithErrorBoundary = withErrorBoundary(Dashboards.User);
 const PromotorDashboardWithErrorBoundary = withErrorBoundary(Dashboards.Promotor);
-const AgencyDashboardWithErrorBoundary = withErrorBoundary(Dashboards.Agencia);
+const AgencyDashboardWithErrorBoundary = withErrorBoundary(Dashboards.Agency);
 const AdminDashboardWithErrorBoundary = withErrorBoundary(Dashboards.Admin);
 const AgentSalesDashboardWithErrorBoundary = withErrorBoundary(Dashboards.AgentSales);
 
@@ -124,9 +123,6 @@ const AppRoutes = () => {
   // Redirección inteligente basada en autenticación y rol
   const getDefaultRoute = () => {
     if (!isAuthenticated) return '/landing';
-    
-    // Si el usuario está autenticado pero no tiene rol asignado, redirigir al dashboard de administrador
-    if (!user?.role) return '/admin/dashboard';
     
     switch (user?.role) {
       case 'CLIENTE':
@@ -138,7 +134,7 @@ const AppRoutes = () => {
       case 'ADMIN':
         return '/admin/dashboard';
       default:
-        return '/admin/dashboard';
+        return '/dashboard';
     }
   };
 
@@ -256,7 +252,7 @@ const AppRoutes = () => {
         </Route>
 
         {/* Rutas para AGENCIA */}
-        <Route path="/agencia/*" element={<PrivateRoute allowedRoles={['AGENCIA', 'ADMIN']} />}>
+        <Route path="/agencia" element={<PrivateRoute allowedRoles={['AGENCIA', 'ADMIN']} />}>
           <Route path="dashboard" element={<AgencyDashboardWithErrorBoundary />} />
           
           {/* Rutas de Clientes */}
@@ -304,14 +300,6 @@ const AppRoutes = () => {
           </Route>
         </Route>
 
-        {/* Ruta de Configuración - Accesible para todos los usuarios autenticados */}
-        <Route path="/settings" element={<PrivateRoute />}>
-          <Route index element={<Navigate to="general" replace />} />
-          <Route path="general" element={<Placeholder title="Configuración General" />} />
-          <Route path="seguridad" element={<Placeholder title="Configuración de Seguridad" />} />
-          <Route path="integraciones" element={<Placeholder title="Integraciones" />} />
-        </Route>
-
         {/* Rutas para ADMIN */}
         <Route path="/admin" element={<PrivateRoute allowedRoles={['ADMIN']} />}>
           <Route path="dashboard" element={<AdminDashboardWithErrorBoundary />} />
@@ -323,6 +311,12 @@ const AppRoutes = () => {
                 <RegisterPromoterForm />
               </div>
             } />
+          </Route>
+          <Route path="configuracion" element={<SettingsPageWithErrorBoundary />}>
+            <Route index element={<Navigate to="general" replace />} />
+            <Route path="general" element={<Placeholder title="Configuración General" />} />
+            <Route path="seguridad" element={<Placeholder title="Configuración de Seguridad" />} />
+            <Route path="integraciones" element={<Placeholder title="Integraciones" />} />
           </Route>
         </Route>
       </Routes>

@@ -1,8 +1,26 @@
-import React from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
+import { useToast } from '@/components/ui/use-toast';
+import { Loader2, Bell, Lock, Shield, UserCog, CreditCard, Globe } from 'lucide-react';
 
-const SettingsPage = () => {
-  const { updateProfile } = useAuth();
+type SettingsSection = {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  roles: string[];
+  component: React.ReactNode;
+};
+
+export default function SettingsPage() {
+  const { user, updateProfile } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [notifications, setNotifications] = useState({
@@ -256,6 +274,4 @@ const SettingsPage = () => {
       </Tabs>
     </div>
   );
-};
-
-export default SettingsPage;
+}

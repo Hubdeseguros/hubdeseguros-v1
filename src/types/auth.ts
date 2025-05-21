@@ -1,12 +1,5 @@
-import { Permission, RolePermissions } from '@/types/permissions';
 
-export type UserRole = 'ADMIN' | 'AGENCIA' | 'PROMOTOR' | 'CLIENTE';
-
-// Tipos de permisos
-export type PermissionType = 'view' | 'edit' | 'admin';
-
-// Tipos de módulos
-export type ModuleType = 'system' | 'clients' | 'policies' | 'promotors' | 'reports' | 'agency';
+export type UserRole = 'ADMIN' | 'CLIENTE' | 'PROMOTOR' | 'AGENCIA';
 
 export type UserLevel = 'BASICO' | 'INTERMEDIO' | 'AVANZADO';
 
@@ -27,8 +20,6 @@ export interface User {
   documentNumber?: string;
   createdAt?: Date;
   updatedAt?: Date;
-  permissions: Permission[];
-  rolePermissions?: Permission[];
 }
 
 export interface AuthState {

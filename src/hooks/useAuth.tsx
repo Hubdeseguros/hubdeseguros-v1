@@ -43,13 +43,14 @@ interface AuthProviderProps {
 function mapSupabaseUserToUser(supabaseUser: any): User {
   if (!supabaseUser) return null as any;
 
+  // User metadata (where extra values are stored)
   const meta = supabaseUser.user_metadata || {};
 
   return {
     id: supabaseUser.id,
-    name: meta.name ?? '',
+    name: meta.name ?? '',                 // fallback to empty string if missing
     email: supabaseUser.email,
-    role: meta.role as UserRole ?? 'CLIENTE',
+    role: meta.role as UserRole ?? 'CLIENTE',  // fallback to CLIENTE
     level: meta.level ?? undefined,
     avatar: meta.avatar ?? undefined,
     phone: meta.phone ?? undefined,
@@ -62,8 +63,6 @@ function mapSupabaseUserToUser(supabaseUser: any): User {
     documentNumber: meta.documentNumber ?? undefined,
     createdAt: supabaseUser.created_at ? new Date(supabaseUser.created_at) : undefined,
     updatedAt: supabaseUser.updated_at ? new Date(supabaseUser.updated_at) : undefined,
-    permissions: meta.permissions ?? [],
-    rolePermissions: meta.rolePermissions ?? {},
   };
 }
 
@@ -72,11 +71,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Verificar sesión al cargar y poblar user completo
   useEffect(() => {
     const checkSession = async () => {
       try {
         const { data, error: sessionError } = await supabase.auth.getSession();
         if (sessionError) throw sessionError;
+        
         if (data?.session?.user?.email) {
           setUser(mapSupabaseUserToUser(data.session.user));
         } else {
@@ -92,6 +93,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     checkSession();
 
+    // Escuchar cambios de autenticación
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         if (session?.user?.email) {
@@ -113,14 +115,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       setError(null);
       setIsLoading(true);
-
+      
       const { data, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-
+      
       if (authError) throw authError;
-
+      
       if (data.user?.email) {
         setUser(mapSupabaseUserToUser(data.user));
       } else {
@@ -157,6 +159,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setError(null);
 
     try {
+      // Write updates to user_metadata (Supabase)
+      // NOTE: Not all providers/fields may be writable everywhere!
       const { data, error } = await supabase.auth.updateUser({
         data: {
           ...updates
@@ -165,6 +169,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       if (error) throw error;
 
+      // On success, update local state.
       const updatedUser = {
         ...user,
         ...updates
