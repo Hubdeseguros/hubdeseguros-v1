@@ -1,164 +1,163 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase } from '@/lib/supabase';
+import { createContext, useContext, useState, ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { User, UserRole, UserLevel } from '../types/auth';
+import { toast } from '@/components/ui/use-toast';
 
-// Tipos
-interface UserData {
-  id: string;
-  email: string;
-  user_metadata?: {
-    name?: string;
-  } | null;
-}
-
-type User = UserData | null;
-
-interface AuthContextType {
-  user: User;
+interface AuthContextProps {
+  user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  login: (email: string, password: string) => Promise<boolean>;
+  logout: () => void;
+  updateProfile: (data: Partial<User>) => Promise<boolean>;
   error: string | null;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
 }
 
-// Crear el contexto
-export const AuthContext = createContext<AuthContextType>({
-  user: null,
-  isAuthenticated: false,
-  isLoading: true,
-  error: null,
-  login: async () => {},
-  logout: async () => {}
-});
+// Datos de usuarios de prueba
+const mockUsers = [
+  { 
+    id: '1', 
+    name: 'Administrador', 
+    email: 'admin@hubdeseguros.com', 
+    password: 'admin123', 
+    role: 'ADMIN' as UserRole,
+    level: 'AVANZADO' as UserLevel,
+    phone: '+57 123 456 7893',
+    company: 'Hub de Seguros',
+    position: 'Administrador del Sistema',
+    address: 'Calle 100 #8-60, Bogotá',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin',
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+];
 
-// Hook
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth debe usarse dentro de un AuthProvider');
-  }
-  return context;
-}
+const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
-// Provider
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<User>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState<User | null>(() => {
+    const savedUser = localStorage.getItem('hubseguros_user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+  
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isAuthenticated = !!user;
 
-  // Verificar sesión al cargar
-  useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const { data, error: sessionError } = await supabase.auth.getSession();
-        if (sessionError) throw sessionError;
-        
-        if (data?.session?.user?.email) {
-          setUser({
-            id: data.session.user.id,
-            email: data.session.user.email,
-            user_metadata: data.session.user.user_metadata || null
-          });
-        } else {
-          setUser(null);
-        }
-      } catch (err) {
-        console.error('Error al verificar sesión:', err);
-        setUser(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const login = async (email: string, password: string): Promise<boolean> => {
+    setIsLoading(true);
+    setError(null);
 
-    checkSession();
-
-    // Escuchar cambios de autenticación
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        if (session?.user?.email) {
-          setUser({
-            id: session.user.id,
-            email: session.user.email,
-            user_metadata: session.user.user_metadata || null
-          });
-        } else {
-          setUser(null);
-        }
-        setIsLoading(false);
-      }
-    );
-
-    return () => {
-      subscription?.unsubscribe();
-    };
-  }, []);
-
-  // Iniciar sesión
-  const login = async (email: string, password: string) => {
     try {
-      setError(null);
-      setIsLoading(true);
-      
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      
-      if (authError) throw authError;
-      
-      if (data.user?.email) {
-        setUser({
-          id: data.user.id,
-          email: data.user.email,
-          user_metadata: data.user.user_metadata || null
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      const foundUser = mockUsers.find(
+        (u) => u.email === email && u.password === password
+      );
+      if (foundUser) {
+        const { password, ...userWithoutPassword } = foundUser;
+        setUser(userWithoutPassword as User);
+        localStorage.setItem('hubseguros_user', JSON.stringify(userWithoutPassword));
+        // Use mapped allowed roles only
+        switch (foundUser.role) {
+          case 'CLIENTE':
+            navigate('/usuario/dashboard');
+            break;
+          case 'PROMOTOR':
+            navigate('/promotor/dashboard');
+            break;
+          case 'AGENCIA':
+            navigate('/agencia/dashboard');
+            break;
+          case 'ADMIN':
+            navigate('/admin/dashboard');
+            break;
+          default:
+            navigate('/dashboard');
+        }
+        toast({
+          title: "Inicio de sesión exitoso",
+          description: `Bienvenido, ${foundUser.name}`,
         });
+        return true;
       } else {
-        throw new Error('El usuario no tiene un email válido');
+        setError('Credenciales incorrectas. Inténtelo de nuevo.');
+        toast({
+          variant: "destructive",
+          title: "Error de autenticación",
+          description: "Credenciales incorrectas. Inténtelo de nuevo.",
+        });
+        return false;
       }
-      
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Error de autenticación';
-      setError(message);
-      throw new Error(message);
+      setError('Ocurrió un error al intentar iniciar sesión.');
+      toast({
+        variant: "destructive",
+        title: "Error de conexión",
+        description: "Ocurrió un error al intentar iniciar sesión.",
+      });
+      return false;
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Cerrar sesión
-  const logout = async () => {
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('hubseguros_user');
+    navigate('/landing');
+    toast({
+      title: "Sesión finalizada",
+      description: "Has cerrado sesión correctamente",
+    });
+  };
+
+  const updateProfile = async (data: Partial<User>): Promise<boolean> => {
+    if (!user) return false;
+    
+    setIsLoading(true);
+    
     try {
-      setIsLoading(true);
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      setUser(null);
-    } catch (err) {
-      console.error('Error al cerrar sesión:', err);
-      throw err;
+      await new Promise(resolve => setTimeout(resolve, 500));
+      const updatedUser = { ...user, ...data };
+      setUser(updatedUser);
+      localStorage.setItem('hubseguros_user', JSON.stringify(updatedUser));
+      toast({
+        title: "Perfil actualizado",
+        description: "Tus datos se han actualizado correctamente.",
+      });
+      return true;
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error al actualizar",
+        description: "No se pudo actualizar el perfil. Por favor, inténtalo de nuevo.",
+      });
+      return false;
     } finally {
       setIsLoading(false);
     }
-  };
-
-  // Valor del contexto
-  const contextValue: AuthContextType = {
-    user,
-    isAuthenticated: !!user,
-    isLoading,
-    error,
-    login,
-    logout,
   };
 
   return (
-    <AuthContext.Provider value={contextValue}>
+    <AuthContext.Provider value={{ 
+      user, 
+      isAuthenticated, 
+      isLoading, 
+      login, 
+      logout, 
+      updateProfile,
+      error 
+    }}>
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
-export default AuthProvider;
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth debe ser usado dentro de un AuthProvider');
+  }
+  return context;
+};

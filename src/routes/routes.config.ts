@@ -463,7 +463,7 @@ export const getRoutesByRole = (role: UserRole): RouteConfig => {
   switch (role) {
     case 'CLIENTE':
       return userRoutes;
-    case 'PROMOTOR':
+    case 'AGENTE':
       return agentRoutes;
     case 'AGENCIA':
       return agencyRoutes;

@@ -6,8 +6,15 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import { UserRole } from '@/types/auth';
-import { authService } from '@/services/auth';
-import { supabase } from '@/lib/supabase';
+import { 
+  Select, 
+  SelectContent, 
+  SelectGroup, 
+  SelectItem, 
+  SelectLabel, 
+  SelectTrigger, 
+  SelectValue 
+} from '@/components/ui/select';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -15,7 +22,7 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-
+  const [selectedRole, setSelectedRole] = useState<UserRole>('CLIENTE');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,37 +41,22 @@ const Register = () => {
     setIsLoading(true);
     
     try {
-      console.log('Iniciando registro con:', { name, email });
+      // Aquí iría la lógica de registro real
+      // Por ahora simulamos un registro exitoso después de un pequeño delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Usar el servicio de autenticación para el registro
-      const result = await authService.register(name, email, password);
-      
-      if (result.message && result.message.includes('ya registrado')) {
-        toast({
-          title: "Usuario ya registrado",
-          description: "Ya existe una cuenta con este email. Serás redirigido al login.",
-        });
-      } else {
-        toast({
-          title: "Registro exitoso",
-          description: "Tu cuenta ha sido creada correctamente. Por favor, inicia sesión.",
-        });
-      }
+      toast({
+        title: "Registro exitoso",
+        description: "Tu cuenta ha sido creada correctamente",
+      });
       
       // Redireccionar al login
       navigate('/login');
     } catch (error) {
-      console.error('Error en registro:', error);
-      let errorMessage = 'Error desconocido';
-      
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      }
-      
       toast({
         variant: "destructive",
         title: "Error de registro",
-        description: errorMessage,
+        description: "No se pudo crear la cuenta. Inténtalo de nuevo.",
       });
     } finally {
       setIsLoading(false);
@@ -168,7 +160,23 @@ const Register = () => {
               />
             </div>
             
-
+            <div className="space-y-2">
+              <Label htmlFor="role">Selecciona tu rol</Label>
+              <Select defaultValue={selectedRole} onValueChange={(value) => setSelectedRole(value as UserRole)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Selecciona un rol" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Roles disponibles</SelectLabel>
+                    <SelectItem value="CLIENTE">Cliente</SelectItem>
+                    <SelectItem value="AGENTE">Agente</SelectItem>
+                    <SelectItem value="AGENCIA">Agencia</SelectItem>
+                    <SelectItem value="ADMIN">Administrador</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
             
             <Button
               type="submit"

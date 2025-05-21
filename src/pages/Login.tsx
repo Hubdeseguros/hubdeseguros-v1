@@ -127,11 +127,41 @@ const Login = () => {
             </Button>
           </form>
           
+          <div className="mt-6 text-center text-sm text-gray-600">
+            <p>Cuentas de prueba:</p>
+            <div className="grid grid-cols-4 gap-2 mt-2">
+              <div className="p-2 border rounded text-xs">
+                <p className="font-medium">Cliente</p>
+                <p>cliente@demo.com</p>
+                <p>password</p>
+              </div>
+              <div className="p-2 border rounded text-xs">
+                <p className="font-medium">Agente</p>
+                <p>agente@demo.com</p>
+                <p>password</p>
+              </div>
+              <div className="p-2 border rounded text-xs">
+                <p className="font-medium">Agencia</p>
+                <p>agencia@demo.com</p>
+                <p>password</p>
+              </div>
+              <div className="p-2 border rounded text-xs">
+                <p className="font-medium">Admin</p>
+                <p>admin@demo.com</p>
+                <p>password</p>
+              </div>
+            </div>
+          </div>
+          
           <Separator className="my-6" />
           
           <p className="text-center text-sm">
             ¿No tienes una cuenta? <a href="/register" className="text-blue-700 hover:underline">Regístrate</a>
           </p>
+          
+          <div className="mt-6 text-center text-xs text-gray-500">
+            <p>Acceso demo: demo@factotum.com / password</p>
+          </div>
         </div>
       </div>
     </div>

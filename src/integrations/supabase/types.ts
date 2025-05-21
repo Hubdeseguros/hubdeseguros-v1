@@ -177,38 +177,6 @@ export type Database = {
           },
         ]
       }
-      password_resets: {
-        Row: {
-          created_at: string | null
-          expires_at: string
-          id: string
-          token: string
-          usuario_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          expires_at: string
-          id?: string
-          token: string
-          usuario_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          expires_at?: string
-          id?: string
-          token?: string
-          usuario_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "password_resets_usuario_id_fkey"
-            columns: ["usuario_id"]
-            isOneToOne: true
-            referencedRelation: "usuarios"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       polizas: {
         Row: {
           cliente_id: string

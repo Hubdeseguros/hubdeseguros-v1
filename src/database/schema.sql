@@ -28,12 +28,6 @@ CREATE TABLE IF NOT EXISTS roles (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Insertar roles iniciales
-INSERT INTO roles (name, description) VALUES
-('admin', 'Administrador del sistema'),
-('promotor', 'Promotor de seguros'),
-('cliente', 'Cliente de seguros');
-
 -- Tabla de Usuarios
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -50,7 +44,7 @@ CREATE TABLE IF NOT EXISTS users (
     created_by UUID REFERENCES users(id)
 );
 
--- Tabla de Usuarios por Agencia
+-- Tabla de Usuarios por Agencia (con restricción de 3 admins)
 CREATE TABLE IF NOT EXISTS users_agency (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
@@ -58,15 +52,6 @@ CREATE TABLE IF NOT EXISTS users_agency (
     role_id UUID REFERENCES roles(id),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(user_id, agency_id)
-);
-
--- Tabla de Usuarios_Admin (relación entre usuarios y sus administradores)
-CREATE TABLE IF NOT EXISTS users_admin (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    admin_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(user_id, admin_id)
 );
 
 -- Tabla de Promotores
@@ -159,77 +144,23 @@ CREATE TRIGGER update_policies_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
--- Restricción para máximo 3 admins por cuenta
-CREATE OR REPLACE FUNCTION check_max_admins_per_account()
+-- Restricción para máximo 3 admins por agencia
+CREATE OR REPLACE FUNCTION check_max_admins_per_agency()
 RETURNS TRIGGER AS $$
 BEGIN
-    IF EXISTS (
-        SELECT 1 
-        FROM users_admin ua
-        WHERE ua.user_id = NEW.user_id
-        GROUP BY ua.user_id
-        HAVING COUNT(*) >= 3
-    ) THEN
-        RAISE EXCEPTION 'Maximum of 3 admins per account reached';
+    IF (SELECT COUNT(*) FROM users_agency 
+         WHERE agency_id = NEW.agency_id 
+         AND role_id = (SELECT id FROM roles WHERE name = 'ADMIN')) > 2 THEN
+        RAISE EXCEPTION 'Maximum of 3 admins per agency reached';
     END IF;
     RETURN NEW;
 END;
 $$ language 'plpgsql';
 
-CREATE TRIGGER check_max_admins_per_account
-    BEFORE INSERT ON users_admin
+CREATE TRIGGER check_max_admins
+    BEFORE INSERT ON users_agency
     FOR EACH ROW
-    EXECUTE FUNCTION check_max_admins_per_account();
-
--- Restricción para máximo 3 agencias por cuenta
-CREATE OR REPLACE FUNCTION check_max_agencies_per_account()
-RETURNS TRIGGER AS $$
-BEGIN
-    IF EXISTS (
-        SELECT 1 
-        FROM users_admin ua
-        JOIN users u ON u.id = ua.admin_id
-        JOIN agencies a ON a.created_by = u.id
-        WHERE ua.user_id = (
-            SELECT user_id 
-            FROM users_admin 
-            WHERE admin_id = NEW.created_by
-        )
-        GROUP BY ua.user_id
-        HAVING COUNT(*) >= 3
-    ) THEN
-        RAISE EXCEPTION 'Maximum of 3 agencies per account reached';
-    END IF;
-    RETURN NEW;
-END;
-$$ language 'plpgsql';
-
-CREATE TRIGGER check_max_agencies_per_account
-    BEFORE INSERT ON agencies
-    FOR EACH ROW
-    EXECUTE FUNCTION check_max_agencies_per_account();
-
--- Restricción para máximo 3 agencias por admin
-CREATE OR REPLACE FUNCTION check_max_agencies_per_admin()
-RETURNS TRIGGER AS $$
-BEGIN
-    IF EXISTS (
-        SELECT 1 
-        FROM agencies a
-        WHERE a.created_by = NEW.created_by
-        GROUP BY a.created_by
-        HAVING COUNT(*) >= 3
-    ) THEN
-        RAISE EXCEPTION 'Maximum of 3 agencies per admin reached';
-    END IF;
-    RETURN NEW;
-END;
-$$ language 'plpgsql';
-
-CREATE TRIGGER check_max_agencies_per_admin
-    BEFORE INSERT ON agencies
-    FOR EACH ROW
-    EXECUTE FUNCTION check_max_agencies_per_admin();
+    EXECUTE FUNCTION check_max_admins_per_agency();
 
 -- Restricción para solo admins creando admins
 CREATE OR REPLACE FUNCTION check_admin_creation()
@@ -261,22 +192,6 @@ INSERT INTO roles (name, description) VALUES
 ('ADMIN', 'Administrador de agencia'),
 ('PROMOTOR', 'Promotor de seguros'),
 ('CLIENTE', 'Cliente de seguros');
-
--- Función para resetear intentos fallidos después de login exitoso
-CREATE OR REPLACE FUNCTION reset_failed_attempts()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.failed_login_attempts = 0;
-    NEW.last_failed_login = NULL;
-    RETURN NEW;
-END;
-$$ language 'plpgsql';
-
-CREATE TRIGGER reset_failed_attempts_trigger
-    AFTER UPDATE ON users
-    FOR EACH ROW
-    WHEN (OLD.failed_login_attempts > 0 AND NEW.failed_login_attempts = 0)
-    EXECUTE FUNCTION reset_failed_attempts();
 
 -- Función para bloquear usuario después de N intentos fallidos
 CREATE OR REPLACE FUNCTION block_user_after_failed_attempts()
