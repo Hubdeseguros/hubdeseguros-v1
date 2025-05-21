@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Label } from '@/components/ui/label';
@@ -37,24 +38,21 @@ const Register = () => {
       
       // Usar el servicio de autenticación para el registro
       const result = await authService.register(name, email, password);
-
-      if (!result.success && result.error && result.error.includes('ya registrado')) {
+      
+      if (result.message && result.message.includes('ya registrado')) {
         toast({
           title: "Usuario ya registrado",
           description: "Ya existe una cuenta con este email. Serás redirigido al login.",
         });
-        // Redireccionar al login
-        navigate('/login');
-      } else if (result.success) {
+      } else {
         toast({
           title: "Registro exitoso",
           description: "Tu cuenta ha sido creada correctamente. Por favor, inicia sesión.",
         });
-        // Redireccionar al login
-        navigate('/login');
-      } else {
-        throw new Error(result.error ?? "Error desconocido");
       }
+      
+      // Redireccionar al login
+      navigate('/login');
     } catch (error) {
       console.error('Error en registro:', error);
       let errorMessage = 'Error desconocido';

@@ -1,17 +1,24 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/lib/supabase';
-import { User, UserRole } from '@/types/auth';
 
-// Context type
+// Tipos
+interface UserData {
+  id: string;
+  email: string;
+  user_metadata?: {
+    name?: string;
+  } | null;
+}
+
+type User = UserData | null;
+
 interface AuthContextType {
-  user: User | null;
+  user: User;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  updateProfile: (updates: Partial<User>) => Promise<void>;
 }
 
 // Crear el contexto
@@ -21,8 +28,7 @@ export const AuthContext = createContext<AuthContextType>({
   isLoading: true,
   error: null,
   login: async () => {},
-  logout: async () => {},
-  updateProfile: async () => {},
+  logout: async () => {}
 });
 
 // Hook
@@ -39,39 +45,12 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-// Maps the Supabase user/session object to the full User type
-function mapSupabaseUserToUser(supabaseUser: any): User {
-  if (!supabaseUser) return null as any;
-
-  // User metadata (where extra values are stored)
-  const meta = supabaseUser.user_metadata || {};
-
-  return {
-    id: supabaseUser.id,
-    name: meta.name ?? '',                 // fallback to empty string if missing
-    email: supabaseUser.email,
-    role: meta.role as UserRole ?? 'CLIENTE',  // fallback to CLIENTE
-    level: meta.level ?? undefined,
-    avatar: meta.avatar ?? undefined,
-    phone: meta.phone ?? undefined,
-    company: meta.company ?? undefined,
-    position: meta.position ?? undefined,
-    address: meta.address ?? undefined,
-    bio: meta.bio ?? undefined,
-    website: meta.website ?? undefined,
-    documentType: meta.documentType ?? undefined,
-    documentNumber: meta.documentNumber ?? undefined,
-    createdAt: supabaseUser.created_at ? new Date(supabaseUser.created_at) : undefined,
-    updatedAt: supabaseUser.updated_at ? new Date(supabaseUser.updated_at) : undefined,
-  };
-}
-
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Verificar sesión al cargar y poblar user completo
+  // Verificar sesión al cargar
   useEffect(() => {
     const checkSession = async () => {
       try {
@@ -79,7 +58,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (sessionError) throw sessionError;
         
         if (data?.session?.user?.email) {
-          setUser(mapSupabaseUserToUser(data.session.user));
+          setUser({
+            id: data.session.user.id,
+            email: data.session.user.email,
+            user_metadata: data.session.user.user_metadata || null
+          });
         } else {
           setUser(null);
         }
@@ -97,7 +80,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         if (session?.user?.email) {
-          setUser(mapSupabaseUserToUser(session.user));
+          setUser({
+            id: session.user.id,
+            email: session.user.email,
+            user_metadata: session.user.user_metadata || null
+          });
         } else {
           setUser(null);
         }
@@ -124,10 +111,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (authError) throw authError;
       
       if (data.user?.email) {
-        setUser(mapSupabaseUserToUser(data.user));
+        setUser({
+          id: data.user.id,
+          email: data.user.email,
+          user_metadata: data.user.user_metadata || null
+        });
       } else {
         throw new Error('El usuario no tiene un email válido');
       }
+      
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Error de autenticación';
       setError(message);
@@ -152,38 +144,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  // Actualizar perfil
-  const updateProfile = async (updates: Partial<User>) => {
-    if (!user) throw new Error('No hay usuario autenticado');
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      // Write updates to user_metadata (Supabase)
-      // NOTE: Not all providers/fields may be writable everywhere!
-      const { data, error } = await supabase.auth.updateUser({
-        data: {
-          ...updates
-        }
-      });
-
-      if (error) throw error;
-
-      // On success, update local state.
-      const updatedUser = {
-        ...user,
-        ...updates
-      };
-      setUser(updatedUser as User);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Error actualizando perfil';
-      setError(message);
-      throw new Error(message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+  // Valor del contexto
   const contextValue: AuthContextType = {
     user,
     isAuthenticated: !!user,
@@ -191,7 +152,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     error,
     login,
     logout,
-    updateProfile
   };
 
   return (

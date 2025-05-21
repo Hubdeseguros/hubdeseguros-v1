@@ -495,18 +495,6 @@ const Sidebar = ({ onToggleMobileMenu }: SidebarProps) => {
                   label: 'Coberturas',
                   icon: List,
                   path: `/${roleRoute}/configuracion/coberturas`
-                },
-                {
-                  key: 'promotores',
-                  label: 'Gestión de Promotores',
-                  icon: UserPlus,
-                  path: `/${roleRoute}/configuracion/promotores`
-                },
-                {
-                  key: 'registrar-cliente',
-                  label: 'Registrar Cliente',
-                  icon: UserPlus,
-                  path: `/${roleRoute}/promotores/clientes/registrar`
                 }
               ]
             },
