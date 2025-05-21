@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -8,8 +7,6 @@ export type Policy = {
   client: string;
   type: string;
   status: "Activa" | "Vencida";
-  // new: required by schema
-  amount?: number;
 };
 
 function mapPolicyRow(row: any): Policy {
@@ -17,9 +14,8 @@ function mapPolicyRow(row: any): Policy {
     id: row.id,
     number: row.numero_poliza,
     client: row.cliente_id,
-    type: row.tipo ?? "",
+    type: row.producto_id ?? "",
     status: row.estado === "VIGENTE" ? "Activa" : "Vencida",
-    amount: row.monto,
   };
 }
 
@@ -32,11 +28,10 @@ function policyToDb(policy: Omit<Policy, "id"> & { fecha_inicio?: string; fecha_
   return {
     numero_poliza: policy.number,
     cliente_id: policy.client,
-    tipo: policy.type,
+    producto_id: policy.type,
     estado: statusUiToDb(policy.status),
     fecha_inicio: policy['fecha_inicio'] || new Date().toISOString().slice(0,10),
     fecha_fin: policy['fecha_fin'] || new Date(Date.now() + 365*24*60*60*1000).toISOString().slice(0,10),
-    monto: policy.amount || 0
   };
 }
 
@@ -50,7 +45,7 @@ export function usePolicies() {
     setError(null);
     const { data, error } = await supabase
       .from("polizas")
-      .select("id, numero_poliza, cliente_id, tipo, estado, monto");
+      .select("id, numero_poliza, cliente_id, producto_id, estado");
     if (error) {
       setError(error.message);
     } else {
