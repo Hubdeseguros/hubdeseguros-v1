@@ -7,7 +7,7 @@ interface MainLayoutProps {
   children: ReactNode;
 }
 
-export const MainLayout = ({ children }: MainLayoutProps) => {
+const MainLayout = ({ children }: MainLayoutProps) => {
   // Usar un ref para el estado del overlay para evitar re-renders innecesarios
   const mobileMenuOpenRef = useRef(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -24,9 +24,48 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
     }
   }, []);
 
+  // Manejar el tamaño de la ventana para cerrar el menú en móvil
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024 && mobileMenuOpenRef.current) {
+        setMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Manejar el estado inicial del sidebar basado en el tamaño de la ventana
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  useEffect(() => {
+    setIsSidebarOpen(window.innerWidth >= 1024);
+  }, []);
+
   return (
-    <SidebarProvider defaultOpen={!mobileMenuOpen}>
-      <div className="min-h-screen flex w-full overflow-hidden">
+    <SidebarProvider defaultOpen={isSidebarOpen}>
+      <div className="min-h-screen flex flex-col w-full overflow-hidden">
+        {/* Contenido principal */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <Header />
+          
+          {/* Botón de hamburguesa para móvil */}
+          <button
+            className="lg:hidden absolute top-4 left-4 p-2 rounded-md bg-white shadow-lg"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="h-6 w-6">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          
+          {/* Área de contenido */}
+          <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
+            <div className="max-w-7xl mx-auto">
+              {children}
+            </div>
+          </main>
+        </div>
+
         {/* Sidebar (en versión desktop y overlay en móvil) */}
         <div className={`
           fixed inset-y-0 left-0 z-50 transform lg:relative lg:translate-x-0
@@ -43,29 +82,9 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
             onClick={handleOverlayClick}
           />
         )}
-        
-        {/* Contenido principal */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <Header />
-          
-          {/* Botón de hamburguesa para móvil */}
-          <button
-            className="lg:hidden absolute top-4 left-4 p-2 rounded-md"
-            onClick={() => setMobileMenuOpen(true)}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="h-6 w-6">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-          
-          {/* Área de contenido */}
-          <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
-            <div className="max-w-7xl mx-auto">
-              {children}
-            </div>
-          </main>
-        </div>
       </div>
     </SidebarProvider>
   );
 };
+
+export default MainLayout;

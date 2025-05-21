@@ -2,10 +2,45 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
+const SUPABASE_URL = "https://qsjbmplbgjkjgsqtfqqe.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFzamJtcGxiZ2pramdzcXRmcXFlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDczMDYxMDIsImV4cCI6MjA2Mjg4MjEwMn0.dYGxh87c-EGOboDrypgMo9PMYD5Wft5EukUF4aYpQhE";
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+  },
+  global: {
+    headers: {
+      'Accept': 'application/json',
+    },
+    fetch: (url, options) => {
+      return fetch(url, {
+        ...options,
+        credentials: 'include',
+      });
+    },
+  },
+});
+
+// Agregar un listener para errores de conexión
+supabase.auth.onAuthStateChange((_event, session) => {
+  if (!session) {
+    console.error('No session found');
+  }
+});
+
+// Intentar reconectar automáticamente
+supabase.auth.onAuthStateChange(async (_event, session) => {
+  if (session) {
+    try {
+      await supabase.auth.refreshSession();
+    } catch (error) {
+      console.error('Error refreshing session:', error);
+    }
+  }
+});

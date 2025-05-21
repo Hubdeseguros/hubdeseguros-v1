@@ -68,30 +68,35 @@ const SidebarProvider = React.forwardRef<
     const isMobile = useIsMobile()
     const [openMobile, setOpenMobile] = React.useState(false)
 
-    // State for sidebar open/collapse
+    // This is the internal state of the sidebar.
+    // We use openProp and setOpenProp for control from outside the component.
+    // Usar useRef para evitar re-renders innecesarios
+    // Usar un estado más estable para evitar parpadeos
     const [openState, setOpenState] = React.useState(defaultOpen)
     const open = openProp ?? openState
+    const openRef = React.useRef(open)
     
     const setOpen = React.useCallback(
       (value: boolean | ((value: boolean) => boolean)) => {
-        const openValue = typeof value === "function" ? value(open) : value
+        const openState = typeof value === "function" ? value(open) : value
         if (setOpenProp) {
-          setOpenProp(openValue)
+          setOpenProp(openState)
         } else {
-          setOpenState(openValue)
+          setOpenState(openState)
         }
+        openRef.current = openState
 
-        // Set the cookie to keep the sidebar state.
-        document.cookie = `${SIDEBAR_COOKIE_NAME}=${openValue}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+        // This sets the cookie to keep the sidebar state.
+        document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
       },
-      [setOpenProp, open]
+      [setOpenProp]
     )
 
-    // Memoized versions to avoid unnecessary re-renders
+    // Evitar re-renders innecesarios usando useMemo
     const memoizedOpen = React.useMemo(() => open, [open])
     const memoizedOpenState = React.useMemo(() => openState, [openState])
 
-    // Read initial state from cookie
+    // Actualizar el estado inicial desde la cookie
     React.useEffect(() => {
       const cookie = document.cookie.split('; ').find(row => row.startsWith(SIDEBAR_COOKIE_NAME))
       if (cookie) {
@@ -100,7 +105,8 @@ const SidebarProvider = React.forwardRef<
         if (setOpenProp) {
           setOpenProp(isOpen)
         } else {
-          setOpenState(isOpen)
+          setOpen(isOpen)
+          openRef.current = isOpen
         }
       }
     }, [setOpenProp])
@@ -112,7 +118,7 @@ const SidebarProvider = React.forwardRef<
         : setOpen((open) => !open)
     }, [isMobile, setOpen, setOpenMobile])
 
-    // Keyboard shortcut
+    // Adds a keyboard shortcut to toggle the sidebar.
     React.useEffect(() => {
       const handleKeyDown = (event: KeyboardEvent) => {
         if (
@@ -123,20 +129,22 @@ const SidebarProvider = React.forwardRef<
           toggleSidebar()
         }
       }
+
       window.addEventListener("keydown", handleKeyDown)
       return () => window.removeEventListener("keydown", handleKeyDown)
     }, [toggleSidebar])
 
-    // Explicitly type for transition state
+    // Usar un estado más estable para las transiciones
     const [transitionState, setTransitionState] = React.useState<"expanded" | "collapsed">(open ? "expanded" : "collapsed")
     
+    // Actualizar el estado de transición solo cuando cambie realmente
     React.useEffect(() => {
       if (open !== memoizedOpen) {
         setTransitionState(open ? "expanded" : "collapsed")
       }
     }, [open, memoizedOpen])
 
-    const state: "expanded" | "collapsed" = transitionState
+    const state: "expanded" | "collapsed" = transitionState;
 
     const contextValue = React.useMemo<SidebarContext>(
       () => ({
@@ -175,7 +183,7 @@ const SidebarProvider = React.forwardRef<
       </SidebarContext.Provider>
     )
   }
-);
+)
 SidebarProvider.displayName = "SidebarProvider"
 
 const Sidebar = React.forwardRef<
