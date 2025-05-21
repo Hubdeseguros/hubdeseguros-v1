@@ -156,7 +156,7 @@ export default function SettingsPage() {
         </div>
       ),
     },
-    ...(user?.role === 'ADMIN' || user?.role === 'AGENCIA'
+    ...(user?.role === 'ADMIN' || user?.role === 'AGENTE'
       ? [
           {
             id: 'appearance',
